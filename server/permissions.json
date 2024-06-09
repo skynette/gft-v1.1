@@ -1,0 +1,188 @@
+{
+	"role_levels": {
+		"global": [
+			{
+				"name": "super_admin",
+				"description": "Super admin role level, has access to all resources"
+			},
+			{
+				"name": "company",
+				"description": "Company role level, has access to resources pertaining to the company"
+			},
+			{
+				"name": "user",
+				"description": "User role level, has access to resources pertaining to the user"
+			}
+		]
+	},
+	"permissions": [
+		{
+			"name": "access_admin_portal",
+			"description": "read permissions to the admin portal",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "view_user",
+			"description": "Enables the viewing of user profile",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company", "user"]
+			}
+		},
+		{
+			"name": "add_box",
+			"description": "Enables the creation of new Gift Boxes",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "add_user",
+			"description": "Enables the creation of new user accounts",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "add_company_boxes",
+			"description": "Enables the creation of company box instances",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "edit_user",
+			"description": "Enables the modifying of user profile",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company", "user"]
+			}
+		},
+        {
+			"name": "edit_company_boxes",
+			"description": "Allows modifying company boxes data",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "delete_user",
+			"description": "Allows the deletion of user accounts",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "manage_permissions",
+			"description": "Grants the ability to modify user permissions",
+			"allowed_role_levels": {
+				"global": ["super_admin"]
+			}
+		},
+		{
+			"name": "view_company",
+			"description": "Allows viewing company profile",
+			"allowed_role_levels": {
+				"global": ["super_admin"]
+			}
+		},
+		{
+			"name": "view_company_dashboard",
+			"description": "Allows viewing company dashboard data",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "edit_company_settings",
+			"description": "Permits modification of company-specific settings",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "view_box",
+			"description": "Allows viewing boxes",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company", "user"]
+			}
+		},
+		{
+			"name": "view_gift",
+			"description": "Allows viewing and managing gifts",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company", "user"]
+			}
+		},
+		{
+			"name": "view_campaign",
+			"description": "Allows viewing campaigns",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "create_campaign",
+			"description": "Allows creation of campaigns",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "view_api_log",
+			"description": "Allows viewing API logs",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "view_company_api_key",
+			"description": "Allows viewing company API keys",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+        {
+			"name": "view_company_boxes",
+			"description": "Allows viewing company boxes data",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "view_permissions_model",
+			"description": "Allows viewing and managing permissions models",
+			"allowed_role_levels": {
+				"global": ["super_admin"]
+			}
+		},
+		{
+			"name": "view_permission_group",
+			"description": "Allows viewing and managing permission groups",
+			"allowed_role_levels": {
+				"global": ["super_admin"]
+			}
+		},
+		{
+			"name": "view_box_category",
+			"description": "Allows viewing and managing box categories",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company"]
+			}
+		},
+		{
+			"name": "view_notification",
+			"description": "Allows viewing and managing notifications",
+			"allowed_role_levels": {
+				"global": ["super_admin", "company", "user"]
+			}
+		},
+		{
+			"name": "view_user_dashboard",
+			"description": "Allows viewing gifter and recipient dashboards",
+			"allowed_role_levels": {
+				"global": ["super_admin", "user"]
+			}
+		}
+	]
+}
