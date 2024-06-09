@@ -75,7 +75,7 @@ ROOT_URLCONF = 'zcore.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -138,6 +138,9 @@ MEDIA_ROOT = BASE_DIR / "mediafiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "authentication.User"
+COMPANY_API_KEY = os.environ.get('COMPANY_API_KEY', "default")
+SUPER_ADMIN_USERNAME = os.environ.get("SUPER_ADMIN_USERNAME", "default")
+API_URL = os.environ.get('API_URL')
 
 LOG_LEVEL = "INFO"
 LOG_DIR = os.path.join(BASE_DIR, 'logs')
