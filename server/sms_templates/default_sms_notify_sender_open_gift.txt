@@ -1,0 +1,2 @@
+The receiver has opened the gift {{gift_title}} for {{date}}
+{{box_url}}

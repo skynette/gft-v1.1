@@ -1,0 +1,1 @@
+Reminder: Don't miss today's gift - "{{ gift_title }}". Click {{ box_url }} to view it now! - Enjoy!

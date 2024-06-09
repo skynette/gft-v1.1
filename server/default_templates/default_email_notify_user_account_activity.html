@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Account Activity Notification</title>
+        <style>
+            /* Add CSS styles for email content */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                padding: 20px;
+            }
+
+            .container {
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <p>Hello {{username}}!</p>
+            <p>Your account was accessed on {{date}} at {{time}}. If this wasn't you, please contact support immediately.
+            </p>
+        </div>
+    </body>
+
+</html>

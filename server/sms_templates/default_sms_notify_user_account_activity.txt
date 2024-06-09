@@ -1,0 +1,1 @@
+Hello {{username}}! Your account was accessed on {{date}} at {{time}}. If this wasn't you, please contact support immediately.
