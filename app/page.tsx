@@ -1,10 +1,11 @@
+import { useSession } from "next-auth/react";
 
-const Home: React.FC = () => {
-  return (
-    <div>
-      Hello GFT
-    </div>
-  );
-};
+function Dashboard() {
+  const { data: session } = useSession();
 
-export default Home;
+  if (session?.accessToken) {
+    return <p>Welcome, {session.user?.email}. Your token is {session.accessToken}</p>;
+  }
+
+  return <p>You are not logged in.</p>;
+}

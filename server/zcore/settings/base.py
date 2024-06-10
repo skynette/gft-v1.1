@@ -47,6 +47,7 @@ THIRD_PARTY_APPS = [
     'rest_framework',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'knox',
 ]
 
 LOCAL_APPS = [
@@ -161,10 +162,10 @@ logging.config.dictConfig(
         "disable_existing_loggers": False,
         "formatters": {
             "console": {
-                "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
+                "format": "LOG: %(asctime)s %(name)-12s %(levelname)-8s %(message)s",
             },
             "file": {
-                "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
+                "format": "LOG: %(asctime)s %(name)-12s %(levelname)-8s %(message)s",
             },
             "django.server": DEFAULT_LOGGING["formatters"]["django.server"],
         },

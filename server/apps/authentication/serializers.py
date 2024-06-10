@@ -35,7 +35,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {'email': 'Email is required.'})
         try:
-            
             validate_email(email)
         except ValidationError:
             raise serializers.ValidationError(
@@ -59,9 +58,6 @@ class RegisterSerializer(serializers.ModelSerializer):
                     {'mobile': 'Invalid phone number format, it should be in the format +country_codexxxxxxxx'})
 
         return attrs
-
-    def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
 
 
 class BaseUserProfileSerializer(serializers.ModelSerializer):

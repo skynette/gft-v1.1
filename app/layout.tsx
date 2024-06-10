@@ -1,13 +1,13 @@
 'use client';
 
-import './globals.css'
-import { Epilogue } from "next/font/google"
-
+import './globals.css';
+import { Epilogue } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 
 const epilogue = Epilogue({
     subsets: ['latin'],
     display: 'fallback',
-})
+});
 
 export default function RootLayout({
     children,
@@ -16,8 +16,10 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className=''>
-                {children}
+            <body className={epilogue.className}>
+                <SessionProvider>
+                    {children}
+                </SessionProvider>
             </body>
         </html>
     )
