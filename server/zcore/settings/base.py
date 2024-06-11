@@ -45,6 +45,8 @@ SITE_ID = 1
 
 THIRD_PARTY_APPS = [
     'rest_framework',
+    'rest_framework.authtoken',
+    'drfpasswordless',
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'knox',

@@ -8,54 +8,133 @@ from django.core.validators import validate_email
 User = get_user_model()
 
 
-class RegisterSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.Serializer):
+    id = serializers.UUIDField(read_only=True)
+    username = serializers.CharField(max_length=150)
+    first_name = serializers.CharField(max_length=30, required=False, allow_blank=True)
+    last_name = serializers.CharField(max_length=30, required=False, allow_blank=True)
+    email = serializers.EmailField()
+    mobile = serializers.CharField(max_length=15, required=False, allow_blank=True)
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        user = request.user
+        username = attrs.get("username", user.username)
+        email = attrs.get("email", user.email)
+        mobile = attrs.get("mobile", user.mobile)
+        # Username validation
+        if not username.isalnum():
+            raise serializers.ValidationError(
+                {
+                    "username": "The username should only contain alphanumeric characters."
+                }
+            )
+
+        if User.objects.filter(username=username).exclude(pk=user.pk).exists():
+            raise serializers.ValidationError(
+                {"username": "This username is already taken."}
+            )
+
+        # Email validation
+        if not email:
+            raise serializers.ValidationError({"email": "Email is required."})
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise serializers.ValidationError({"email": "Enter a valid email address."})
+
+        if User.objects.filter(email=email).exclude(pk=user.pk).exists():
+            raise serializers.ValidationError(
+                {"email": "This email is already registered."}
+            )
+
+        # Mobile validation
+        if mobile:
+            try:
+                parsed_mobile = phonenumbers.parse(mobile, None)
+                if not phonenumbers.is_valid_number(parsed_mobile):
+                    raise serializers.ValidationError(
+                        {"mobile": "Enter a valid phone number."}
+                    )
+
+                if not phonenumbers.is_possible_number(parsed_mobile):
+                    raise serializers.ValidationError(
+                        {"mobile": "Enter a possible phone number."}
+                    )
+
+                if User.objects.filter(mobile=mobile).exclude(pk=user.pk).exists():
+                    raise serializers.ValidationError(
+                        {"mobile": "This phone number is already registered."}
+                    )
+
+            except phonenumbers.phonenumberutil.NumberParseException:
+                raise serializers.ValidationError(
+                    {
+                        "mobile": "Invalid phone number format, it should be in the format +country_codexxxxxxxx"
+                    }
+                )
+
+        attrs["mobile"] = mobile
+        return attrs
+
+
+class UserRegisterSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField(read_only=True)
     mobile = serializers.CharField(required=False)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name',
-                  'last_name', 'email', 'mobile']
+        fields = ["id", "username", "first_name", "last_name", "email", "mobile"]
 
     def validate(self, attrs):
-        username = attrs.get('username', None)
-        email = attrs.get('email', None)
-        mobile = attrs.get('mobile', None)
+        username = attrs.get("username", None)
+        email = attrs.get("email", None)
+        mobile = attrs.get("mobile", None)
 
         if not username.isalnum():
             raise serializers.ValidationError(
-                {'username': 'The username should only contain alphanumeric characters.'})
+                {
+                    "username": "The username should only contain alphanumeric characters."
+                }
+            )
 
         if User.objects.filter(username=username).exists():
             raise serializers.ValidationError(
-                {'username': 'This username is already taken.'})
+                {"username": "This username is already taken."}
+            )
 
         # Validate email format
         if not email:
-            raise serializers.ValidationError(
-                {'email': 'Email is required.'})
+            raise serializers.ValidationError({"email": "Email is required."})
         try:
             validate_email(email)
         except ValidationError:
-            raise serializers.ValidationError(
-                {'email': 'Enter a valid email address.'})
+            raise serializers.ValidationError({"email": "Enter a valid email address."})
 
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError(
-                {'email': 'This email is already registered.'})
-        
+                {"email": "This email is already registered."}
+            )
+
         if mobile:
             try:
                 parsed_mobile = phonenumbers.parse(mobile, None)
                 if not phonenumbers.is_valid_number(parsed_mobile):
-                    raise serializers.ValidationError({'mobile': 'Enter a valid phone number.'})
-                
+                    raise serializers.ValidationError(
+                        {"mobile": "Enter a valid phone number."}
+                    )
+
                 if not phonenumbers.is_possible_number(parsed_mobile):
-                    raise serializers.ValidationError({'mobile': 'Enter a possible phone number.'})
+                    raise serializers.ValidationError(
+                        {"mobile": "Enter a possible phone number."}
+                    )
 
             except phonenumbers.phonenumberutil.NumberParseException:
                 raise serializers.ValidationError(
-                    {'mobile': 'Invalid phone number format, it should be in the format +country_codexxxxxxxx'})
+                    {
+                        "mobile": "Invalid phone number format, it should be in the format +country_codexxxxxxxx"
+                    }
+                )
 
         return attrs
 
@@ -68,14 +147,26 @@ class BaseUserProfileSerializer(serializers.ModelSerializer):
             try:
                 image = Image.open(value)
             except Exception as e:
-                raise serializers.ValidationError('Invalid image format, please upload a valid image')
+                raise serializers.ValidationError(
+                    "Invalid image format, please upload a valid image"
+                )
         return value
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'contact_preference',
-                  'mobile', 'is_active', 'user_type', 'date_joined', 'image']
-        read_only_fields = ['is_active', 'user_type', 'date_joined']
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "contact_preference",
+            "mobile",
+            "is_active",
+            "user_type",
+            "date_joined",
+            "image",
+        ]
+        read_only_fields = ["is_active", "user_type", "date_joined"]
 
 
 class UserProfileSerializer(BaseUserProfileSerializer):

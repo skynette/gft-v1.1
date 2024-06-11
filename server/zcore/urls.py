@@ -15,6 +15,7 @@ urlpatterns = [
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     # authentication urls
+    path('', include('drfpasswordless.urls')),
     path('auth/', include('apps.authentication.urls')),
     path('supersecret/', admin.site.urls),
 ]
