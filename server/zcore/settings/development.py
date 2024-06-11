@@ -1,6 +1,6 @@
 from .base import *
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend" 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_USE_TLS = True
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
@@ -64,8 +64,8 @@ PASSWORDLESS_AUTH = {
     'PASSWORDLESS_MOBILE_NOREPLY_NUMBER ': '+23491923456',
     # Amount of time that tokens last, in seconds
     'PASSWORDLESS_TOKEN_EXPIRE_TIME': 15 * 60,
-    # 'PASSWORDLESS_EMAIL_CALLBACK': 'helpers.notifications.send_email_with_callback_token',
-    # 'PASSWORDLESS_SMS_CALLBACK': 'helpers.notifications.send_sms_with_callback_token',
+    'PASSWORDLESS_EMAIL_CALLBACK': 'helpers.notifications.send_email_with_callback_token',
+    'PASSWORDLESS_SMS_CALLBACK': 'helpers.notifications.send_sms_with_callback_token',
     # The email subject
     'PASSWORDLESS_EMAIL_SUBJECT': "Your Login Token!",
     # What function is called to construct a serializer for drf tokens when

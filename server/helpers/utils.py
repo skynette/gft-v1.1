@@ -12,6 +12,10 @@ from django.conf import settings
 from django.utils import timezone
 from urllib.parse import urlparse
 
+from sendgrid.helpers.mail import Mail
+from sendgrid import SendGridAPIClient
+from twilio.rest import Client
+
 from apps.gft.models import Box, Gift, GiftVisit, Template, Config
 from django.contrib.auth import get_user_model
 
@@ -608,6 +612,85 @@ class TemplateHandler:
             return template.subject
         except Template.DoesNotExist:
             return None
+
+
+
+
+def send_email(receiver_email: str, subject: str, html_content: str) -> Dict[str, Union[bool, str]]:
+    """
+    Sends an email using SendGrid.
+
+    Parameters:
+    - receiver_email (str): Email address of the recipient.
+    - subject (str): Subject of the email.
+    - html_content (str): HTML content of the email body.
+
+    Returns:
+    - dict: Dictionary with 'status' indicating success or failure (boolean) and 'message' (str) with the corresponding message.
+    """
+    try:
+        # Fetch SendGrid API key from configuration
+        config = Config.objects.first()
+        api_key = config.sendgrid_api_key
+
+        # Construct the email message
+        message = Mail(
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to_emails=receiver_email,
+            subject=subject,
+            html_content=html_content
+        )
+
+        # Send email using SendGrid API
+        sg = SendGridAPIClient(api_key)
+        response = sg.send(message)
+        print("Email sent successfully:", response)
+        return {'status': True, 'message': 'Email sent successfully'}
+    except Exception as e:
+        print("Error sending email:", str(e))
+        return {'status': False, 'message': str(e)}
+
+
+def send_sms(receiver_phone: str, content: str) -> bool:
+    """
+    Sends an SMS message using Twilio.
+
+    Parameters:
+    - receiver_phone (str): The phone number of the message recipient.
+    - content (str): The content or body of the SMS.
+
+    Returns:
+    - bool: True if the SMS was sent successfully, False otherwise.
+
+    Example:
+    send_sms('+1234567890', 'This is the content of the SMS.')
+    """
+    try:
+        # Fetch configuration
+        config = Config.objects.first()
+        account_sid = config.twilio_account_sid
+        auth_token = config.twilio_auth_token
+        twilio_number = config.twilio_number
+        
+        twilio_client = Client(account_sid, auth_token)
+
+        # Send the SMS
+        message = twilio_client.messages.create(
+            body=content,
+            to=receiver_phone,
+            from_=twilio_number
+        )
+
+        # Check if the SMS was successfully sent
+        if message.sid:
+            return True
+        else:
+            return False
+
+    except Exception as e:
+        print(f"Failed to send SMS to {receiver_phone}. Error: {str(e)}")
+        return False
+
 
 
 def get_receiver_contact_info(user):
