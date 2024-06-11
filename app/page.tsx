@@ -1,11 +1,23 @@
-import { useSession } from "next-auth/react";
+'use client';
 
-function Dashboard() {
-  const { data: session } = useSession();
+import { signIn, useSession, signOut } from 'next-auth/react';
 
-  if (session?.accessToken) {
-    return <p>Welcome, {session.user?.email}. Your token is {session.accessToken}</p>;
-  }
+export default function Dashboard() {
+    const { data: session, status } = useSession();
+    console.log({ session })
 
-  return <p>You are not logged in.</p>;
+    if (status === 'loading') {
+        return <p>Loading...</p>;
+    }
+
+    if (session) {
+        return <p>Welcome, {session.user?.email}. Your token is {session.accessToken} <button onClick={() => signOut()}>signOut</button></p>;
+    }
+
+    return (
+        <div>
+            <p>You are not logged in.</p>
+            <button onClick={() => signIn('google')}>Sign in with Google</button>
+        </div>
+    );
 }
