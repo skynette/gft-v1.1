@@ -19,6 +19,11 @@ class User(TimeStampedUUIDModel, AbstractUser):
         ("email", "email"),
         ("phone", "phone"),
     )
+    PROVIDER_CHOICES = (
+        ("credentials", "credentials"),
+        ("google", "google"),
+        ("apple", "apple"),
+    )
     first_name = models.CharField(max_length=100, blank=True, null=True)
     last_name = models.CharField(max_length=100, blank=True, null=True)
     username = models.TextField(max_length=100, unique=True)
@@ -26,6 +31,7 @@ class User(TimeStampedUUIDModel, AbstractUser):
     mobile = models.CharField(null=True, blank=True, max_length=50)
     contact_preference = models.CharField(max_length=100,choices=CONTACT_PREFERENCE_CHOICES,default="phone")
     image = models.ImageField(upload_to=custom_upload_to, null=True, blank=True)
+    provider = models.CharField(max_length=100, choices=PROVIDER_CHOICES, default="credentials")
     user_type = models.CharField(
         max_length=100,
         choices=(

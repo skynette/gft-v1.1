@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import permissions
 from django.contrib.auth import get_user_model, login
 from drf_spectacular.utils import extend_schema
-from apps.authentication.serializers import RegisterSerializer, UserRegisterSerializer
+from apps.authentication.serializers import RegisterSerializer, UserRegisterSerializer, SocialAuthSerializer
 from apps.gft.permissions import APIPermissionValidator
 from knox.models import AuthToken
 
@@ -72,41 +72,40 @@ class RegisterView(generics.GenericAPIView):
 register_api_view = RegisterView.as_view()
 
 
-class GoogleLoginAPI(generics.GenericAPIView):
-    permission_classes = [permissions.AllowAny]
-    serializer_class = UserRegisterSerializer
+class SocialAuthView(generics.GenericAPIView):
+    serializer_class = SocialAuthSerializer
 
-    @extend_schema(
-        request=UserRegisterSerializer,
-        responses={200: UserRegisterSerializer},
-        description="Register a new user",
-        tags=["Authentication"],
-    )
     def post(self, request, *args, **kwargs):
-        serializer = UserRegisterSerializer(data=request.data)
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
 
-        email = serializer.validated_data['email']
-        username = serializer.validated_data['username']
-        first_name = serializer.validated_data.get('first_name', '')
-        last_name = serializer.validated_data.get('last_name', '')
-        mobile = serializer.validated_data.get('mobile', '')
+        print("DATA FROM SOCIAL LOGIN", data)
+        
+        provider = data.get('provider')
+        email = data.get('email')
+        first_name = data.get('first_name', '')
+        last_name = data.get('last_name', '')
 
-        user, created = User.objects.get_or_create(
-            email=email, defaults={
-                "username": username,
-                "first_name": first_name,
-                "last_name": last_name,
-                "mobile": mobile
-            }
-        )
-        if created:
-            user.set_unusable_password()
+        user, created = User.objects.get_or_create(email=email, defaults={
+            'first_name': first_name,
+            'last_name': last_name,
+            'username': email.split('@')[0],
+            'provider': provider,
+        })
+
+        if not created:
+            # Update user details if necessary
+            user.first_name = user.first_name or first_name
+            user.last_name = user.last_name or last_name
+            user.provider = provider
             user.save()
 
-        login(request, user)
-        _, token = AuthToken.objects.create(user)
-        return Response({"user": UserRegisterSerializer(user).data, "token": token}, status=status.HTTP_200_OK)
-
-
-login_with_google_api_view = GoogleLoginAPI.as_view()
+        token = AuthToken.objects.create(user)[1]
+        return Response({
+            'user': UserRegisterSerializer(user).data,
+            'token': token
+        }, status=status.HTTP_200_OK)
+        
+        
+social_auth_login_api_view = SocialAuthView.as_view()

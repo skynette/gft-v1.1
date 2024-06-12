@@ -84,7 +84,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "username", "first_name", "last_name", "email", "mobile"]
+        fields = ["id", "username", "first_name", "last_name", "email", "mobile", "provider"]
 
     def validate(self, attrs):
         username = attrs.get("username", None)
@@ -177,3 +177,12 @@ class UserProfileSerializer(BaseUserProfileSerializer):
 class SuperAdminUserProfileSerializer(BaseUserProfileSerializer):
     class Meta(BaseUserProfileSerializer.Meta):
         fields = "__all__"
+
+
+class SocialAuthSerializer(serializers.Serializer):
+    provider = serializers.ChoiceField(choices=User.PROVIDER_CHOICES)
+    email = serializers.EmailField()
+    first_name = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    last_name = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    image = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    
