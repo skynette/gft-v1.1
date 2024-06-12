@@ -49,6 +49,7 @@ THIRD_PARTY_APPS = [
     'drfpasswordless',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'corsheaders',
     'knox',
 ]
 
@@ -65,6 +66,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
