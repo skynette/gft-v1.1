@@ -1,10 +1,13 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import axios from 'axios';
 
 const clientIdStr = process.env.GOOGLE_CLIENT_ID as string;
 const clientSecretStr = process.env.GOOGLE_CLIENT_SECRET as string;
 const secretStr = process.env.NEXTAUTH_SECRET as string;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL as string;
+
 
 const handler = NextAuth({
     providers: [
@@ -12,14 +15,46 @@ const handler = NextAuth({
             clientId: clientIdStr,
             clientSecret: clientSecretStr,
         }),
+        CredentialsProvider({
+            name: 'Credentials',
+            credentials: {
+                email: { label: 'Email', type: 'email' },
+                token: { label: 'Token', type: 'text' },
+            },
+            async authorize(credentials) {
+                try {
+                    // Request token from backend
+                    const tokenResponse = await axios.post(`${BASE_URL}/auth/token/`, {
+                        email: credentials?.email,
+                        token: credentials?.token,
+                    });
+
+                    const user = tokenResponse.data;
+
+                    // If no error and we have user data, return it
+                    if (user) {
+                        return { email: credentials?.email, ...user };
+                    }
+
+                    // Return null if user data could not be retrieved
+                    return null;
+                } catch (error) {
+                    console.error('Error authorizing user:', error);
+                    return null;
+                }
+            },
+        }),
     ],
     callbacks: {
         async jwt({ token, user, account, profile }) {
-            if (user) {
-                token.id = (user.id || profile?.sub) as string;
+            if (account && account.provider === 'google' && profile) {
+                token.id = (user?.id || profile?.sub) as string;
                 token.firstName = profile?.given_name as string;
                 token.lastName = profile?.family_name as string;
                 token.picture = profile?.picture as string;
+            } else if (user) {
+                token.id = user.id as string;
+                token.accessToken = user.token as string;
             }
             return token;
         },
