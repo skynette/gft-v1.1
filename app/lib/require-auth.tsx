@@ -12,6 +12,7 @@ interface AuthProps {
 const requireAuth = <P extends AuthProps>(WrappedComponent: ComponentType<P>) => {
     const AuthenticatedComponent = (props: Omit<P, keyof AuthProps>) => {
         const { data: session, status } = useSession();
+        console.log({ session })
         const router = useRouter();
 
         useEffect(() => {

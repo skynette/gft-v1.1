@@ -1,17 +1,21 @@
-'use client'
+'use client';
+
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { FcGoogle } from 'react-icons/fc';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [token, setToken] = useState('');
     const [stage, setStage] = useState<'request' | 'verify'>('request');
+    const router = useRouter();
 
     const handleRequestToken = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await fetch('http://localhost:8000/auth/email/', {
+            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/email/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -19,8 +23,10 @@ export default function Login() {
                 body: `email=${email}`,
             });
             setStage('verify');
+            toast.success('A new token has been sent to your email.');
         } catch (error) {
             console.error('Error requesting token:', error);
+            toast.error('Failed to request a token. Please try again.');
         }
     };
 
@@ -32,12 +38,20 @@ export default function Login() {
             email,
             token,
         });
-
+        console.log("RESULT FROM NEXT AUTH", { result })
         if (result?.error) {
             console.error('Error signing in:', result.error);
+            if (result.error.includes("token")) {
+                toast.error("Invalid or expired token. A new token has been sent to your email.");
+                await handleRequestToken(e); // Resend token
+            } else {
+                toast.error('Failed to sign in. Please try again.');
+            }
         } else {
             // Handle successful login
+            toast.success('Successfully signed in');
             console.log('Successfully signed in');
+            router.push('/');
         }
     };
 
@@ -79,7 +93,6 @@ export default function Login() {
                                     type="email"
                                     autoComplete="email"
                                     required
-                                    disabled
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

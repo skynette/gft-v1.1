@@ -1,7 +1,7 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 const clientIdStr = process.env.GOOGLE_CLIENT_ID as string;
 const clientSecretStr = process.env.GOOGLE_CLIENT_SECRET as string;
@@ -24,7 +24,9 @@ const handler = NextAuth({
             async authorize(credentials) {
                 try {
                     // Request token from backend
-                    const tokenResponse = await axios.post(`${BASE_URL}/auth/token/`, {
+                    const url = `${BASE_URL}/auth/token/`;
+
+                    const tokenResponse = await axios.post(url, {
                         email: credentials?.email,
                         token: credentials?.token,
                     });
@@ -33,6 +35,7 @@ const handler = NextAuth({
 
                     // If no error and we have user data, return it
                     if (user) {
+                        console.log("RETURNING FROM AUTHORIZE", { email: credentials?.email, ...user })
                         return { email: credentials?.email, ...user };
                     }
 
@@ -42,11 +45,14 @@ const handler = NextAuth({
                     console.error('Error authorizing user:', error);
                     return null;
                 }
+
             },
         }),
     ],
     callbacks: {
         async jwt({ token, user, account, profile }) {
+            console.log("JWT callback")
+            console.log({ token, user, account, profile })
             if (account && account.provider === 'google' && profile) {
                 token.id = (user?.id || profile?.sub) as string;
                 token.firstName = profile?.given_name as string;
@@ -59,6 +65,8 @@ const handler = NextAuth({
             return token;
         },
         async session({ session, token }) {
+            console.log("session callback")
+            console.log({ session, token })
             session.accessToken = token.accessToken as string;
             session.user.id = token.id as string;
             session.user.firstName = token.firstName as string;
