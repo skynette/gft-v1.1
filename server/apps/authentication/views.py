@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema
 from apps.authentication.serializers import RegisterSerializer, UserRegisterSerializer, SocialAuthSerializer
 from apps.gft.permissions import APIPermissionValidator

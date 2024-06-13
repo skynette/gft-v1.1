@@ -51,6 +51,7 @@ THIRD_PARTY_APPS = [
     'drf_spectacular_sidecar',
     'corsheaders',
     'knox',
+    'phonenumber_field',
 ]
 
 LOCAL_APPS = [

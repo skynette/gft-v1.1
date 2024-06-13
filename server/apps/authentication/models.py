@@ -3,8 +3,10 @@ import random
 import string
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
+from django.utils.translation import gettext_lazy as _
 import shortuuid
 from apps.common.models import TimeStampedUUIDModel
+from phonenumber_field.modelfields import PhoneNumberField
 
 def custom_upload_to(instance, filename):
     # Generate a custom filename with user ID and random text
@@ -28,7 +30,7 @@ class User(TimeStampedUUIDModel, AbstractUser):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     username = models.TextField(max_length=100, unique=True)
     email = models.EmailField(null=True, blank=True, unique=True)
-    mobile = models.CharField(null=True, blank=True, max_length=50)
+    mobile = PhoneNumberField(verbose_name=_("Phone number"), max_length=20, default="+234980000000")
     contact_preference = models.CharField(max_length=100,choices=CONTACT_PREFERENCE_CHOICES,default="phone")
     image = models.ImageField(upload_to=custom_upload_to, null=True, blank=True)
     provider = models.CharField(max_length=100, choices=PROVIDER_CHOICES, default="credentials")
