@@ -5,7 +5,7 @@ from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiTypes,
 )
-from .serializers import CampaignSerializer, CampaignDetailSerializer
+from .serializers import CampaignSerializer, CampaignDetailSerializer, CreateCampaignSerializer
 
 campaign_list_schema = extend_schema(
     responses={
@@ -117,4 +117,37 @@ campaign_detail_schema = extend_schema(
     parameters=[
         OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
     ]
+)
+
+
+campaign_create_schema = extend_schema(
+    request=CreateCampaignSerializer,
+    responses={
+        201: OpenApiResponse(
+            response=CreateCampaignSerializer,
+            description="Campaign created successfully",
+            examples=[
+                OpenApiExample(
+                    name="Success",
+                    value={
+                        "detail": "Campaign created successfully.",
+                        "campaign": {
+                            "id": "BVNe8NP6y8",
+                            "company": 1,
+                            "name": "API",
+                            "company_boxes": 1,
+                            "duration": 3,
+                            "num_boxes": 1,
+                            "header_image": "/mediafiles/image/header.png",
+                            "open_after_a_day": True
+                        }
+                    }
+                )
+            ]
+        ),
+        400: OpenApiResponse(description='Bad Request'),
+        500: OpenApiResponse(description="Server Error"),
+    },
+    description="Create a new campaign for the authenticated user.",
+    tags=["Campaigns"],
 )
