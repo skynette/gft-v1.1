@@ -55,9 +55,9 @@ def send_email_with_callback_token(user, email_token, **kwargs):
                 receiver_contact, method = get_receiver_contact_info(user)
 
             if method == 'mobile':
-                send_sms_with_callback_token(
+                res = send_sms_with_callback_token(
                     user, email_token, receiver_contact=receiver_contact)
-                return True
+                return res == True
 
             try:
                 message = Mail(

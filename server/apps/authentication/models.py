@@ -65,7 +65,5 @@ class User(TimeStampedUUIDModel, AbstractUser):
                 self.image.name = 'image/avatar.png'
 
         if not self.username:
-            if not self.password:
-                self.password = "1234"
             self.username = f"user_{shortuuid.uuid()[:8]}"
         super().save(*args, **kwargs)

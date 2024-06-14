@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
 from django.contrib.auth import get_user_model
-from apps.authentication.serializers import RegisterSerializer, UserRegisterSerializer, SocialAuthSerializer
+from apps.authentication.serializers import RegisterSerializer, SocialAuthSerializer, UserUpdateSerializer
 from apps.gft.permissions import APIPermissionValidator
 from knox.models import AuthToken
 
@@ -88,11 +88,13 @@ class SocialAuthView(generics.GenericAPIView):
                         name="Success",
                         value={
                             "user": {
-                                "provider": "credentials",
-                                "email": "user@example.com",
+                                "id": "VoZkCadJP9",
+                                "username": "user_hdrZnk7n",
                                 "first_name": "string",
                                 "last_name": "string",
-                                "image": "string"
+                                "email": "user@example.com",
+                                "mobile": "+234980000000",
+                                "provider": "credentials",
                             },
                             "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                         }
@@ -130,10 +132,62 @@ class SocialAuthView(generics.GenericAPIView):
             user.save()
 
         token = AuthToken.objects.create(user)[1]
+        data = {
+            'user': RegisterSerializer(user).data,
+            'token': token
+        }
+        print("res", data)
         return Response({
-            'user': UserRegisterSerializer(user).data,
+            'user': RegisterSerializer(user).data,
             'token': token
         }, status=status.HTTP_200_OK)
         
         
 social_auth_login_api_view = SocialAuthView.as_view()
+
+
+class UserUpdateView(generics.GenericAPIView):
+    serializer_class = UserUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    @extend_schema(
+        request=UserUpdateSerializer,
+        responses={
+            200: OpenApiResponse(
+                response={'application/json': {}},
+                description="User details successfully updated",
+                examples=[
+                    OpenApiExample(
+                        name="Success",
+                        value={
+                            "first_name": "John",
+                            "last_name": "Doe",
+                            "username": "john_doe",
+                            "mobile": "+23491234567",
+                            "contact_preference": "phone",
+                            "image": "http://example.com/media/image.jpg"
+                        }
+                    )
+                ]
+            ),
+            400: OpenApiResponse(description='Bad Request'),
+            404: OpenApiResponse(description='User not found'),
+            500: OpenApiResponse(description="Server Error"),
+        },
+        description="Update user details for users registered with passwordless authentication",
+        tags=["User"],
+    )
+    def patch(self, request, *args, **kwargs):
+        user = request.user
+
+        if not user.is_authenticated:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+user_profile_update_api_view = UserUpdateView.as_view()
