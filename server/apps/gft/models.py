@@ -23,14 +23,14 @@ class Company(models.Model):
         null=True,
         blank=True
     )
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, help_text="The owner of the company")
-    name = models.CharField(max_length=255, help_text="Name of the company")
-    logo = models.ImageField(upload_to='company/logos/', help_text="Logo of the company")
-    header_image = models.ImageField(upload_to='company/headers/', help_text="Header image for the company")
-    company_url = models.CharField(max_length=255, help_text="URL of the company's website")
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, help_text="The owner of the company", null=True, blank=True)
+    name = models.CharField(max_length=255, help_text="Name of the company", null=True, blank=True)
+    logo = models.ImageField(upload_to='company/logos/', help_text="Logo of the company", null=True, blank=True)
+    header_image = models.ImageField(upload_to='company/headers/', help_text="Header image for the company", null=True, blank=True)
+    company_url = models.CharField(max_length=255, help_text="URL of the company's website", null=True, blank=True)
     box_limit = models.IntegerField(help_text="Maximum number of gift boxes the company can manage")
-    socials = models.JSONField(help_text="Social media information for the company")
-    color_schema = models.JSONField(help_text="Color scheme used by the company")
+    socials = models.JSONField(help_text="Social media information for the company", null=True, blank=True)
+    color_schema = models.JSONField(help_text="Color scheme used by the company", null=True, blank=True)
 
 
     def get_company_users(self):
@@ -89,8 +89,8 @@ class BoxCategory(models.Model):
         THIRTY_DAYS = '30', _('30 days')
 
     name = models.CharField(max_length=255, help_text="Name of the box category")
-    label = models.SlugField(unique=True, help_text="Auto-generated slug based on the name")
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES.choices, help_text="Type of box duration")
+    label = models.SlugField(unique=True, help_text="Auto-generated slug based on the name", null=True, blank=True)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES.choices, help_text="Type of box duration", null=True, blank=True)
     qty = models.IntegerField(help_text="Available quantity of boxes for this category")
 
     def __str__(self):

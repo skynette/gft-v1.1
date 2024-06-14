@@ -30,7 +30,7 @@ class User(TimeStampedUUIDModel, AbstractUser):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     username = models.TextField(max_length=100, unique=True)
     email = models.EmailField(null=True, blank=True, unique=True)
-    mobile = PhoneNumberField(verbose_name=_("Phone number"), max_length=20, default="+234980000000")
+    mobile = PhoneNumberField(verbose_name=_("Phone number"), max_length=20, default="+23491234567")
     contact_preference = models.CharField(max_length=100,choices=CONTACT_PREFERENCE_CHOICES,default="phone")
     image = models.ImageField(upload_to=custom_upload_to, null=True, blank=True)
     provider = models.CharField(max_length=100, choices=PROVIDER_CHOICES, default="credentials")
