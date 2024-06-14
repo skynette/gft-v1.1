@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema
 from apps.authentication.serializers import RegisterSerializer, UserRegisterSerializer, SocialAuthSerializer
 from apps.gft.permissions import APIPermissionValidator
 from knox.models import AuthToken
+
+from drf_spectacular.utils import extend_schema, OpenApiExample
+from drf_spectacular.utils import OpenApiResponse
 
 from helpers.utils import validate_phone
 
@@ -17,7 +19,7 @@ User = get_user_model()
 class RegisterView(generics.GenericAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
-    # required_permissions = ["add_user"]
+    required_permissions = ["add_user"]
 
     @extend_schema(
         request=RegisterSerializer,
@@ -75,13 +77,39 @@ register_api_view = RegisterView.as_view()
 class SocialAuthView(generics.GenericAPIView):
     serializer_class = SocialAuthSerializer
 
+    @extend_schema(
+        request=SocialAuthSerializer,
+        responses={
+            200: OpenApiResponse(
+                response={'application/json': {}},
+                description="Successful registration or login",
+                examples=[
+                    OpenApiExample(
+                        name="Success",
+                        value={
+                            "user": {
+                                "provider": "credentials",
+                                "email": "user@example.com",
+                                "first_name": "string",
+                                "last_name": "string",
+                                "image": "string"
+                            },
+                            "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                        }
+                    )
+                ]
+            ),
+            400: OpenApiResponse(description='Bad Request'),
+            500: OpenApiResponse(description="Server Error"),
+        },
+        description="Register or login a user using social account",
+        tags=["Authentication"],
+    )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        print("DATA FROM SOCIAL LOGIN", data)
-        
         provider = data.get('provider')
         email = data.get('email')
         first_name = data.get('first_name', '')
