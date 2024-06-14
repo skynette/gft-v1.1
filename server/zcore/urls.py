@@ -17,5 +17,6 @@ urlpatterns = [
     # authentication urls
     path('', include('drfpasswordless.urls')),
     path('auth/', include('apps.authentication.urls')),
+    path('dashboard/', include('apps.company_dashboard.urls')),
     path('supersecret/', admin.site.urls),
 ]

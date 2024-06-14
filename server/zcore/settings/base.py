@@ -58,6 +58,7 @@ LOCAL_APPS = [
     'apps.authentication',
     'apps.common',
     'apps.gft',
+    'apps.company_dashboard',
 ]
 
 
