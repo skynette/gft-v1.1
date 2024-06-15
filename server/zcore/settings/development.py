@@ -16,7 +16,7 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_SID = os.environ.get('TWILIO_SID')
 
 
-CSRF_TRUSTED_ORIGINS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://gftv1.vercel.app', "http://gftv1.vercel.app"]
 ALLOWED_HOSTS = ['*']
 
 # DATABASES = {

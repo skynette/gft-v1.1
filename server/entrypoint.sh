@@ -2,7 +2,7 @@
 
 # Make database migrations
 echo "[+] Make database migrations"
-python manage.py makemigrations
+python manage.py makemigrations authentication gft
 
 # Apply database migrations
 echo "[+] Apply database migrations"

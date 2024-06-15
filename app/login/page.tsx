@@ -13,10 +13,12 @@ export default function Login() {
     const [stage, setStage] = useState<'request' | 'verify'>('request');
     const router = useRouter();
 
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL as string;
+
     const handleRequestToken = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/email/`, {
+            await fetch(`${BASE_URL}/auth/email/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
