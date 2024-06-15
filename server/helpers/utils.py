@@ -21,7 +21,7 @@ from django.contrib.auth import get_user_model
 
 from typing import Dict, Union
 
-from apps.gft.signals import create_mini_boxes_for_box
+# from apps.gft.signals import create_mini_boxes_for_box
 
 
 apikey = settings.SENDGRID_API_KEY
@@ -725,18 +725,18 @@ def get_receiver_contact_info(user):
     return contact_info, preferred_contact
 
 
-def create_boxes_in_background(campaign, num_boxes_to_create):
-    for i in range(num_boxes_to_create):
-        box = Box.objects.create(
-            user=campaign.company,
-            title=f'{campaign.name} Box {campaign.num_boxes + i + 1}',
-            receiver_name="",
-            receiver_email="",
-            receiver_phone="",
-            days_of_gifting=campaign.duration,
-            open_date=timezone.now(),
-            is_setup=False,
-            box_campaign=campaign,
-            open_after_a_day=campaign.open_after_a_day,
-        )
-        create_mini_boxes_for_box(box, days_of_gifting=campaign.duration)
+# def create_boxes_in_background(campaign, num_boxes_to_create):
+#     for i in range(num_boxes_to_create):
+#         box = Box.objects.create(
+#             user=campaign.company,
+#             title=f'{campaign.name} Box {campaign.num_boxes + i + 1}',
+#             receiver_name="",
+#             receiver_email="",
+#             receiver_phone="",
+#             days_of_gifting=campaign.duration,
+#             open_date=timezone.now(),
+#             is_setup=False,
+#             box_campaign=campaign,
+#             open_after_a_day=campaign.open_after_a_day,
+#         )
+#         create_mini_boxes_for_box(box, days_of_gifting=campaign.duration)
