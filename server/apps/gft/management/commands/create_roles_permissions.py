@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 import json
 import os
-from gft.models import PermissionGroup, PermissionsModel
+from apps.gft.models import PermissionGroup, PermissionsModel
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 
