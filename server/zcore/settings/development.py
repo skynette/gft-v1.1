@@ -16,10 +16,24 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_SID = os.environ.get('TWILIO_SID')
 
 
+CSRF_TRUSTED_ORIGINS = ['*']
+ALLOWED_HOSTS = ['*']
+
+# DATABASES = {
+# 'default': {
+# 	'ENGINE': 'django.db.backends.sqlite3',
+# 	'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# 	}
+# }
+
 DATABASES = {
-'default': {
-	'ENGINE': 'django.db.backends.sqlite3',
-	'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+	'default': {
+		'ENGINE': 'django.db.backends.postgresql',
+		'NAME': os.environ.get('POSTGRES_NAME'),
+		'USER': os.environ.get('POSTGRES_USER'),
+		'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+		'HOST': os.environ.get('POSTGRES_HOST'),
+		'PORT': os.environ.get('POSTGRES_PORT'),
 	}
 }
 
@@ -197,6 +211,15 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+# Static file serving.
+# https://whitenoise.readthedocs.io/en/stable/django.html#add-compression-and-caching-support
+STORAGES = {
+    # ...
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # DJANGO DEBUG TOOLBAR
 if DEBUG:
