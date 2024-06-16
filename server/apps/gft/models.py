@@ -18,17 +18,16 @@ class Company(models.Model):
     owner = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        verbose_name=_("User"),
+        verbose_name=_("Owner"),
         help_text=_("Owner of the company"),
         null=True,
         blank=True
     )
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, help_text="The owner of the company", null=True, blank=True)
     name = models.CharField(max_length=255, help_text="Name of the company", null=True, blank=True)
     logo = models.ImageField(upload_to='company/logos/', help_text="Logo of the company", null=True, blank=True)
     header_image = models.ImageField(upload_to='company/headers/', help_text="Header image for the company", null=True, blank=True)
     company_url = models.CharField(max_length=255, help_text="URL of the company's website", null=True, blank=True)
-    box_limit = models.IntegerField(help_text="Maximum number of gift boxes the company can manage")
+    box_limit = models.IntegerField(help_text="Maximum number of gift boxes the company can manage", default=0)
     socials = models.JSONField(help_text="Social media information for the company", null=True, blank=True)
     color_schema = models.JSONField(help_text="Color scheme used by the company", null=True, blank=True)
 

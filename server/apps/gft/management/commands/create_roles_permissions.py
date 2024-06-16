@@ -5,7 +5,7 @@ import json
 import os
 from apps.gft.models import PermissionGroup, PermissionsModel
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent
 
 class Command(BaseCommand):
     help = 'Creates initial permission groups and permissions'
