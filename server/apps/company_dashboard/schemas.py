@@ -37,7 +37,7 @@ campaign_list_schema = extend_schema(
         ),
     },
     description="Retrieve all campaigns for the authenticated company.",
-    tags=["Campaigns"],
+    tags=["Company Area"],
 )
 
 campaign_detail_schema = extend_schema(
@@ -113,7 +113,7 @@ campaign_detail_schema = extend_schema(
         ),
     },
     description="Retrieve a campaign for the authenticated company.",
-    tags=["Campaigns"],
+    tags=["Company Area"],
     parameters=[
         OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
     ]
@@ -149,5 +149,5 @@ campaign_create_schema = extend_schema(
         500: OpenApiResponse(description="Server Error"),
     },
     description="Create a new campaign for the authenticated user.",
-    tags=["Campaigns"],
+    tags=["Company Area"],
 )

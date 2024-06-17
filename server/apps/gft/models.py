@@ -167,6 +167,7 @@ class Campaign(TimeStampedUUIDModel):
     is_deleted = models.BooleanField(default=False, help_text="Indicates if the campaign is deleted")
 
     current_objects = CampaignSoftDeleteManager()
+    objects = models.Manager()
 
     def __str__(self):
         return self.name
@@ -202,9 +203,6 @@ class Box(TimeStampedUUIDModel):
     box_campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, blank=True, null=True, help_text="Campaign associated with this gift box")
     qr_code_v = models.ImageField(upload_to='gift_qr_codes/', blank=True, null=True, help_text="QR code image for the gift box")
     open_after_a_day = models.BooleanField(default=False, help_text="Allow opening mini boxes only once a day")
-
-    def get_absolute_url(self):
-        return reverse('index:view_box', args=[str(self.pkid)])
 
     @property
     def get_qr_code(self, request):
@@ -266,8 +264,6 @@ class Gift(TimeStampedUUIDModel):
     open_date = models.DateField(help_text="Date when the mini box can be opened")
     qr_code_v = models.ImageField(upload_to='gift_qr_codes/', blank=True, null=True, help_text="QR code image for the mini box")
 
-    def get_absolute_url(self):
-        return reverse('index:open_gift', args=[str(self.pkid)])
 
     @property
     def get_total_visits(self):

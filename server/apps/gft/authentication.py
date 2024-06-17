@@ -47,10 +47,10 @@ class APIKeyAuthentication(BaseAuthentication):
 
         try:
             api_key_obj = CompanyApiKey.objects.get(key=api_key)
-            if api_key_obj.company.user.is_superuser == True:
-                return (api_key_obj.company.user, api_key_obj)
+            if api_key_obj.company.owner.is_superuser == True:
+                return (api_key_obj.company.owner, api_key_obj)
             
-            if api_key_obj.num_of_requests_made >= api_key_obj.max_requests and api_key_obj.company.user.is_superuser == False:
+            if api_key_obj.num_of_requests_made >= api_key_obj.max_requests and api_key_obj.company.owner.is_superuser == False:
                 raise AuthenticationFailed('API key has exceeded the number of requests allowed.')
             
             api_key_obj.num_of_requests_made += 1
@@ -59,7 +59,7 @@ class APIKeyAuthentication(BaseAuthentication):
         except CompanyApiKey.DoesNotExist:
             raise AuthenticationFailed('Invalid API key.')
 
-        return (api_key_obj.company.user, api_key_obj)
+        return (api_key_obj.company.owner, api_key_obj)
 
     def authenticate_header(self, request):
         """Return the keyword to be used in the 'WWW-Authenticate' header.

@@ -7,9 +7,9 @@ certifi==2024.6.2
 cffi==1.16.0
 charset-normalizer==3.3.2
 cryptography==42.0.8
-Django==4.2.9
+Django==4.0
 django-cors-headers==4.3.1
-django-debug-toolbar==4.4.2
+django-debug-toolbar==4.1.0
 django-phonenumber-field==7.3.0
 django-rest-framework==0.1.0
 django-rest-knox==4.2.0
