@@ -12,7 +12,6 @@ urlpatterns = [
     path('campaigns/create/', views.campaign_create_api_view, name='api_create_campaign'),
     path('campaigns/<str:id>/detail/', views.campaign_detail_api_view, name='api_campaign_detail'),
     
-    
     # box category urls
     path('box-category/', views.box_category_list_create_api_view, name='api_list_create_box_category'),
     path('box-category/<int:id>/', views.box_category_retrieve_update_destroy_api_view, name='box_category_get_update_delete'),
@@ -20,6 +19,8 @@ urlpatterns = [
     # api key usage url
     path('api-key-usage/<int:id>', views.company_api_key_usage_view, name='api_key_usage'),
 
+    # company url
+    path("company/", views.company_api_view, name="api_company"),
     # company users url
     path('company-users/<int:id>/', views.company_users_api_view, name='api_company_users_list')
 ]

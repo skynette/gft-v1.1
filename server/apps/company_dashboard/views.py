@@ -12,6 +12,7 @@ from .serializers import (
     CampaignDetailSerializer,
     CampaignSerializer,
     CompanyAPIKeySerializer,
+    CompanySerializer,
     CompanyUserSerializer,
     CreateCampaignSerializer,
 )
@@ -331,6 +332,30 @@ class CompanyApiKeyUsageView(generics.GenericAPIView):
 
 
 company_api_key_usage_view = CompanyApiKeyUsageView.as_view()
+
+
+class CompanyView(generics.GenericAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_company_dashboard']
+
+    @extend_schema(
+        request=None,
+        description="Get company details.",
+        responses=CompanySerializer,
+        tags=["Company Area"],
+    )
+    def get(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        if not company:
+            return Response({'message': 'Company not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(company)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+company_api_view = CompanyView.as_view()
 
 
 class CompanyUsersView(generics.GenericAPIView):

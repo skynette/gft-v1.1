@@ -1,7 +1,7 @@
 import datetime
 from PIL import Image
 from rest_framework import serializers
-from apps.gft.models import Box, BoxCategory, Campaign, CompanyApiKey, CompanyBoxes, CompanyUser
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, CompanyUser
 from django.contrib.auth import get_user_model
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
@@ -176,31 +176,10 @@ class CompanyUserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CompanyUserProfileSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(required=False, write_only=True)
-    # image_url = serializers.SerializerMethodField()
-
-    # @extend_schema_field(OpenApiTypes.STR)
-    # def get_image_url(self, obj):
-    #     request = self.context.get('request')
-    #     if obj.image and request:
-    #         absolute_uri = request.build_absolute_uri(obj.image.url)
-    #         return absolute_uri
-    #     return None
-
-    @extend_schema_field(OpenApiTypes.ANY)
-    def validate_image(self, value):
-        if value:
-            try:
-                image = Image.open(value)
-            except Exception as e:
-                raise serializers.ValidationError(
-                    'Invalid image format, please upload a valid image')
-        return value
+class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'is_active',
-                  'user_type', 'date_joined', 'image']
-        read_only_fields = ['is_active',
-                            'user_type', 'date_joined']
+        model = Company
+        fields = ['id', 'name', 'logo', 'header_image', 'company_url',
+                  'box_limit', 'socials', 'color_schema']
+
