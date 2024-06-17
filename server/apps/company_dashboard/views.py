@@ -6,6 +6,7 @@ from apps.gft.authentication import APIKeyAuthentication
 from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyBoxes
 from apps.gft.permissions import APIPermissionValidator
 from .serializers import (
+    BoxCategorySerializer,
     BoxEditSerializer,
     BoxSerializer,
     CampaignDetailSerializer,
@@ -204,3 +205,97 @@ class BoxCreateView(generics.GenericAPIView):
 
 
 create_box_api_view = BoxCreateView.as_view()
+
+
+class BoxCategoryListCreateView(generics.GenericAPIView):
+    serializer_class = BoxCategorySerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_box_category']
+
+    @extend_schema(
+        request=None,
+        responses=BoxCategorySerializer(many=True),
+        description="Retrieve list of box categories.",
+        tags=["Box Category"],
+    )
+    def get(self, request, *args, **kwargs):
+        box_categories = BoxCategory.objects.all()
+        serializer = self.get_serializer(box_categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        request=BoxCategorySerializer,
+        responses=BoxCategorySerializer,
+        description="Create a new box category.",
+        tags=["Box Category"],
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+box_category_list_create_api_view = BoxCategoryListCreateView.as_view()
+
+
+class BoxCategoryRetrieveUpdateDestroyView(generics.GenericAPIView):
+    serializer_class = BoxCategorySerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_box_category']
+
+    def get_object(self):
+        box_category_id = self.kwargs.get("id")
+        box_category = get_object_or_404(BoxCategory, id=box_category_id)
+        return box_category
+
+    @extend_schema(
+        request=BoxCategorySerializer,
+        responses=BoxCategorySerializer,
+        description="Retrieve a box category.",
+        tags=["Box Category"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH),
+        ],
+    )
+    def get(self, request, *args, **kwargs):
+        box_category = self.get_object()
+        serializer = self.get_serializer(box_category)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        request=BoxCategorySerializer,
+        responses=BoxCategorySerializer,
+        description="Update a box category.",
+        tags=["Box Category"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH),
+        ],
+    )
+    def put(self, request, *args, **kwargs):
+        box_category = self.get_object()
+        serializer = self.get_serializer(box_category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(
+        request=BoxCategorySerializer,
+        responses=BoxCategorySerializer,
+        description="Delete a box category.",
+        tags=["Box Category"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH),
+        ],
+    )
+    def delete(self, request, *args, **kwargs):
+        box_category = self.get_object()
+        box_category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+box_category_retrieve_update_destroy_api_view = BoxCategoryRetrieveUpdateDestroyView.as_view()

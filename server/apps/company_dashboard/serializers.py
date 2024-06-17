@@ -151,3 +151,9 @@ class BoxEditSerializer(serializers.ModelSerializer):
 
 class DeleteBoxResponseSerializer(serializers.Serializer):
     message = serializers.CharField()
+
+
+class BoxCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BoxCategory
+        fields = '__all__'
