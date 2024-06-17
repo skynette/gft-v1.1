@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Box, BoxCategory, Config, Gift, Notification, Campaign, GiftVisit, Company, CompanyBoxes, Template, CompanyApiKey, ApiLog, PermissionGroup, PermissionsModel
+from .models import Box, BoxCategory, CompanyUser, Config, Gift, Notification, Campaign, GiftVisit, Company, CompanyBoxes, Template, CompanyApiKey, ApiLog, PermissionGroup, PermissionsModel
 from django.utils.html import format_html
 from django.db.models.signals import post_save
 from django.contrib.auth import get_user_model
@@ -235,6 +235,35 @@ class TemplateAdmin(admin.ModelAdmin):
 
 
 
+class CompanyUserAdmin(admin.ModelAdmin):
+    list_display = ('company', 'user', 'user_username', 'user_email')
+    search_fields = ('company__name', 'user__username', 'user__email')
+    list_filter = ('company',)
+    ordering = ('company', 'user')
+
+    def user_username(self, obj):
+        return obj.user.username
+    user_username.short_description = 'Username'
+    user_username.admin_order_field = 'user__username'
+
+    def user_email(self, obj):
+        return obj.user.email
+    user_email.short_description = 'Email'
+    user_email.admin_order_field = 'user__email'
+
+    fieldsets = (
+        (None, {
+            'fields': ('company', 'user')
+        }),
+        ('User Information', {
+            'fields': ('user_username', 'user_email'),
+            'description': 'This section shows the user information. These fields are read-only.'
+        }),
+    )
+
+    readonly_fields = ('user_username', 'user_email')
+
+
 admin.site.register(Company, CompanyAdminForm)
 admin.site.register(Box, BoxAdmin)
 admin.site.register(Gift, GiftAdmin)
@@ -243,3 +272,4 @@ admin.site.register(GiftVisit, GiftVisitAdmin)
 admin.site.register(BoxCategory, BoxCategoryAdmin)
 admin.site.register(CompanyBoxes, CompanyBoxesAdmin)
 admin.site.register(Template, TemplateAdmin)
+admin.site.register(CompanyUser, CompanyUserAdmin)

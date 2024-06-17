@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from apps.gft.authentication import APIKeyAuthentication
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyBoxes
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes
 from apps.gft.permissions import APIPermissionValidator
 from .serializers import (
     BoxCategorySerializer,
@@ -11,6 +11,8 @@ from .serializers import (
     BoxSerializer,
     CampaignDetailSerializer,
     CampaignSerializer,
+    CompanyAPIKeySerializer,
+    CompanyUserSerializer,
     CreateCampaignSerializer,
 )
 from django.shortcuts import get_object_or_404
@@ -299,3 +301,62 @@ class BoxCategoryRetrieveUpdateDestroyView(generics.GenericAPIView):
 
 
 box_category_retrieve_update_destroy_api_view = BoxCategoryRetrieveUpdateDestroyView.as_view()
+
+
+class CompanyApiKeyUsageView(generics.GenericAPIView):
+    serializer_class = CompanyAPIKeySerializer
+    permission_classes = [permissions.IsAuthenticated,
+                          APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_company_dashboard']
+
+    @extend_schema(
+        request=None,
+        description="Retrieve total number of requests made by company API keys.",
+        responses={'total_requests': OpenApiTypes.INT},
+        tags=["Company API Key Usage"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH),
+        ],
+    )
+    def get(self, request, id, *args, **kwargs):
+        company = Company.objects.filter(id=id).first()
+        if not company:
+            return Response({'message': 'Company not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        total_requests = CompanyApiKey.objects.filter(company=company).aggregate(
+            total_requests=Sum('num_of_requests_made'))['total_requests']
+
+        return Response({'total_requests': total_requests}, status=status.HTTP_200_OK)
+
+
+company_api_key_usage_view = CompanyApiKeyUsageView.as_view()
+
+
+class CompanyUsersView(generics.GenericAPIView):
+    serializer_class = CompanyUserSerializer
+    permission_classes = [permissions.IsAuthenticated,
+                          APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_company_dashboard']
+
+    @extend_schema(
+        request=None,
+        description="Retrieve list of users for company by id.",
+        responses=CompanyUserSerializer(many=True),
+        tags=["Company Users"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.INT, OpenApiParameter.PATH),
+        ]
+    )
+    def get(self, request, id, *args, **kwargs):
+        company = Company.objects.filter(id=id).first()
+        if not company:
+            return Response({'message': 'Company not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        company_users = company.get_company_users()
+        serializer = CompanyUserSerializer(company_users, many=True, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+company_users_api_view = CompanyUsersView.as_view()

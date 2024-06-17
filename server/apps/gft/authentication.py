@@ -47,14 +47,15 @@ class APIKeyAuthentication(BaseAuthentication):
 
         try:
             api_key_obj = CompanyApiKey.objects.get(key=api_key)
-            if api_key_obj.company.owner.is_superuser == True:
-                return (api_key_obj.company.owner, api_key_obj)
             
             if api_key_obj.num_of_requests_made >= api_key_obj.max_requests and api_key_obj.company.owner.is_superuser == False:
                 raise AuthenticationFailed('API key has exceeded the number of requests allowed.')
             
             api_key_obj.num_of_requests_made += 1
             api_key_obj.save()
+            
+            if api_key_obj.company.owner.is_superuser == True:
+                return (api_key_obj.company.owner, api_key_obj)
 
         except CompanyApiKey.DoesNotExist:
             raise AuthenticationFailed('Invalid API key.')
