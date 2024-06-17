@@ -25,6 +25,7 @@ from django.db.models import Sum, Q
 class CampaignListView(generics.GenericAPIView):
     serializer_class = CampaignSerializer
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [APIKeyAuthentication]
     required_permissions = ["view_campaign"]
 
     @campaign_list_schema
@@ -41,6 +42,7 @@ campaign_list_api_view = CampaignListView.as_view()
 class CampaignCreateView(generics.GenericAPIView):
     serializer_class = CreateCampaignSerializer
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [APIKeyAuthentication]
     required_permissions = ["create_campaign"]
 
     @campaign_create_schema
@@ -115,6 +117,7 @@ campaign_create_api_view = CampaignCreateView.as_view()
 class CampaignDetailView(generics.GenericAPIView):
     serializer_class = CampaignDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [APIKeyAuthentication]
     required_permissions = ["view_campaign"]
 
     @campaign_detail_schema

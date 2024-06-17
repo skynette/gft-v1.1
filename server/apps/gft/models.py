@@ -42,7 +42,7 @@ class Company(models.Model):
         return self.companyuser_set.all()
     
     def __str__(self):
-        return self.name
+        return self.name + "'s Company"
 
     def save(self, *args, **kwargs):
         if not self.pk:
