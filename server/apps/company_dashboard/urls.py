@@ -5,6 +5,7 @@ urlpatterns = [
     # Gift-Boxes urls
     path('boxes/', views.all_boxes_api_view, name='api_all_boxes'),
     path('boxes/<str:box_id>/detail/', views.box_detail_api_view, name='api_view_box'),
+    path('boxes/create/', views.create_box_api_view, name='api_create_box'),
     
     # campaign urls
     path('campaigns/all/', views.campaign_list_api_view, name='api_campaign_list'),

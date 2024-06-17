@@ -180,3 +180,27 @@ class BoxDetailView(generics.GenericAPIView):
 
 box_detail_api_view = BoxDetailView.as_view()
 
+
+
+class BoxCreateView(generics.GenericAPIView):
+    serializer_class = BoxSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['add_box']
+
+    @extend_schema(
+        request=BoxSerializer,
+        description="Create a new box for the authenticated user.",
+        responses=BoxSerializer,
+        tags=["Company Area"],
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            box = serializer.save()
+            data = self.get_serializer(box).data
+            return Response(data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+create_box_api_view = BoxCreateView.as_view()
