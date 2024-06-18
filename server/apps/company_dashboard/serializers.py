@@ -183,3 +183,21 @@ class CompanySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'logo', 'header_image', 'company_url',
                   'box_limit', 'socials', 'color_schema']
 
+
+class CompanyBoxesSerializer(serializers.ModelSerializer):
+    company_name = serializers.SerializerMethodField()
+    box_type = BoxCategorySerializer(read_only=True)
+
+    class Meta:
+        model = CompanyBoxes
+        exclude = ['company']
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_company_name(self, obj):
+        return obj.company.name
+
+
+class CreateCompanyBoxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyBoxes
+        exclude = ['company']

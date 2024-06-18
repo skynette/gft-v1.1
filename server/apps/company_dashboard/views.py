@@ -12,9 +12,11 @@ from .serializers import (
     CampaignDetailSerializer,
     CampaignSerializer,
     CompanyAPIKeySerializer,
+    CompanyBoxesSerializer,
     CompanySerializer,
     CompanyUserSerializer,
     CreateCampaignSerializer,
+    CreateCompanyBoxSerializer,
 )
 from django.shortcuts import get_object_or_404
 from .schemas import (
@@ -385,3 +387,138 @@ class CompanyUsersView(generics.GenericAPIView):
 
 
 company_users_api_view = CompanyUsersView.as_view()
+
+
+class CompanyBoxesListView(generics.ListAPIView):
+    serializer_class = CompanyBoxesSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_company_boxes']
+
+    @extend_schema(
+        request=None,
+        description="Retrieve list of boxes available for the authenticated company.",
+        responses=CompanyBoxesSerializer(many=True),
+        tags=["Company Area"],
+    )
+    def get(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        if not company:
+            return Response({'message': 'Company not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        company_boxes = CompanyBoxes.objects.filter(company=company)
+        serializer = self.get_serializer(instance=company_boxes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+company_boxes_list_api_view = CompanyBoxesListView.as_view()
+
+
+class AddCompanyBoxesView(generics.GenericAPIView):
+    serializer_class = CreateCompanyBoxSerializer
+    permission_classes = [permissions.IsAdminUser]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['add_company_boxes']
+
+    @extend_schema(
+        request=CreateCompanyBoxSerializer,
+        description="Add company boxes.",
+        responses={'200': CompanyBoxesSerializer},
+        tags=["Company Area"],
+    )
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return Response({"detail": "Cannot perform this action"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        company = get_object_or_404(Company, owner=request.user)
+        box_type = serializer.validated_data['box_type']
+        qty = serializer.validated_data['qty']
+        box_type = get_object_or_404(BoxCategory, id=box_type.id)
+        available_boxes = box_type.qty
+
+        if available_boxes < qty:
+            return Response({'message': 'Only {} boxes are available for this type.'.format(available_boxes)}, status=status.HTTP_400_BAD_REQUEST)
+
+        box_type.qty -= qty
+        box_type.save(update_fields=['qty'])
+
+        # check if company already has boxes of this type
+        company_box = CompanyBoxes.objects.filter(
+            company=company, box_type=box_type).first()
+        if company_box:
+            company_box.qty += qty
+            company_box.save(update_fields=['qty'])
+            return Response({'message': 'Company Box updated successfully.'}, status=status.HTTP_200_OK)
+
+        serializer.save(company=company)
+        return Response({'message': 'Company Box allocation created successfully.', "results": serializer.data}, status=status.HTTP_201_CREATED)
+
+
+add_company_boxes_api_view = AddCompanyBoxesView.as_view()
+
+
+
+class UpdateCompanyBoxesView(generics.GenericAPIView):
+    serializer_class = CompanyBoxesSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['edit_company_boxes']
+
+    @extend_schema(
+        request=CompanyBoxesSerializer,
+        description="Update company boxes.",
+        responses=CompanyBoxesSerializer,
+        tags=["Company Area"],
+        parameters=[
+            OpenApiParameter("box_type_id", OpenApiTypes.INT, OpenApiParameter.PATH),
+        ]
+    )
+    def put(self, request, box_type_id, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        if not company:
+            return Response({'message': 'Company not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        company_boxes = get_object_or_404(
+            CompanyBoxes, box_type__id=box_type_id, company=company)
+        serializer = self.get_serializer(
+            instance=company_boxes, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Company Box updated successfully.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+update_company_boxes_api_view = UpdateCompanyBoxesView.as_view()
+
+
+class CompanyBoxesDetailView(generics.GenericAPIView):
+    serializer_class = CompanyBoxesSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_company_boxes']
+
+    @extend_schema(
+        request=CompanyBoxesSerializer,
+        description="Retrieve a company box by box type (category) id.",
+        responses=CompanyBoxesSerializer,
+        tags=["Company Area"],
+        parameters=[
+            OpenApiParameter("box_type_id", OpenApiTypes.INT, OpenApiParameter.PATH),
+        ]
+    )
+    def get(self, request, box_type_id, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        if not company:
+            return Response({'message': 'Company not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        company_boxes = get_object_or_404(
+            CompanyBoxes, id=box_type_id, company=company)
+        serializer = self.get_serializer(company_boxes)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+company_boxes_detail_api_view = CompanyBoxesDetailView.as_view()
+

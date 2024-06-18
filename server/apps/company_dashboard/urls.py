@@ -15,6 +15,11 @@ urlpatterns = [
     # box category urls
     path('box-category/', views.box_category_list_create_api_view, name='api_list_create_box_category'),
     path('box-category/<int:id>/', views.box_category_retrieve_update_destroy_api_view, name='box_category_get_update_delete'),
+    
+    path('company-boxes/', views.company_boxes_list_api_view, name='api_company_boxes_list'),
+    path('company-boxes/create/', views.add_company_boxes_api_view, name='api_add_company_boxes'),
+    path('company-boxes/<int:box_type_id>/update/', views.update_company_boxes_api_view, name='api_update_company_boxes'),
+    path('company-boxes/<int:box_type_id>/detail/', views.company_boxes_detail_api_view, name='api_company_boxes_detail'),
 
     # api key usage url
     path('api-key-usage/<int:id>', views.company_api_key_usage_view, name='api_key_usage'),
