@@ -261,7 +261,7 @@ class Gift(TimeStampedUUIDModel):
     gift_campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, blank=True, null=True, help_text="Campaign associated with this mini box")
     reaction = models.CharField(max_length=255, blank=True, null=True, help_text="Reaction associated with opening the mini box")
     opened = models.BooleanField(default=False, help_text="Indicates if the mini box has been opened")
-    open_date = models.DateField(help_text="Date when the mini box can be opened")
+    open_date = models.DateTimeField(help_text="Date when the mini box can be opened")
     qr_code_v = models.ImageField(upload_to='gift_qr_codes/', blank=True, null=True, help_text="QR code image for the mini box")
 
 

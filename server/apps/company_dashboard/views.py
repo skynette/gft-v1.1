@@ -282,7 +282,7 @@ class BoxGiftsView(generics.GenericAPIView):
         request=None,
         description="Retrieve all gifts for a specific box.",
         responses={200: GiftSerializer(many=True)},
-        tags=["Boxes"],
+        tags=["Company Area"],
         parameters=[
             OpenApiParameter("box_id", OpenApiTypes.STR, OpenApiParameter.PATH),
         ]
@@ -293,14 +293,68 @@ class BoxGiftsView(generics.GenericAPIView):
             Q(id=box_id, user=request.user) | Q(
                 id=box_id, box_campaign__company__owner=request.user)
         )
-        print("\n\n\t\t\t\tBox", box)
         gifts = Gift.objects.filter(box_model=box).order_by('open_date')
-        print("gifts", gifts)
         serializer = self.get_serializer(gifts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 box_gifts_api_view = BoxGiftsView.as_view()
+
+
+class GiftEditView(generics.GenericAPIView):
+    serializer_class = GiftSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_gift']
+
+    @extend_schema(
+        request=GiftSerializer,
+        responses=GiftSerializer,
+        description="Edit a gift",
+        tags=["Company Area"],
+        parameters=[
+            OpenApiParameter("box_id", OpenApiTypes.STR, OpenApiParameter.PATH),
+            OpenApiParameter("gift_id", OpenApiTypes.STR, OpenApiParameter.PATH),
+        ]
+    )
+    def put(self, request, box_id, gift_id, *args, **kwargs):
+        gift = get_object_or_404(
+            Gift, id=gift_id, box_model__id=box_id, box_model__user=request.user)
+        serializer = self.get_serializer(instance=gift, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Gift updated successfully.', "result": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+gift_edit_api_view = GiftEditView.as_view()
+
+
+
+class GiftDeleteView(generics.GenericAPIView):
+    serializer_class = GiftSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_gift']
+
+    @extend_schema(
+        request=GiftSerializer,
+        responses=GiftSerializer,
+        description="Delete a gift.",
+        tags=["Company Area"],
+        parameters=[
+            OpenApiParameter("box_id", OpenApiTypes.STR, OpenApiParameter.PATH),
+            OpenApiParameter("gift_id", OpenApiTypes.STR, OpenApiParameter.PATH),
+        ]
+    )
+    def delete(self, request, box_id, gift_id, *args, **kwargs):
+        gift = get_object_or_404(
+            Gift, id=gift_id, box_model__id=box_id, box_model__user=request.user)
+        gift.delete()
+        return Response({'message': 'Gift deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+gift_delete_api_view = GiftDeleteView.as_view()
 
 
 class AddBoxesToCampaignView(generics.GenericAPIView):
