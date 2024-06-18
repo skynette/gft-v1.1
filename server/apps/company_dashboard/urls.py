@@ -9,6 +9,11 @@ urlpatterns = [
     path('boxes/<str:id>/edit/', views.box_edit_api_view, name='api_edit_box'),
     path('boxes/<str:id>/delete/', views.delete_box_api_view, name='api_delete_box'),
     path('campaigns/<str:campaign_id>/add-box-to-campaign/', views.add_boxes_to_campaign_api_view, name='api_add_box_to_campaign'),
+    path('boxes/<str:box_id>/gifts/', views.box_gifts_api_view, name='api_view_box_gifts'),
+    
+    # notification urls
+    path('notifications/', views.notifications_api_view, name='api_notifications'),
+    path('notifications/<int:notification_id>/mark-read/', views.mark_notification_read_api_view, name='api_mark_notification_read'),
     
     # campaign urls
     path('campaigns/all/', views.campaign_list_api_view, name='api_campaign_list'),

@@ -1,7 +1,8 @@
 import datetime
 from PIL import Image
 from rest_framework import serializers
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, CompanyUser
+from apps.authentication.serializers import UserProfileSerializer
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, CompanyUser, Gift, Notification
 from django.contrib.auth import get_user_model
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
@@ -153,9 +154,50 @@ class DeleteBoxResponseSerializer(serializers.Serializer):
     message = serializers.CharField()
 
 
+class GiftSerializer(serializers.ModelSerializer):
+    box_model = BoxEditSerializer(read_only=True)
+    total_visits = serializers.SerializerMethodField(read_only=True)
+    gifter = serializers.SerializerMethodField(read_only=True)
+    gift_campaign_deleted_status = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Gift
+        exclude = ["qr_code_v", "created_at", "updated_at"]
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_gifter(self, obj):
+        return obj.box_model.user.username
+
+    @extend_schema_field(OpenApiTypes.STR)
+    def get_total_visits(self, obj):
+        return obj.get_total_visits
+    
+    @extend_schema_field(OpenApiTypes.BOOL)
+    def get_gift_campaign_deleted_status(self, obj):
+        if obj.gift_campaign:
+            return obj.gift_campaign.is_deleted
+        return False
+
+
 class AddBoxesToCampaignSerializer(serializers.Serializer):
     box_ids = serializers.ListField(child=serializers.CharField())
     
+
+class ShowNotificationSerializer(serializers.ModelSerializer):
+    user = UserProfileSerializer()
+    box = BoxEditSerializer()
+    gift = GiftSerializer()
+
+    class Meta:
+        model = Notification
+        fields = '__all__'
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'
+
 
 class BoxCategorySerializer(serializers.ModelSerializer):
     class Meta:

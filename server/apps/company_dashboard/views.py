@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from apps.gft.authentication import APIKeyAuthentication
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Gift, Notification
 from apps.gft.permissions import APIPermissionValidator
 from .serializers import (
     AddBoxesToCampaignSerializer,
@@ -19,6 +19,9 @@ from .serializers import (
     CreateCampaignSerializer,
     CreateCompanyBoxSerializer,
     DeleteBoxResponseSerializer,
+    GiftSerializer,
+    NotificationSerializer,
+    ShowNotificationSerializer,
     UpdateCompanySerializer,
 )
 from django.shortcuts import get_object_or_404
@@ -226,7 +229,7 @@ class BoxEditView(generics.GenericAPIView):
         request=BoxEditSerializer,
         description="Edit a box.",
         responses=BoxSerializer,
-        tags=["Boxes"],
+        tags=["Company Area"],
         parameters=[
             OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
         ]
@@ -254,7 +257,7 @@ class DeleteBoxView(generics.GenericAPIView):
     @extend_schema(
         description="Delete a box.",
         responses={204: DeleteBoxResponseSerializer},
-        tags=["Boxes"],
+        tags=["Company Area"],
         parameters=[
             OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
         ]
@@ -269,6 +272,37 @@ class DeleteBoxView(generics.GenericAPIView):
 delete_box_api_view = DeleteBoxView.as_view()
 
 
+class BoxGiftsView(generics.GenericAPIView):
+    serializer_class = GiftSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_gift']
+
+    @extend_schema(
+        request=None,
+        description="Retrieve all gifts for a specific box.",
+        responses={200: GiftSerializer(many=True)},
+        tags=["Boxes"],
+        parameters=[
+            OpenApiParameter("box_id", OpenApiTypes.STR, OpenApiParameter.PATH),
+        ]
+    )
+    def get(self, request, box_id, *args, **kwargs):
+        box = get_object_or_404(
+            Box,
+            Q(id=box_id, user=request.user) | Q(
+                id=box_id, box_campaign__company__owner=request.user)
+        )
+        print("\n\n\t\t\t\tBox", box)
+        gifts = Gift.objects.filter(box_model=box).order_by('open_date')
+        print("gifts", gifts)
+        serializer = self.get_serializer(gifts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+box_gifts_api_view = BoxGiftsView.as_view()
+
+
 class AddBoxesToCampaignView(generics.GenericAPIView):
     serializer_class = BoxSerializer
     permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
@@ -279,7 +313,7 @@ class AddBoxesToCampaignView(generics.GenericAPIView):
         request=AddBoxesToCampaignSerializer,
         description="Add boxes to a given campaign.",
         responses={200: BoxSerializer(many=True)},
-        tags=["Campaigns"],
+        tags=["Company Area"],
         parameters=[
             OpenApiParameter("campaign_id", OpenApiTypes.STR, OpenApiParameter.PATH),
         ]
@@ -309,6 +343,49 @@ class AddBoxesToCampaignView(generics.GenericAPIView):
 
 
 add_boxes_to_campaign_api_view = AddBoxesToCampaignView.as_view()
+
+
+class NotificationsView(generics.GenericAPIView):
+    serializer_class = ShowNotificationSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_notification']
+
+    @extend_schema(
+        request=ShowNotificationSerializer,
+        responses=ShowNotificationSerializer(many=True),
+        description="Retrieve all notifications for the authenticated user.",
+        tags=["Notifications"],
+    )
+    def get(self, request, *args, **kwargs):
+        notifications = Notification.objects.filter(
+            user=request.user).order_by('-timestamp')
+        serializer = self.get_serializer(notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+notifications_api_view = NotificationsView.as_view()
+
+
+class MarkNotificationReadView(generics.GenericAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.AllowAny]
+    authentication_classes = [APIKeyAuthentication]
+
+    @extend_schema(
+        request=NotificationSerializer,
+        responses=NotificationSerializer,
+        description="Mark a notification as read.",
+        tags=["Notifications"],
+    )
+    def get(self, request, notification_id, *args, **kwargs):
+        notification = get_object_or_404(Notification, id=notification_id)
+        notification.read = True
+        notification.save()
+        return Response({'success': True}, status=status.HTTP_200_OK)
+
+
+mark_notification_read_api_view = MarkNotificationReadView.as_view()
 
 
 class BoxCategoryListCreateView(generics.GenericAPIView):
@@ -469,7 +546,7 @@ class CompanyDetailsView(generics.GenericAPIView):
         request=CompanySerializer,
         description="Get company details.",
         responses=CompanySerializer,
-        tags=["Company"],
+        tags=["Company Area"],
         parameters=[
             OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
         ]
@@ -496,7 +573,7 @@ class UpdateSettingsView(generics.GenericAPIView):
         request=UpdateCompanySerializer,
         description="Update company settings.",
         responses=UpdateCompanySerializer,
-        tags=["Company"],
+        tags=["Company Area"],
     )
     def put(self, request, *args, **kwargs):
         company = get_object_or_404(Company, owner=request.user)
