@@ -6,6 +6,9 @@ urlpatterns = [
     path('boxes/', views.all_boxes_api_view, name='api_all_boxes'),
     path('boxes/<str:box_id>/detail/', views.box_detail_api_view, name='api_view_box'),
     path('boxes/create/', views.create_box_api_view, name='api_create_box'),
+    path('boxes/<str:id>/edit/', views.box_edit_api_view, name='api_edit_box'),
+    path('boxes/<str:id>/delete/', views.delete_box_api_view, name='api_delete_box'),
+    path('campaigns/<str:campaign_id>/add-box-to-campaign/', views.add_boxes_to_campaign_api_view, name='api_add_box_to_campaign'),
     
     # campaign urls
     path('campaigns/all/', views.campaign_list_api_view, name='api_campaign_list'),

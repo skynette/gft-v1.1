@@ -190,7 +190,7 @@ class Campaign(TimeStampedUUIDModel):
 class Box(TimeStampedUUIDModel):
     """Represents a Gift-Box Package"""
     
-    user = models.ForeignKey(User, related_name='box_user', on_delete=models.CASCADE, null=True, blank=True, help_text="User who owns the gift box")
+    user = models.ForeignKey(User, related_name='box_user', on_delete=models.CASCADE, null=True, blank=True, help_text="Company who owns the gift box")
     title = models.CharField(max_length=150, help_text="Title for the gift box package")
     receiver_name = models.CharField(max_length=150, blank=True, null=True, help_text="Name of the receiver")
     receiver_email = models.CharField(max_length=150, blank=True, null=True, help_text="Email of the receiver")

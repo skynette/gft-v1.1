@@ -6,6 +6,7 @@ from apps.gft.authentication import APIKeyAuthentication
 from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes
 from apps.gft.permissions import APIPermissionValidator
 from .serializers import (
+    AddBoxesToCampaignSerializer,
     BoxCategorySerializer,
     BoxEditSerializer,
     BoxSerializer,
@@ -17,6 +18,7 @@ from .serializers import (
     CompanyUserSerializer,
     CreateCampaignSerializer,
     CreateCompanyBoxSerializer,
+    DeleteBoxResponseSerializer,
 )
 from django.shortcuts import get_object_or_404
 from .schemas import (
@@ -210,6 +212,102 @@ class BoxCreateView(generics.GenericAPIView):
 
 
 create_box_api_view = BoxCreateView.as_view()
+
+
+
+class BoxEditView(generics.GenericAPIView):
+    serializer_class = BoxEditSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_box']
+
+    @extend_schema(
+        request=BoxEditSerializer,
+        description="Edit a box.",
+        responses=BoxSerializer,
+        tags=["Boxes"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
+        ]
+    )
+    def put(self, request, id, *args, **kwargs):
+        box = get_object_or_404(Box, id=id, user=request.user)
+
+        serializer = self.get_serializer(
+            instance=box, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Box updated successfully.', 'results': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=400)
+
+
+box_edit_api_view = BoxEditView.as_view()
+
+
+class DeleteBoxView(generics.GenericAPIView):
+    serializer_class = DeleteBoxResponseSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_box']
+
+    @extend_schema(
+        description="Delete a box.",
+        responses={204: DeleteBoxResponseSerializer},
+        tags=["Boxes"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
+        ]
+    )
+    def delete(self, request, id):
+        instance = get_object_or_404(
+            Box, box_campaign__company__owner=request.user, id=id)
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+delete_box_api_view = DeleteBoxView.as_view()
+
+
+class AddBoxesToCampaignView(generics.GenericAPIView):
+    serializer_class = BoxSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['create_campaign']
+
+    @extend_schema(
+        request=AddBoxesToCampaignSerializer,
+        description="Add boxes to a given campaign.",
+        responses={200: BoxSerializer(many=True)},
+        tags=["Campaigns"],
+        parameters=[
+            OpenApiParameter("campaign_id", OpenApiTypes.STR, OpenApiParameter.PATH),
+        ]
+    )
+    def post(self, request, campaign_id, *args, **kwargs):
+        """
+        Add boxes to a given campaign.
+        """
+        campaign = get_object_or_404(
+            Campaign, id=campaign_id, company__owner=request.user)
+        
+        print("campaign", campaign, campaign.pkid, campaign.id, campaign.num_boxes)
+
+        box_ids = request.data.get('box_ids', [])
+        
+        boxes = Box.objects.filter(id__in=box_ids, user=request.user, box_campaign__isnull=True)
+        print(boxes)
+
+        for box in boxes:
+            box.box_campaign = campaign
+            campaign.num_boxes += 1
+            box.save()
+        
+        campaign.save()
+        serializer = self.get_serializer(boxes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+add_boxes_to_campaign_api_view = AddBoxesToCampaignView.as_view()
 
 
 class BoxCategoryListCreateView(generics.GenericAPIView):

@@ -153,6 +153,10 @@ class DeleteBoxResponseSerializer(serializers.Serializer):
     message = serializers.CharField()
 
 
+class AddBoxesToCampaignSerializer(serializers.Serializer):
+    box_ids = serializers.ListField(child=serializers.CharField())
+    
+
 class BoxCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxCategory
