@@ -29,6 +29,9 @@ urlpatterns = [
 
     # company url
     path("company/", views.company_api_view, name="api_company"),
+    path('company/<int:id>/details/', views.company_details_api_view, name='api_company_details'),
+    path('settings/update/', views.update_settings_api_view, name='api_update_settings'),
+    
     # company users url
     path('company-users/<int:id>/', views.company_users_api_view, name='api_company_users_list')
 ]

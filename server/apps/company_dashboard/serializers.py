@@ -205,3 +205,34 @@ class CreateCompanyBoxSerializer(serializers.ModelSerializer):
     class Meta:
         model = CompanyBoxes
         exclude = ['company']
+
+
+class SocialsSerializer(serializers.Serializer):
+    twitter_url = serializers.URLField(required=False, allow_blank=True)
+    facebook_url = serializers.URLField(required=False, allow_blank=True)
+    instagram_url = serializers.URLField(required=False, allow_blank=True)
+    snapchat_url = serializers.URLField(required=False, allow_blank=True)
+    youtube_url = serializers.URLField(required=False, allow_blank=True)
+
+class ColorSchemaDetailsSerializer(serializers.Serializer):
+    primary_color = serializers.CharField(required=False, allow_blank=True)
+    secondary_color = serializers.CharField(required=False, allow_blank=True)
+    background_color = serializers.CharField(required=False, allow_blank=True)
+    qr_code_text_color = serializers.CharField(required=False, allow_blank=True)
+    background_border_color = serializers.CharField(required=False, allow_blank=True)
+    background_hover_color = serializers.CharField(required=False, allow_blank=True)
+    foreground_color = serializers.CharField(required=False, allow_blank=True)
+    header_color = serializers.CharField(required=False, allow_blank=True)
+    footer_color = serializers.CharField(required=False, allow_blank=True)
+
+class ColorSchemaSerializer(serializers.Serializer):
+    light = ColorSchemaDetailsSerializer(required=False)
+    dark = ColorSchemaDetailsSerializer(required=False)
+
+class UpdateCompanySerializer(serializers.ModelSerializer):
+    socials = SocialsSerializer(required=False)
+    color_schema = ColorSchemaSerializer(required=False)
+
+    class Meta:
+        model = Company
+        fields = ['name', 'logo', 'header_image', 'company_url', 'box_limit', 'socials', 'color_schema']

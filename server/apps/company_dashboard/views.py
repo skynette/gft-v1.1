@@ -19,6 +19,7 @@ from .serializers import (
     CreateCampaignSerializer,
     CreateCompanyBoxSerializer,
     DeleteBoxResponseSerializer,
+    UpdateCompanySerializer,
 )
 from django.shortcuts import get_object_or_404
 from .schemas import (
@@ -456,6 +457,58 @@ class CompanyView(generics.GenericAPIView):
 
 
 company_api_view = CompanyView.as_view()
+
+
+class CompanyDetailsView(generics.GenericAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_company_dashboard']
+
+    @extend_schema(
+        request=CompanySerializer,
+        description="Get company details.",
+        responses=CompanySerializer,
+        tags=["Company"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
+        ]
+    )
+    def get(self, request, id, *args, **kwargs):
+        company = Company.objects.filter(id=id, owner=request.user).first()
+        if not company:
+            return Response({'message': 'Company not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(company)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+company_details_api_view = CompanyDetailsView.as_view()
+
+
+class UpdateSettingsView(generics.GenericAPIView):
+    serializer_class = UpdateCompanySerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['edit_company_settings']
+
+    @extend_schema(
+        request=UpdateCompanySerializer,
+        description="Update company settings.",
+        responses=UpdateCompanySerializer,
+        tags=["Company"],
+    )
+    def put(self, request, *args, **kwargs):
+        company = get_object_or_404(Company, owner=request.user)
+        serializer = self.get_serializer(
+            instance=company, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Settings updated successfully.'}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+update_settings_api_view = UpdateSettingsView.as_view()
 
 
 class CompanyUsersView(generics.GenericAPIView):
