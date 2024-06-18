@@ -48,6 +48,7 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'knox',
     'phonenumber_field',
+    'django_filters',
 ]
 
 LOCAL_APPS = [
@@ -55,6 +56,7 @@ LOCAL_APPS = [
     'apps.common',
     'apps.gft',
     'apps.company_dashboard',
+    'apps.admin_dashboard',
 ]
 
 

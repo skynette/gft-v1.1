@@ -18,5 +18,10 @@ urlpatterns = [
     path('', include('drfpasswordless.urls')),
     path('auth/', include('apps.authentication.urls')),
     path('dashboard/', include('apps.company_dashboard.urls')),
+    path('dashboard/admin/', include('apps.admin_dashboard.urls')),
     path('supersecret/', admin.site.urls),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
