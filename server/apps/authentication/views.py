@@ -2,12 +2,15 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions
-from django.contrib.auth import get_user_model
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from django.contrib.auth import get_user_model, login
+from apps.admin_dashboard.serializers import UserSerializer
 from apps.authentication.serializers import RegisterSerializer, SocialAuthSerializer, UserUpdateSerializer
 from apps.gft.permissions import APIPermissionValidator
 from knox.models import AuthToken
+from knox.views import LogoutView as KnoxLogoutView
 
-from drf_spectacular.utils import extend_schema, OpenApiExample
+from drf_spectacular.utils import extend_schema, OpenApiExample, extend_schema_view
 from drf_spectacular.utils import OpenApiResponse
 
 from helpers.utils import validate_phone
@@ -191,3 +194,53 @@ class UserUpdateView(generics.GenericAPIView):
 
 
 user_profile_update_api_view = UserUpdateView.as_view()
+
+
+
+@extend_schema_view(
+    post=extend_schema(
+        description="Admin login to obtain authentication token.",
+        request=AuthTokenSerializer,
+        responses={
+            200: "Authentication successful, returns user data and token.",
+            400: "Invalid credentials, authentication failed."
+        },
+        tags=["Admin Authentication"]
+    )
+)
+class LoginAPI(generics.GenericAPIView):
+    permission_classes = [permissions.AllowAny]
+    serializer_class = AuthTokenSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        login(request, user)
+        _, token = AuthToken.objects.create(user)
+        return Response({
+            "user": UserSerializer(user).data,
+            "token": token
+        })
+
+
+admin_login_api_view = LoginAPI.as_view()
+
+@extend_schema_view(
+    post=extend_schema(
+        description="Admin logout to invalidate authentication token.",
+        responses={
+            204: "Logout successful.",
+            401: "Authentication required, invalid token."
+        },
+        tags=["Admin Authentication"]
+    )
+)
+class LogoutAPI(KnoxLogoutView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+admin_logout_api_view = LogoutAPI.as_view()
