@@ -19,6 +19,7 @@ from .serializers import (
     CreateCampaignSerializer,
     CreateCompanyBoxSerializer,
     DeleteBoxResponseSerializer,
+    EditCampaignSerializer,
     GiftSerializer,
     NotificationSerializer,
     ShowNotificationSerializer,
@@ -124,6 +125,34 @@ class CampaignCreateView(generics.GenericAPIView):
 
 
 campaign_create_api_view = CampaignCreateView.as_view()
+
+
+class CampaignUpdateView(generics.GenericAPIView):
+    serializer_class = EditCampaignSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ['view_campaign']
+
+    @extend_schema(
+        request=EditCampaignSerializer,
+        responses=CampaignSerializer,
+        description="Update a campaign for the authenticated company.",
+        tags=["Campaigns"],
+        parameters=[
+            OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
+        ]
+    )
+    def put(self, request, id, *args, **kwargs):
+        campaign = get_object_or_404(Campaign, id=id, company__owner=request.user)
+        serializer = self.get_serializer(
+            instance=campaign, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Campaign updated successfully.', "results": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+campaign_update_api_view = CampaignUpdateView.as_view()
 
 
 class CampaignDetailView(generics.GenericAPIView):
