@@ -6,11 +6,137 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from apps.gft.models import BoxCategory, Company, CompanyApiKey
-from .serializers import AdminBoxCategorySerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, UserSerializer
+from apps.gft.models import Box, BoxCategory, Company, CompanyApiKey, Config
+from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
 from .filters import UserFilter
 
 User = get_user_model()
+
+class BoxListView(generics.GenericAPIView):
+    queryset = Box.objects.all()
+    serializer_class = AdminBoxSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="List all boxes.",
+        responses={200: AdminBoxSerializer(many=True)},
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        List all boxes.
+        """
+        boxes = self.get_queryset()
+        serializer = self.get_serializer(boxes, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+box_list_view = BoxListView.as_view()
+
+
+class BoxCreateView(generics.GenericAPIView):
+    queryset = Box.objects.all()
+    serializer_class = AdminBoxSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Create a new box.",
+        request=AdminBoxSerializer,
+        responses={201: AdminBoxSerializer},
+        tags=["Admin Area"]
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new box.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+box_create_view = BoxCreateView.as_view()
+
+
+class BoxDetailView(generics.GenericAPIView):
+    queryset = Box.objects.all()
+    serializer_class = AdminBoxSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Retrieve a box by ID.",
+        responses={200: AdminBoxSerializer},
+        tags=["Admin Area"]
+    )
+    def get(self, request, box_id, *args, **kwargs):
+        """
+        Retrieve a box by ID.
+        """
+        box = self.get_object()
+        serializer = self.get_serializer(box)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def get_object(self):
+        return generics.get_object_or_404(Box, id=self.kwargs['box_id'])
+
+
+box_detail_view = BoxDetailView.as_view()
+
+
+class BoxUpdateView(generics.GenericAPIView):
+    queryset = Box.objects.all()
+    serializer_class = AdminBoxSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Update a box by ID.",
+        request=AdminBoxSerializer,
+        responses={200: AdminBoxSerializer},
+        tags=["Admin Area"]
+    )
+    def put(self, request, box_id, *args, **kwargs):
+        """
+        Update a box by ID.
+        """
+        box = self.get_object()
+        serializer = self.get_serializer(box, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def get_object(self):
+        return generics.get_object_or_404(Box, id=self.kwargs['box_id'])
+
+
+box_update_view = BoxUpdateView.as_view()
+
+
+class BoxDeleteView(generics.GenericAPIView):
+    queryset = Box.objects.all()
+    serializer_class = AdminBoxSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Delete a box by ID.",
+        responses={204: None},
+        tags=["Admin Area"]
+    )
+    def delete(self, request, box_id, *args, **kwargs):
+        """
+        Delete a box by ID.
+        """
+        box = self.get_object()
+        box.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def get_object(self):
+        return generics.get_object_or_404(Box, id=self.kwargs['box_id'])
+
+
+box_delete_view = BoxDeleteView.as_view()
 
 
 @extend_schema_view(
@@ -370,3 +496,47 @@ class CompanyApiKeyDeleteView(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 company_api_key_delete_view = CompanyApiKeyDeleteView.as_view()
+
+
+class ConfigDetailView(generics.GenericAPIView):
+    queryset = Config.objects.all()
+    serializer_class = ConfigSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Retrieve the configuration settings.",
+        responses={200: ConfigSerializer},
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        Get the configuration settings.
+        """
+        config = self.get_queryset().first()
+        if config:
+            serializer = self.get_serializer(config)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"detail": "Configuration not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    @extend_schema(
+        description="Update the configuration settings.",
+        request=ConfigSerializer,
+        responses={200: ConfigSerializer},
+        tags=["Admin Area"]
+    )
+    def put(self, request, *args, **kwargs):
+        """
+        Update the configuration settings.
+        """
+        config = self.get_queryset().first()
+        if not config:
+            return Response({"detail": "Configuration not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(config, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+config_management_view = ConfigDetailView.as_view()

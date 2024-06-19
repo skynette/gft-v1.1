@@ -5,6 +5,13 @@ urlpatterns = [
     path('users/', views.user_list_and_create_api_view, name='user-list'),
     path('users/<int:pk>/', views.user_details_update_and_delete_view, name='user-detail'),
     
+    # box urls
+    path('boxes/', views.box_list_view, name='box_list'),
+    path('boxes/create/', views.box_create_view, name='box_create'),
+    path('boxes/<str:box_id>/', views.box_detail_view, name='box_detail'),
+    path('boxes/<str:box_id>/update/', views.box_update_view, name='box_update'),
+    path('boxes/<str:box_id>/delete/', views.box_delete_view, name='box_delete'),
+    
     # box category urls
     path('box-category/create/', views.create_box_category_view, name='box_category_create'),
     path('box-category/list/', views.box_category_list_view, name='box_category_list'),
@@ -25,4 +32,6 @@ urlpatterns = [
     path("company-api-key/<int:id>/", views.company_api_key_detail_view, name="company_api_key_detail"),
     path("company-api-key/<int:id>/update/", views.company_api_key_update_view, name="company_api_key_update"),
     path("company-api-key/<int:id>/delete/", views.company_api_key_delete_view, name="company_api_key_delete"),
+    
+    path("config-management/", views.config_management_view, name="config_management"),
 ]

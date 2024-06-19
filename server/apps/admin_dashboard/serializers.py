@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from apps.gft.models import BoxCategory, Company, CompanyApiKey, PermissionGroup
+from apps.gft.models import Box, BoxCategory, Company, CompanyApiKey, Config, PermissionGroup
 
 
 User = get_user_model()
@@ -54,7 +54,7 @@ class CompanyApiKeyReadSerializer(serializers.ModelSerializer):
     company_name = serializers.SerializerMethodField()
     groups = serializers.StringRelatedField(many=True)
 
-    def get_company_name(self, obj):
+    def get_company_name(self, obj) -> str:
         return obj.company.name
 
     class Meta:
@@ -71,3 +71,14 @@ class CompanyApiKeyWriteSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {'company': {'write_only': True}}
         
+
+class ConfigSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Config
+        fields = '__all__'
+
+
+class AdminBoxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Box
+        fields = '__all__'
