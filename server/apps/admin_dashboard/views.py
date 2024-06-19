@@ -1,13 +1,13 @@
 from rest_framework import generics, status, filters as drf_filters
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_filters import rest_framework as django_filters
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from apps.gft.models import BoxCategory
-from .serializers import BoxCategorySerializer, UserSerializer
+from apps.gft.models import BoxCategory, Company
+from .serializers import BoxCategorySerializer, CompanySerializer, UserSerializer
 from .filters import UserFilter
 
 User = get_user_model()
@@ -96,7 +96,7 @@ user_details_update_and_delete_view = UserDetailView.as_view()
 
 class CreateBoxCategoryView(generics.GenericAPIView):
     serializer_class = BoxCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
         request=BoxCategorySerializer,
@@ -117,7 +117,7 @@ create_box_category_view = CreateBoxCategoryView.as_view()
 
 class BoxCategoryListView(generics.GenericAPIView):
     serializer_class = BoxCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
         responses={200: BoxCategorySerializer(many=True)},
@@ -135,7 +135,7 @@ box_category_list_view = BoxCategoryListView.as_view()
 
 class BoxCategoryDetailView(generics.GenericAPIView):
     serializer_class = BoxCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
         responses={200: BoxCategorySerializer},
@@ -153,7 +153,7 @@ box_category_detail_view = BoxCategoryDetailView.as_view()
 
 class UpdateBoxCategoryView(generics.GenericAPIView):
     serializer_class = BoxCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
         request=BoxCategorySerializer,
@@ -174,7 +174,7 @@ update_box_category_view = UpdateBoxCategoryView.as_view()
 
 
 class DeleteBoxCategoryView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
         responses={204: None},
@@ -188,3 +188,94 @@ class DeleteBoxCategoryView(generics.GenericAPIView):
 
 
 delete_box_category_view = DeleteBoxCategoryView.as_view()
+
+
+class CompanyListView(generics.GenericAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    @extend_schema(
+        responses={200: CompanySerializer(many=True)},
+        description="Retrieve a list of all companies.",
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        companies = Company.objects.all()
+        serializer = self.get_serializer(companies, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+company_list_view = CompanyListView.as_view()
+
+
+class CompanyCreateView(generics.GenericAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    @extend_schema(
+        request=CompanySerializer,
+        responses={201: CompanySerializer},
+        description="Create a new company.",
+        tags=["Admin Area"]
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+company_create_view = CompanyCreateView.as_view()
+
+
+class CompanyDetailView(generics.GenericAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    @extend_schema(
+        responses={200: CompanySerializer},
+        description="Retrieve details of a specific company.",
+        tags=["Admin Area"]
+    )
+    def get(self, request, id, *args, **kwargs):
+        company = get_object_or_404(Company, pk=id)
+        serializer = self.get_serializer(company)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+company_detail_view = CompanyDetailView.as_view()
+
+
+class CompanyUpdateView(generics.GenericAPIView):
+    serializer_class = CompanySerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    @extend_schema(
+        request=CompanySerializer,
+        responses={200: CompanySerializer},
+        description="Update a specific company.",
+        tags=["Admin Area"]
+    )
+    def put(self, request, id, *args, **kwargs):
+        company = get_object_or_404(Company, pk=id)
+        serializer = self.get_serializer(company, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+company_update_view = CompanyUpdateView.as_view()
+
+
+class CompanyDeleteView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    @extend_schema(
+        responses={204: None},
+        description="Delete a specific company.",
+        tags=["Admin Area"]
+    )
+    def delete(self, request, id, *args, **kwargs):
+        company = get_object_or_404(Company, pk=id)
+        company.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+company_delete_view = CompanyDeleteView.as_view()

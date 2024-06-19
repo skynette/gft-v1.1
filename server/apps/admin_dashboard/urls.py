@@ -11,4 +11,11 @@ urlpatterns = [
     path('box-category/detail/<int:id>/', views.box_category_detail_view, name='box_category_detail'),
     path('box-category/update/<int:id>/', views.update_box_category_view, name='box_category_update'),
     path('box-category/delete/<int:id>/', views.delete_box_category_view, name='delete_box_category'),
+    
+    # company urls
+    path('companies/', views.company_list_view, name='company_list'),
+    path('companies/create/', views.company_create_view, name='company_create'),
+    path('companies/<int:id>/', views.company_detail_view, name='company_detail'),
+    path('companies/<int:id>/update/', views.company_update_view, name='company_update'),
+    path('companies/<int:id>/delete/', views.company_delete_view, name='company_delete'),
 ]
