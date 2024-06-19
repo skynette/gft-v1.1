@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from apps.gft.models import BoxCategory, Company
+from apps.gft.models import BoxCategory, Company, CompanyApiKey, PermissionGroup
 
 
 User = get_user_model()
@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
         exclude = ["password"]
         
 
-class BoxCategorySerializer(serializers.ModelSerializer):
+class AdminBoxCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = BoxCategory
         fields = '__all__'
@@ -37,14 +37,37 @@ class BoxCategorySerializer(serializers.ModelSerializer):
         return value
 
 
-class CompanySerializer(serializers.ModelSerializer):
+class AdminCompanySerializer(serializers.ModelSerializer):
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     owner_username = serializers.SerializerMethodField()
 
-    def get_owner_username(self, obj):
+    def get_owner_username(self, obj) -> str:
         return obj.owner.username
     
     class Meta:
         model = Company
         fields = '__all__'
         extra_kwargs = {'owner': {'write_only': True}}
+        
+
+class CompanyApiKeyReadSerializer(serializers.ModelSerializer):
+    company_name = serializers.SerializerMethodField()
+    groups = serializers.StringRelatedField(many=True)
+
+    def get_company_name(self, obj):
+        return obj.company.name
+
+    class Meta:
+        model = CompanyApiKey
+        fields = '__all__'
+
+
+class CompanyApiKeyWriteSerializer(serializers.ModelSerializer):
+    company = serializers.PrimaryKeyRelatedField(queryset=Company.objects.all())
+    groups = serializers.PrimaryKeyRelatedField(queryset=PermissionGroup.objects.all(), many=True)
+
+    class Meta:
+        model = CompanyApiKey
+        fields = '__all__'
+        extra_kwargs = {'company': {'write_only': True}}
+        

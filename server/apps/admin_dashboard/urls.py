@@ -18,4 +18,11 @@ urlpatterns = [
     path('companies/<int:id>/', views.company_detail_view, name='company_detail'),
     path('companies/<int:id>/update/', views.company_update_view, name='company_update'),
     path('companies/<int:id>/delete/', views.company_delete_view, name='company_delete'),
+
+    # company api key urls 
+    path("company-api-key/", views.company_api_key_list_view, name="company_api_key_list"),
+    path("company-api-key/create/", views.company_api_key_create_view, name="company_api_key_create"),
+    path("company-api-key/<int:id>/", views.company_api_key_detail_view, name="company_api_key_detail"),
+    path("company-api-key/<int:id>/update/", views.company_api_key_update_view, name="company_api_key_update"),
+    path("company-api-key/<int:id>/delete/", views.company_api_key_delete_view, name="company_api_key_delete"),
 ]

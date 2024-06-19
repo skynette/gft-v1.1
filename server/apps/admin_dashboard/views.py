@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from apps.gft.models import BoxCategory, Company
-from .serializers import BoxCategorySerializer, CompanySerializer, UserSerializer
+from apps.gft.models import BoxCategory, Company, CompanyApiKey
+from .serializers import AdminBoxCategorySerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, UserSerializer
 from .filters import UserFilter
 
 User = get_user_model()
@@ -95,12 +95,12 @@ user_details_update_and_delete_view = UserDetailView.as_view()
 
 
 class CreateBoxCategoryView(generics.GenericAPIView):
-    serializer_class = BoxCategorySerializer
+    serializer_class = AdminBoxCategorySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
-        request=BoxCategorySerializer,
-        responses={201: BoxCategorySerializer},
+        request=AdminBoxCategorySerializer,
+        responses={201: AdminBoxCategorySerializer},
         description="Create a new box category.",
         tags=["Admin Area"]
     )
@@ -116,11 +116,11 @@ create_box_category_view = CreateBoxCategoryView.as_view()
 
 
 class BoxCategoryListView(generics.GenericAPIView):
-    serializer_class = BoxCategorySerializer
+    serializer_class = AdminBoxCategorySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
-        responses={200: BoxCategorySerializer(many=True)},
+        responses={200: AdminBoxCategorySerializer(many=True)},
         description="Retrieve a list of box categories.",
         tags=["Admin Area"]
     )
@@ -134,11 +134,11 @@ box_category_list_view = BoxCategoryListView.as_view()
 
 
 class BoxCategoryDetailView(generics.GenericAPIView):
-    serializer_class = BoxCategorySerializer
+    serializer_class = AdminBoxCategorySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
-        responses={200: BoxCategorySerializer},
+        responses={200: AdminBoxCategorySerializer},
         description="Retrieve details of a box category.",
         tags=["Admin Area"]
     )
@@ -152,12 +152,12 @@ box_category_detail_view = BoxCategoryDetailView.as_view()
 
 
 class UpdateBoxCategoryView(generics.GenericAPIView):
-    serializer_class = BoxCategorySerializer
+    serializer_class = AdminBoxCategorySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
-        request=BoxCategorySerializer,
-        responses={200: BoxCategorySerializer},
+        request=AdminBoxCategorySerializer,
+        responses={200: AdminBoxCategorySerializer},
         description="Update a box category.",
         tags=["Admin Area"]
     )
@@ -191,11 +191,11 @@ delete_box_category_view = DeleteBoxCategoryView.as_view()
 
 
 class CompanyListView(generics.GenericAPIView):
-    serializer_class = CompanySerializer
+    serializer_class = AdminCompanySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
-        responses={200: CompanySerializer(many=True)},
+        responses={200: AdminCompanySerializer(many=True)},
         description="Retrieve a list of all companies.",
         tags=["Admin Area"]
     )
@@ -208,12 +208,12 @@ company_list_view = CompanyListView.as_view()
 
 
 class CompanyCreateView(generics.GenericAPIView):
-    serializer_class = CompanySerializer
+    serializer_class = AdminCompanySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
-        request=CompanySerializer,
-        responses={201: CompanySerializer},
+        request=AdminCompanySerializer,
+        responses={201: AdminCompanySerializer},
         description="Create a new company.",
         tags=["Admin Area"]
     )
@@ -228,11 +228,11 @@ company_create_view = CompanyCreateView.as_view()
 
 
 class CompanyDetailView(generics.GenericAPIView):
-    serializer_class = CompanySerializer
+    serializer_class = AdminCompanySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
-        responses={200: CompanySerializer},
+        responses={200: AdminCompanySerializer},
         description="Retrieve details of a specific company.",
         tags=["Admin Area"]
     )
@@ -245,12 +245,12 @@ company_detail_view = CompanyDetailView.as_view()
 
 
 class CompanyUpdateView(generics.GenericAPIView):
-    serializer_class = CompanySerializer
+    serializer_class = AdminCompanySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     @extend_schema(
-        request=CompanySerializer,
-        responses={200: CompanySerializer},
+        request=AdminCompanySerializer,
+        responses={200: AdminCompanySerializer},
         description="Update a specific company.",
         tags=["Admin Area"]
     )
@@ -279,3 +279,94 @@ class CompanyDeleteView(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 company_delete_view = CompanyDeleteView.as_view()
+
+
+class CompanyApiKeyListView(generics.GenericAPIView):
+    serializer_class = CompanyApiKeyReadSerializer
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses={200: CompanyApiKeyReadSerializer(many=True)},
+        description="Retrieve a list of all company API keys.",
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        api_keys = CompanyApiKey.objects.all()
+        serializer = self.get_serializer(api_keys, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+company_api_key_list_view = CompanyApiKeyListView.as_view()
+
+
+class CompanyApiKeyCreateView(generics.GenericAPIView):
+    serializer_class = CompanyApiKeyWriteSerializer
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        request=CompanyApiKeyWriteSerializer,
+        responses={201: CompanyApiKeyReadSerializer},
+        description="Create a new company API key.",
+        tags=["Admin Area"]
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(CompanyApiKeyReadSerializer(serializer.instance).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+company_api_key_create_view = CompanyApiKeyCreateView.as_view()
+
+
+class CompanyApiKeyDetailView(generics.GenericAPIView):
+    serializer_class = CompanyApiKeyReadSerializer
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses={200: CompanyApiKeyReadSerializer},
+        description="Retrieve details of a specific company API key.",
+        tags=["Admin Area"]
+    )
+    def get(self, request, id, *args, **kwargs):
+        api_key = get_object_or_404(CompanyApiKey, pk=id)
+        serializer = self.get_serializer(api_key)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+company_api_key_detail_view = CompanyApiKeyDetailView.as_view()
+
+
+class CompanyApiKeyUpdateView(generics.GenericAPIView):
+    serializer_class = CompanyApiKeyWriteSerializer
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        request=CompanyApiKeyWriteSerializer,
+        responses={200: CompanyApiKeyReadSerializer},
+        description="Update a specific company API key.",
+        tags=["Admin Area"]
+    )
+    def put(self, request, id, *args, **kwargs):
+        api_key = get_object_or_404(CompanyApiKey, pk=id)
+        serializer = self.get_serializer(api_key, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(CompanyApiKeyReadSerializer(serializer.instance).data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+company_api_key_update_view = CompanyApiKeyUpdateView.as_view()
+
+
+class CompanyApiKeyDeleteView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses={204: None},
+        description="Delete a specific company API key.",
+        tags=["Admin Area"]
+    )
+    def delete(self, request, id, *args, **kwargs):
+        api_key = get_object_or_404(CompanyApiKey, pk=id)
+        api_key.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+company_api_key_delete_view = CompanyApiKeyDeleteView.as_view()
