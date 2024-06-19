@@ -6,8 +6,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from apps.gft.models import Box, BoxCategory, Company, CompanyApiKey, Config
-from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
+from apps.gft.models import Box, BoxCategory, Company, CompanyApiKey, Config, Gift
+from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminGiftSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
 from .filters import UserFilter
 
 User = get_user_model()
@@ -137,6 +137,131 @@ class BoxDeleteView(generics.GenericAPIView):
 
 
 box_delete_view = BoxDeleteView.as_view()
+
+
+class GiftListView(generics.GenericAPIView):
+    queryset = Gift.objects.all()
+    serializer_class = AdminGiftSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="List all gifts.",
+        responses={200: AdminGiftSerializer(many=True)},
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        List all gifts.
+        """
+        gifts = self.get_queryset()
+        serializer = self.get_serializer(gifts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+gift_list_view = GiftListView.as_view()
+
+
+class GiftCreateView(generics.GenericAPIView):
+    queryset = Gift.objects.all()
+    serializer_class = AdminGiftSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Create a new gift.",
+        request=AdminGiftSerializer,
+        responses={201: AdminGiftSerializer},
+        tags=["Admin Area"]
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new gift.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+gift_create_view = GiftCreateView.as_view()
+
+
+class GiftDetailView(generics.GenericAPIView):
+    queryset = Gift.objects.all()
+    serializer_class = AdminGiftSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Retrieve a gift by ID.",
+        responses={200: AdminGiftSerializer},
+        tags=["Admin Area"]
+    )
+    def get(self, request, gift_id, *args, **kwargs):
+        """
+        Retrieve a gift by ID.
+        """
+        gift = self.get_object()
+        serializer = self.get_serializer(gift)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_object(self):
+        return generics.get_object_or_404(Gift, id=self.kwargs['gift_id'])
+
+
+gift_detail_view = GiftDetailView.as_view()
+
+
+class GiftUpdateView(generics.GenericAPIView):
+    queryset = Gift.objects.all()
+    serializer_class = AdminGiftSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Update a gift by ID.",
+        request=AdminGiftSerializer,
+        responses={200: AdminGiftSerializer},
+        tags=["Admin Area"]
+    )
+    def put(self, request, gift_id, *args, **kwargs):
+        """
+        Update a gift by ID.
+        """
+        gift = self.get_object()
+        serializer = self.get_serializer(gift, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_object(self):
+        return generics.get_object_or_404(Gift, id=self.kwargs['gift_id'])
+
+
+gift_update_view = GiftUpdateView.as_view()
+
+
+class GiftDeleteView(generics.GenericAPIView):
+    queryset = Gift.objects.all()
+    serializer_class = AdminGiftSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Delete a gift by ID.",
+        responses={204: None},
+        tags=["Admin Area"]
+    )
+    def delete(self, request, gift_id, *args, **kwargs):
+        """
+        Delete a gift by ID.
+        """
+        gift = self.get_object()
+        gift.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        return generics.get_object_or_404(Gift, id=self.kwargs['gift_id'])
+
+
+gift_delete_view = GiftDeleteView.as_view()
 
 
 @extend_schema_view(
