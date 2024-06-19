@@ -4,4 +4,11 @@ from . import views
 urlpatterns = [
     path('users/', views.user_list_and_create_api_view, name='user-list'),
     path('users/<int:pk>/', views.user_details_update_and_delete_view, name='user-detail'),
+    
+    # box category urls
+    path('box-category/create/', views.create_box_category_view, name='box_category_create'),
+    path('box-category/list/', views.box_category_list_view, name='box_category_list'),
+    path('box-category/detail/<int:id>/', views.box_category_detail_view, name='box_category_detail'),
+    path('box-category/update/<int:id>/', views.update_box_category_view, name='box_category_update'),
+    path('box-category/delete/<int:id>/', views.delete_box_category_view, name='delete_box_category'),
 ]
