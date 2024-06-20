@@ -161,3 +161,7 @@ class PermissionGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = PermissionGroup
         fields = '__all__'
+
+class AssignUserGroupSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    group_id = serializers.IntegerField()

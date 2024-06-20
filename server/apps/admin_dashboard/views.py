@@ -34,6 +34,7 @@ from .serializers import (
     AdminCreateCampaignSerializer,
     AdminGiftSerializer,
     AdminGiftVisitSerializer,
+    AssignUserGroupSerializer,
     CompanyApiKeyReadSerializer,
     AdminCompanySerializer,
     CompanyApiKeyWriteSerializer,
@@ -1683,3 +1684,34 @@ class PermissionsModelDetailView(generics.GenericAPIView):
 
     def get_object(self):
         return get_object_or_404(PermissionsModel, pk=self.kwargs["pk"])
+
+
+class AssignUserGroupView(generics.GenericAPIView):
+    serializer_class = AssignUserGroupSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Assign a user to a group.",
+        request=AssignUserGroupSerializer,
+        responses={200: None},
+        tags=["Admin Area"]
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Assign a user to a group.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user_id = serializer.validated_data['user_id']
+            group_id = serializer.validated_data['group_id']
+
+            user = get_object_or_404(User, pkid=user_id)
+            group = get_object_or_404(PermissionGroup, id=group_id)
+
+            user.user_type = group.name
+            user.save()
+            return Response({"detail": "User group changed successfully"}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+assign_user_group_view = AssignUserGroupView.as_view()

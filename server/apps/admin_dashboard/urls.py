@@ -77,6 +77,7 @@ urlpatterns = [
     path('permission-groups/<int:pk>/', views.PermissionGroupDetailView.as_view(), name='permission_group_detail'),
     path('permissions/', views.PermissionsModelListCreateView.as_view(), name='permissions_list_create'),
     path('permissions/<int:pk>/', views.PermissionsModelDetailView.as_view(), name='permissions_detail'),
+    path('assign-user-group/', views.assign_user_group_view, name='assign_user_group'),
     
     path("config-management/", views.config_management_view, name="config_management"),
 ]
