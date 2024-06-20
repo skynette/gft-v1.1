@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, PermissionGroup
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, PermissionGroup
 
 
 User = get_user_model()
@@ -87,6 +87,12 @@ class AdminBoxSerializer(serializers.ModelSerializer):
 class AdminGiftSerializer(serializers.ModelSerializer):
     class Meta:
         model = Gift
+        fields = '__all__'
+        
+
+class AdminGiftVisitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GiftVisit
         fields = '__all__'
         
         

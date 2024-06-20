@@ -10,9 +10,9 @@ from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiPara
 from drf_spectacular.types import OpenApiTypes
 
 from apps.company_dashboard.views import CampaignCreateView
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit
 from helpers.utils import ImageUploader
-from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminCampaignDetailSerializer, AdminCampaignSerializer, AdminCreateCampaignSerializer, AdminGiftSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
+from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminCampaignDetailSerializer, AdminCampaignSerializer, AdminCreateCampaignSerializer, AdminGiftSerializer, AdminGiftVisitSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
 from .filters import UserFilter
 
 User = get_user_model()
@@ -268,6 +268,123 @@ class GiftDeleteView(generics.GenericAPIView):
 
 gift_delete_view = GiftDeleteView.as_view()
 
+class CreateGiftVisitView(generics.GenericAPIView):
+    serializer_class = AdminGiftVisitSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Create a new gift visit.",
+        request=AdminGiftVisitSerializer,
+        responses={201: AdminGiftVisitSerializer},
+        tags=["Admin Area"]
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new gift visit.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+gift_visit_create = CreateGiftVisitView.as_view()
+
+class GiftVisitListView(generics.GenericAPIView):
+    queryset = GiftVisit.objects.all()
+    serializer_class = AdminGiftVisitSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="List all gift visits.",
+        responses={200: AdminGiftVisitSerializer(many=True)},
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        List all gift visits.
+        """
+        gift_visits = self.get_queryset()
+        serializer = self.get_serializer(gift_visits, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+gift_visit_list = GiftVisitListView.as_view()
+
+
+class GiftVisitDetailView(generics.GenericAPIView):
+    queryset = GiftVisit.objects.all()
+    serializer_class = AdminGiftVisitSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Retrieve a gift visit by ID.",
+        responses={200: AdminGiftVisitSerializer},
+        tags=["Admin Area"]
+    )
+    def get(self, request, id, *args, **kwargs):
+        """
+        Retrieve a gift visit by ID.
+        """
+        gift_visit = self.get_object()
+        serializer = self.get_serializer(gift_visit)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_object(self):
+        return get_object_or_404(GiftVisit, id=self.kwargs['id'])
+
+gift_visit_detail = GiftVisitDetailView.as_view()
+
+class UpdateGiftVisitView(generics.GenericAPIView):
+    queryset = GiftVisit.objects.all()
+    serializer_class = AdminGiftVisitSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Update a gift visit by ID.",
+        request=AdminGiftVisitSerializer,
+        responses={200: AdminGiftVisitSerializer},
+        tags=["Admin Area"]
+    )
+    def put(self, request, id, *args, **kwargs):
+        """
+        Update a gift visit by ID.
+        """
+        gift_visit = self.get_object()
+        serializer = self.get_serializer(gift_visit, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_object(self):
+        return get_object_or_404(GiftVisit, id=self.kwargs['id'])
+
+
+gift_visit_update = UpdateGiftVisitView.as_view()
+
+
+class DeleteGiftVisitView(generics.GenericAPIView):
+    queryset = GiftVisit.objects.all()
+    serializer_class = AdminGiftVisitSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Delete a gift visit by ID.",
+        responses={204: None},
+        tags=["Admin Area"]
+    )
+    def delete(self, request, id, *args, **kwargs):
+        """
+        Delete a gift visit by ID.
+        """
+        gift_visit = self.get_object()
+        gift_visit.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        return get_object_or_404(GiftVisit, id=self.kwargs['id'])
+
+gift_visit_delete = DeleteGiftVisitView.as_view()
 
 @extend_schema_view(
     get=extend_schema(

@@ -19,6 +19,13 @@ urlpatterns = [
     path('gifts/<str:gift_id>/update/', views.gift_update_view, name='gift_update'),
     path('gifts/<str:gift_id>/delete/', views.gift_delete_view, name='gift_delete'),
     
+    # gift visit urls
+    path('giftvisits/', views.gift_visit_list, name='gift_visit_list'),
+    path('giftvisits/create/', views.gift_visit_create, name='gift_visit_create'),
+    path('giftvisits/<str:id>/', views.gift_visit_detail, name='gift_visit_detail'),
+    path('giftvisits/<str:id>/update/', views.gift_visit_update, name='gift_visit_update'),
+    path('giftvisits/<str:id>/delete/', views.gift_visit_delete, name='gift_visit_delete'),
+    
     # box category urls
     path('box-category/create/', views.create_box_category_view, name='box_category_create'),
     path('box-category/list/', views.box_category_list_view, name='box_category_list'),
