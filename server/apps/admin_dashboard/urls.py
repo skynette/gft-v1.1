@@ -68,5 +68,15 @@ urlpatterns = [
     path('template/delete/<int:id>/', views.template_delete_view, name='template_delete'),
     path('template/select/', views.template_selection_view, name='template_select'),
     
+    # roles and permission urls
+    path('roles/', views.ViewRolesView.as_view(), name='view_roles'),
+    path('roles/<str:group_id>/', views.RoleDetailView.as_view(), name='role_detail'),
+    path('roles/<str:group_id>/delete/', views.DeletePermissionGroupView.as_view(), name='delete_permission_group'),
+    
+    path('permission-groups/', views.PermissionGroupListCreateView.as_view(), name='permission_group_list_create'),
+    path('permission-groups/<int:pk>/', views.PermissionGroupDetailView.as_view(), name='permission_group_detail'),
+    path('permissions/', views.PermissionsModelListCreateView.as_view(), name='permissions_list_create'),
+    path('permissions/<int:pk>/', views.PermissionsModelDetailView.as_view(), name='permissions_detail'),
+    
     path("config-management/", views.config_management_view, name="config_management"),
 ]

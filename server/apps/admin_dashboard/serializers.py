@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, PermissionGroup, Template
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, PermissionGroup, PermissionsModel, Template
 
 
 User = get_user_model()
@@ -148,3 +148,16 @@ class TemplateSerializer(serializers.ModelSerializer):
 class TemplateSelectionSerializer(serializers.Serializer):
     template_id = serializers.IntegerField()
     category = serializers.CharField(max_length=255)
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PermissionsModel
+        fields = '__all__'
+
+class PermissionGroupSerializer(serializers.ModelSerializer):
+    permissions = PermissionSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = PermissionGroup
+        fields = '__all__'
