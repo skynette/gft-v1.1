@@ -137,7 +137,7 @@ class CampaignUpdateView(generics.GenericAPIView):
         request=EditCampaignSerializer,
         responses=CampaignSerializer,
         description="Update a campaign for the authenticated company.",
-        tags=["Campaigns"],
+        tags=["Company Area"],
         parameters=[
             OpenApiParameter("id", OpenApiTypes.STR, OpenApiParameter.PATH),
         ]

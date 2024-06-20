@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from apps.gft.models import Box, BoxCategory, Company, CompanyApiKey, Config, Gift, PermissionGroup
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, PermissionGroup
 
 
 User = get_user_model()
@@ -88,3 +88,41 @@ class AdminGiftSerializer(serializers.ModelSerializer):
     class Meta:
         model = Gift
         fields = '__all__'
+        
+        
+class AdminCreateCampaignSerializer(serializers.ModelSerializer):
+    company_boxes = serializers.PrimaryKeyRelatedField(queryset=CompanyBoxes.objects.all())
+
+    class Meta:
+        model = Campaign
+        fields = ['company_boxes', 'name', 'duration', 'num_boxes', 'header_image', 'open_after_a_day']
+        
+class AdminEditCampaignSerializer(serializers.ModelSerializer):
+    company_boxes = serializers.PrimaryKeyRelatedField(queryset=CompanyBoxes.objects.all(), required=False)
+
+    class Meta:
+        model = Campaign
+        fields = ['company_boxes', 'name', 'duration', 'num_boxes', 'header_image', 'open_after_a_day', 'is_deleted']
+        read_only_fields = ['is_deleted']
+
+class AdminCampaignSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(source='company.name', read_only=True)
+    box_type = serializers.CharField(source='company_boxes.box_type.name', read_only=True)
+
+    class Meta:
+        model = Campaign
+        fields = ['id', 'company_name', 'name', 'box_type', 'duration', 'num_boxes', 'header_image', 'open_after_a_day']
+
+
+class AdminCampaignDetailSerializer(serializers.ModelSerializer):
+    company_name = serializers.CharField(source='company.name', read_only=True)
+    box_type = serializers.CharField(source='company_boxes.box_type.name', read_only=True)
+    company_owner = serializers.CharField(source='company.owner.username', read_only=True)
+
+    class Meta:
+        model = Campaign
+        fields = [
+            'id', 'company_name', 'company_owner', 'name', 'box_type', 'duration', 'num_boxes', 'header_image', 
+            'open_after_a_day', 'is_deleted', 'created_at', 'updated_at'
+        ]
+

@@ -26,6 +26,12 @@ urlpatterns = [
     path('box-category/update/<int:id>/', views.update_box_category_view, name='box_category_update'),
     path('box-category/delete/<int:id>/', views.delete_box_category_view, name='delete_box_category'),
     
+    # campaign urls
+    path('campaigns/', views.campaign_list_api_view, name='admin_campaign_list'),
+    path('campaigns/<str:id>/', views.campaign_detail_api_view, name='admin_campaign_detail'),
+    path('campaigns/<str:id>/update/', views.campaign_update_api_view, name='admin_campaign_update'),
+    path('campaigns/<str:id>/delete/', views.campaign_delete_api_view, name='admin_campaign_delete'),
+    
     # company urls
     path('companies/', views.company_list_view, name='company_list'),
     path('companies/create/', views.company_create_view, name='company_create'),

@@ -2,12 +2,17 @@ from rest_framework import generics, status, filters as drf_filters
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_filters import rest_framework as django_filters
+from django.db import transaction
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 
-from apps.gft.models import Box, BoxCategory, Company, CompanyApiKey, Config, Gift
-from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminGiftSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
+from apps.company_dashboard.views import CampaignCreateView
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift
+from helpers.utils import ImageUploader
+from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminCampaignDetailSerializer, AdminCampaignSerializer, AdminCreateCampaignSerializer, AdminGiftSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
 from .filters import UserFilter
 
 User = get_user_model()
@@ -439,6 +444,174 @@ class DeleteBoxCategoryView(generics.GenericAPIView):
 
 
 delete_box_category_view = DeleteBoxCategoryView.as_view()
+
+
+class CreateCampaignView(generics.GenericAPIView):
+    serializer_class = AdminCreateCampaignSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Create a new campaign from the admin.",
+        request=AdminCreateCampaignSerializer,
+        responses={201: AdminCampaignSerializer},
+        tags=["Admin Area"]
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new campaign.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            company_id = serializer.validated_data['company_id']
+            campaign_name = serializer.validated_data['name']
+            company_box_id = serializer.validated_data['company_boxes'].id
+            num_boxes = serializer.validated_data['num_boxes']
+            header_image = serializer.validated_data['header_image']
+
+            # duration should come from the name of the company box boxtype
+            company_box = CompanyBoxes.objects.filter(id=company_box_id).first()
+            duration = company_box.box_type.category
+
+            if num_boxes > company_box.qty:
+                return Response(
+                    {"detail": f'Not enough boxes available for {company_box.box_type.name}'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # reduce number of company boxes by the number of boxes created
+            company_box.qty -= num_boxes
+            company_box.save()
+
+            # validate image
+            image_validator = ImageUploader()
+            valid_image = image_validator.is_valid_image(header_image) if header_image else True
+            if not valid_image:
+                return Response({"detail": "Invalid image uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+            campaign = Campaign.objects.create(
+                company_id=company_id,
+                name=campaign_name,
+                company_boxes=company_box,
+                duration=int(duration),
+                num_boxes=num_boxes,
+                header_image=header_image
+            )
+
+            serializer = AdminCampaignSerializer(campaign)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+campaign_create_api_view = CampaignCreateView.as_view()
+
+
+class CampaignListView(generics.GenericAPIView):
+    queryset = Campaign.objects.all()
+    serializer_class = AdminCampaignSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="List all campaigns.",
+        responses={200: AdminCampaignSerializer(many=True)},
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        List all campaigns.
+        """
+        campaigns = self.get_queryset()
+        serializer = self.get_serializer(campaigns, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+campaign_list_api_view = CampaignListView.as_view()
+
+
+class CampaignDetailView(generics.GenericAPIView):
+    queryset = Campaign.objects.all()
+    serializer_class = AdminCampaignDetailSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Retrieve a campaign by ID.",
+        responses={200: AdminCampaignDetailSerializer},
+        tags=["Admin Area"]
+    )
+    def get(self, request, id, *args, **kwargs):
+        """
+        Retrieve a campaign by ID.
+        """
+        campaign = self.get_object()
+        serializer = self.get_serializer(campaign)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_object(self):
+        return get_object_or_404(Campaign, id=self.kwargs['id'])
+
+
+campaign_detail_api_view = CampaignDetailView.as_view()
+
+
+class UpdateCampaignView(generics.GenericAPIView):
+    queryset = Campaign.objects.all()
+    serializer_class = AdminCampaignSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Update a campaign by ID.",
+        request=AdminCampaignSerializer,
+        responses={200: AdminCampaignSerializer},
+        tags=["Admin Area"]
+    )
+    def put(self, request, id, *args, **kwargs):
+        """
+        Update a campaign by ID.
+        """
+        campaign = self.get_object()
+        serializer = self.get_serializer(campaign, data=request.data, partial=True)
+        if serializer.is_valid():
+            header_image = serializer.validated_data.get('header_image')
+
+            image_validator = ImageUploader()
+            valid_image = image_validator.is_valid_image(header_image) if header_image else True
+            if not valid_image:
+                return Response({"detail": "Invalid image uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_object(self):
+        return get_object_or_404(Campaign, id=self.kwargs['id'])
+
+
+campaign_update_api_view = UpdateCampaignView.as_view()
+
+
+class DeleteCampaignView(generics.GenericAPIView):
+    queryset = Campaign.objects.all()
+    serializer_class = AdminCampaignSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Delete a campaign by ID.",
+        responses={204: None},
+        tags=["Admin Area"]
+    )
+    def delete(self, request, id, *args, **kwargs):
+        """
+        Delete a campaign by ID.
+        """
+        campaign = self.get_object()
+        campaign.is_deleted = True
+        campaign.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        return get_object_or_404(Campaign, id=self.kwargs['id'])
+
+
+campaign_delete_api_view = DeleteCampaignView.as_view()
 
 
 class CompanyListView(generics.GenericAPIView):

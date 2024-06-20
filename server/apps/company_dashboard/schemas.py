@@ -148,6 +148,6 @@ campaign_create_schema = extend_schema(
         400: OpenApiResponse(description='Bad Request'),
         500: OpenApiResponse(description="Server Error"),
     },
-    description="Create a new campaign for the authenticated user.",
+    description="Create a new campaign for the authenticated company.",
     tags=["Company Area"],
 )
