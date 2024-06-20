@@ -78,6 +78,12 @@ class ConfigSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AdminCompanyBoxesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyBoxes
+        fields = '__all__'
+
+
 class AdminBoxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Box

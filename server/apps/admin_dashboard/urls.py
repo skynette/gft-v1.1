@@ -53,5 +53,12 @@ urlpatterns = [
     path("company-api-key/<int:id>/update/", views.company_api_key_update_view, name="company_api_key_update"),
     path("company-api-key/<int:id>/delete/", views.company_api_key_delete_view, name="company_api_key_delete"),
     
+    # company box urls
+    path("company-boxes/", views.company_boxes_list_view, name="company_box_list"),
+    path("company-boxes/create/", views.company_boxes_create_view, name="company_box_create"),
+    path("company-boxes/<int:id>/", views.company_box_detail_view, name="company_box_detail"),
+    path("company-boxes/<int:id>/update/", views.company_boxes_update_view, name="company_box_update"),
+    path("company-boxes/<int:id>/delete/", views.company_boxes_delete_view, name="company_box_delete"),
+    
     path("config-management/", views.config_management_view, name="config_management"),
 ]

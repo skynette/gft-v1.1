@@ -12,7 +12,7 @@ from drf_spectacular.types import OpenApiTypes
 from apps.company_dashboard.views import CampaignCreateView
 from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit
 from helpers.utils import ImageUploader
-from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminCampaignDetailSerializer, AdminCampaignSerializer, AdminCreateCampaignSerializer, AdminGiftSerializer, AdminGiftVisitSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
+from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminCampaignDetailSerializer, AdminCampaignSerializer, AdminCompanyBoxesSerializer, AdminCreateCampaignSerializer, AdminGiftSerializer, AdminGiftVisitSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
 from .filters import UserFilter
 
 User = get_user_model()
@@ -911,6 +911,170 @@ class CompanyApiKeyDeleteView(generics.GenericAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 company_api_key_delete_view = CompanyApiKeyDeleteView.as_view()
+
+
+class CreateCompanyBoxesView(generics.GenericAPIView):
+    serializer_class = AdminCompanyBoxesSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Create a new company box.",
+        request=AdminCompanyBoxesSerializer,
+        responses={201: AdminCompanyBoxesSerializer},
+        tags=["Admin Area"]
+    )
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new company box.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            company_id = serializer.validated_data['company'].id
+            box_type_id = serializer.validated_data['box_type'].id
+            requested_qty = serializer.validated_data['qty']
+
+            company = get_object_or_404(Company, id=company_id)
+            box_category = get_object_or_404(BoxCategory, id=box_type_id)
+
+            # Check if the quantity of boxes requested is more than the available boxes
+            if requested_qty > box_category.qty:
+                return Response(
+                    {"detail": "The requested quantity exceeds available quantity"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Reduce the quantity of boxes available in the category
+            box_category.qty -= requested_qty
+            box_category.save()
+
+            # Check if company boxes already exist, and update with new qty
+            company_box, created = CompanyBoxes.objects.get_or_create(
+                company=company, box_type=box_category)
+
+            if created:
+                company_box.qty = requested_qty
+                company_box.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                company_box.qty += requested_qty
+                company_box.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+company_boxes_create_view = CreateCompanyBoxesView.as_view()
+
+
+class CompanyBoxesListView(generics.GenericAPIView):
+    queryset = CompanyBoxes.objects.all()
+    serializer_class = AdminCompanyBoxesSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="List all company boxes.",
+        responses={200: AdminCompanyBoxesSerializer(many=True)},
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        List all company boxes.
+        """
+        company_boxes_list = self.get_queryset()
+        serializer = self.get_serializer(company_boxes_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+company_boxes_list_view = CompanyBoxesListView.as_view()
+
+
+class CompanyBoxesDetailView(generics.GenericAPIView):
+    queryset = CompanyBoxes.objects.all()
+    serializer_class = AdminCompanyBoxesSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Retrieve a company box by ID.",
+        responses={200: AdminCompanyBoxesSerializer},
+        tags=["Admin Area"]
+    )
+    def get(self, request, id, *args, **kwargs):
+        """
+        Retrieve a company box by ID.
+        """
+        company_boxes = self.get_object()
+        serializer = self.get_serializer(company_boxes)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_object(self):
+        return get_object_or_404(CompanyBoxes, id=self.kwargs['id'])
+
+
+company_box_detail_view = CompanyBoxesDetailView.as_view()
+
+
+class UpdateCompanyBoxesView(generics.GenericAPIView):
+    queryset = CompanyBoxes.objects.all()
+    serializer_class = AdminCompanyBoxesSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Update a company box by ID.",
+        request=AdminCompanyBoxesSerializer,
+        responses={200: AdminCompanyBoxesSerializer},
+        tags=["Admin Area"]
+    )
+    @transaction.atomic
+    def put(self, request, id, *args, **kwargs):
+        """
+        Update a company box by ID.
+        """
+        company_box = self.get_object()
+        serializer = self.get_serializer(company_box, data=request.data, partial=True)
+        if serializer.is_valid():
+            requested_qty = serializer.validated_data['qty']
+            original_qty = company_box.qty
+
+            # Reduce the difference from the original quantity and add the requested quantity
+            qty_diff = requested_qty - original_qty
+            company_box.box_type.qty -= qty_diff
+            company_box.box_type.save()
+
+            company_box.qty = requested_qty
+            company_box.save()
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_object(self):
+        return get_object_or_404(CompanyBoxes, id=self.kwargs['id'])
+
+
+company_boxes_update_view = UpdateCompanyBoxesView.as_view()
+
+
+class DeleteCompanyBoxesView(generics.GenericAPIView):
+    queryset = CompanyBoxes.objects.all()
+    serializer_class = AdminCompanyBoxesSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Delete a company box by ID.",
+        responses={204: None},
+        tags=["Admin Area"]
+    )
+    def delete(self, request, id, *args, **kwargs):
+        """
+        Delete a company box by ID.
+        """
+        company_boxes = self.get_object()
+        company_boxes.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        return get_object_or_404(CompanyBoxes, id=self.kwargs['id'])
+
+
+company_boxes_delete_view = DeleteCompanyBoxesView.as_view()
 
 
 class ConfigDetailView(generics.GenericAPIView):
