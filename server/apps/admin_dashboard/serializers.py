@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, PermissionGroup
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, PermissionGroup, Template
 
 
 User = get_user_model()
@@ -138,3 +138,13 @@ class AdminCampaignDetailSerializer(serializers.ModelSerializer):
             'open_after_a_day', 'is_deleted', 'created_at', 'updated_at'
         ]
 
+
+class TemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Template
+        fields = '__all__'
+
+
+class TemplateSelectionSerializer(serializers.Serializer):
+    template_id = serializers.IntegerField()
+    category = serializers.CharField(max_length=255)

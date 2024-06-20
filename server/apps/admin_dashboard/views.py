@@ -10,9 +10,9 @@ from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiPara
 from drf_spectacular.types import OpenApiTypes
 
 from apps.company_dashboard.views import CampaignCreateView
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, Template
 from helpers.utils import ImageUploader
-from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminCampaignDetailSerializer, AdminCampaignSerializer, AdminCompanyBoxesSerializer, AdminCreateCampaignSerializer, AdminGiftSerializer, AdminGiftVisitSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, UserSerializer
+from .serializers import AdminBoxCategorySerializer, AdminBoxSerializer, AdminCampaignDetailSerializer, AdminCampaignSerializer, AdminCompanyBoxesSerializer, AdminCreateCampaignSerializer, AdminGiftSerializer, AdminGiftVisitSerializer, CompanyApiKeyReadSerializer, AdminCompanySerializer, CompanyApiKeyWriteSerializer, ConfigSerializer, TemplateSelectionSerializer, TemplateSerializer, UserSerializer
 from .filters import UserFilter
 
 User = get_user_model()
@@ -1075,6 +1075,196 @@ class DeleteCompanyBoxesView(generics.GenericAPIView):
 
 
 company_boxes_delete_view = DeleteCompanyBoxesView.as_view()
+
+
+class TemplateListView(generics.GenericAPIView):
+    queryset = Template.objects.all()
+    serializer_class = TemplateSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="List all templates.",
+        responses={200: TemplateSerializer(many=True)},
+        tags=["Admin Area"]
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        List all templates.
+        """
+        templates = self.get_queryset()
+        serializer = self.get_serializer(templates, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+template_list_view = TemplateListView.as_view()
+
+
+class TemplateCreateView(generics.GenericAPIView):
+    serializer_class = TemplateSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Create a new template.",
+        request=TemplateSerializer,
+        responses={201: TemplateSerializer},
+        tags=["Admin Area"]
+    )
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new template.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            active = serializer.validated_data.get('active', False)
+            notification_type = serializer.validated_data['notification_type']
+            
+            # Check if there's an active template with the same notification type
+            if active:
+                active_templates_same_type = Template.objects.filter(notification_type=notification_type, active=True)
+                if active_templates_same_type.exists():
+                    return Response(
+                        {"detail": "An active template with this notification type already exists. Deactivate the existing template before creating a new one."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+template_create_view = TemplateCreateView.as_view()
+
+
+class TemplateDetailView(generics.GenericAPIView):
+    queryset = Template.objects.all()
+    serializer_class = TemplateSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Retrieve a template by ID.",
+        responses={200: TemplateSerializer},
+        tags=["Admin Area"]
+    )
+    def get(self, request, id, *args, **kwargs):
+        """
+        Retrieve a template by ID.
+        """
+        template = self.get_object()
+        serializer = self.get_serializer(template)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_object(self):
+        return get_object_or_404(Template, id=self.kwargs['id'])
+
+template_detail = TemplateDetailView.as_view()
+
+class TemplateUpdateView(generics.GenericAPIView):
+    queryset = Template.objects.all()
+    serializer_class = TemplateSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Update a template by ID.",
+        request=TemplateSerializer,
+        responses={200: TemplateSerializer},
+        tags=["Admin Area"]
+    )
+    @transaction.atomic
+    def put(self, request, id, *args, **kwargs):
+        """
+        Update a template by ID.
+        """
+        template = self.get_object()
+        serializer = self.get_serializer(template, data=request.data, partial=True)
+        if serializer.is_valid():
+            active = serializer.validated_data.get('active', False)
+            notification_type = serializer.validated_data['notification_type']
+            
+            # Check if there's an active template with the same notification type, excluding the current one being updated
+            if active:
+                active_templates_same_type = Template.objects.filter(notification_type=notification_type, active=True).exclude(id=id)
+                if active_templates_same_type.exists():
+                    return Response(
+                        {"detail": "An active template with this notification type already exists. Deactivate the existing template before updating this one."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_object(self):
+        return get_object_or_404(Template, id=self.kwargs['id'])
+
+template_update_view = TemplateUpdateView.as_view()
+
+class TemplateDeleteView(generics.GenericAPIView):
+    queryset = Template.objects.all()
+    serializer_class = TemplateSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Delete a template by ID.",
+        responses={204: None},
+        tags=["Admin Area"]
+    )
+    def delete(self, request, id, *args, **kwargs):
+        """
+        Delete a template by ID.
+        """
+        template = self.get_object()
+        if template.active:
+            return Response({"detail": "Active templates cannot be deleted."}, status=status.HTTP_400_BAD_REQUEST)
+        template.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        return get_object_or_404(Template, id=self.kwargs['id'])
+    
+
+template_delete_view = TemplateDeleteView.as_view()
+
+
+class TemplateSelectionView(generics.GenericAPIView):
+    serializer_class = TemplateSelectionSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Select a template to set as active for a category.",
+        request=TemplateSelectionSerializer,
+        responses={200: TemplateSerializer},
+        tags=["Admin Area"]
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Select a template to set as active for a category.
+        """
+        template_id = request.data.get('template_id')
+        category = request.data.get('category')
+
+        if template_id and category:
+            try:
+                new_template = Template.objects.get(pk=template_id)
+                existing_active_template = Template.objects.filter(
+                    notification_type=category,
+                    active=True
+                ).exclude(pk=new_template.pk).first()
+
+                if existing_active_template:
+                    existing_active_template.active = False
+                    existing_active_template.save(update_fields=['active'])
+
+                new_template.active = True
+                new_template.save(update_fields=['active'])
+                return Response({"detail": f"{new_template.name} set as active for {category} category."}, status=status.HTTP_200_OK)
+            except Template.DoesNotExist:
+                return Response({"detail": f"Template not found for {category} category."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"detail": "Invalid template ID or category provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+template_selection_view = TemplateSelectionView.as_view()
 
 
 class ConfigDetailView(generics.GenericAPIView):

@@ -60,5 +60,13 @@ urlpatterns = [
     path("company-boxes/<int:id>/update/", views.company_boxes_update_view, name="company_box_update"),
     path("company-boxes/<int:id>/delete/", views.company_boxes_delete_view, name="company_box_delete"),
     
+    # template urls
+    path('template/', views.template_list_view, name='template_list'),
+    path('template/create/', views.template_create_view, name='template_create'),
+    path('templates/<str:id>/', views.template_detail, name='template_detail'),
+    path('template/update/<int:id>/', views.template_update_view, name='template_update'),
+    path('template/delete/<int:id>/', views.template_delete_view, name='template_delete'),
+    path('template/select/', views.template_selection_view, name='template_select'),
+    
     path("config-management/", views.config_management_view, name="config_management"),
 ]
