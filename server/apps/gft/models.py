@@ -30,7 +30,8 @@ class Company(models.Model):
     box_limit = models.IntegerField(help_text="Maximum number of gift boxes the company can manage", default=0)
     socials = models.JSONField(help_text="Social media information for the company", null=True, blank=True)
     color_schema = models.JSONField(help_text="Color scheme used by the company", null=True, blank=True)
-
+    created_at = models.DateTimeField(_("Created"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Updated"), auto_now=True)
 
     def get_company_users(self):
         """
@@ -61,6 +62,8 @@ class CompanyUser(models.Model):
     """Relationship between a company and its users"""
     company = models.ForeignKey(Company, on_delete=models.CASCADE, help_text="The company the user is associated with")
     user = models.ForeignKey(User, on_delete=models.CASCADE, help_text="The user associated with the company")
+    created_at = models.DateTimeField(_("Created"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Updated"), auto_now=True)
 
     def __str__(self) -> str:
         return f"{self.company} {self.user.get_username()}"
@@ -91,7 +94,9 @@ class BoxCategory(models.Model):
     label = models.SlugField(unique=True, help_text="Auto-generated slug based on the name", null=True, blank=True)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES.choices, help_text="Type of box duration", null=True, blank=True)
     qty = models.IntegerField(help_text="Available quantity of boxes for this category")
-
+    created_at = models.DateTimeField(_("Created"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Updated"), auto_now=True)
+    
     def __str__(self):
         return f"{self.category} days box - ({self.qty} boxes available)"
     
@@ -127,7 +132,9 @@ class CompanyBoxes(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, help_text="The company owning the gift boxes")
     box_type = models.ForeignKey(BoxCategory, on_delete=models.CASCADE, help_text="Type of gift box")
     qty = models.IntegerField(help_text="Quantity of boxes available")
-
+    created_at = models.DateTimeField(_("Created"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Updated"), auto_now=True)
+    
     def __str__(self):
         return f"{self.company.name} - {self.box_type.name} - ({self.qty})"
 
@@ -295,6 +302,8 @@ class Notification(models.Model):
     message = models.CharField(max_length=255, help_text="Content of the notification message")
     read = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(_("Created"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Updated"), auto_now=True)
 
     def __str__(self):
         return f'{self.user.username} - {self.box.title}'
@@ -320,7 +329,8 @@ class GiftVisit(models.Model):
     time_of_visit = models.DateTimeField(auto_now_add=True, help_text="Timestamp of the visit")
     visitor = models.ForeignKey(User, on_delete=models.CASCADE, help_text="User who visited the mini box")
     metadata = models.JSONField(blank=True, null=True, help_text="Additional metadata about the visit")
-
+    created_at = models.DateTimeField(_("Created"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("Updated"), auto_now=True)
 
     def __str__(self):
         return f"{self.visitor.username} opened {self.gift.gift_title} at {self.time_of_visit}"

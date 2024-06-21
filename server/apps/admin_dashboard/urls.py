@@ -1,9 +1,9 @@
 from django.urls import path
-from . import views
+from . import views, metrics_views
 
 urlpatterns = [
-    path('users/', views.user_list_and_create_api_view, name='user-list'),
-    path('users/<int:pk>/', views.user_details_update_and_delete_view, name='user-detail'),
+    path('users/', views.user_list_and_create_api_view, name='user_list'),
+    path('users/<int:pk>/', views.user_details_update_and_delete_view, name='user_detail'),
     
     # box urls
     path('boxes/', views.box_list_view, name='box_list'),
@@ -81,5 +81,13 @@ urlpatterns = [
     
     path("config-management/", views.config_management_view, name="config_management"),
     
-    path('admin/metrics/', views.admin_metrics_api_view, name='admin-metrics'),
+    # metrics api endpoint
+    path('metrics/', views.admin_metrics_api_view, name='admin_metrics'),
+    
+    # metrics
+    path('metrics/campaigns/', metrics_views.campaign_metrics_api_view, name='campaign_metrics'),
+    path('metrics/boxes/', metrics_views.box_metrics_api_view, name='box_metrics'),
+    path('metrics/gifts/', metrics_views.gifts_metrics_api_view, name='gift_metrics'),
+    path('metrics/giftvisits/', metrics_views.gifts_visits_metrics_view, name='gift_visit_metrics'),
+    path('metrics/companies/', metrics_views.company_metrics_api_view, name='company_metrics'),
 ]
