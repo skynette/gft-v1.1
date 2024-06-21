@@ -278,3 +278,38 @@ class UpdateCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = ['name', 'logo', 'header_image', 'company_url', 'box_limit', 'socials', 'color_schema']
+
+
+
+class BoxAnalyticsSerializer(serializers.Serializer):
+    total_boxes = serializers.IntegerField()
+    boxes_last_month = serializers.IntegerField()
+    boxes_this_month = serializers.IntegerField()
+    boxes_percentage_increase = serializers.FloatField()
+    
+
+class GiftAnalyticsSerializer(serializers.Serializer):
+    total_gifts = serializers.IntegerField()
+    gifts_last_month = serializers.IntegerField()
+    gifts_this_month = serializers.IntegerField()
+    gifts_percentage_increase = serializers.FloatField()
+    
+
+class GiftVisitAnalyticsSerializer(serializers.Serializer):
+    total_gift_visits = serializers.IntegerField()
+    gift_visits_last_month = serializers.IntegerField()
+    gift_visits_this_month = serializers.IntegerField()
+    gift_visits_percentage_increase = serializers.FloatField()
+    
+
+class CampaignAnalyticsSerializer(serializers.Serializer):
+    total_campaigns = serializers.IntegerField()
+    campaigns_last_month = serializers.IntegerField()
+    campaigns_this_month = serializers.IntegerField()
+    campaigns_percentage_increase = serializers.FloatField()
+    
+
+class CombinedAnalyticsSerializer(serializers.Serializer):
+    gifts = GiftAnalyticsSerializer()
+    gift_visits = GiftVisitAnalyticsSerializer()
+    campaigns = CampaignAnalyticsSerializer()

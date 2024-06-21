@@ -43,5 +43,12 @@ urlpatterns = [
     path('settings/update/', views.update_settings_api_view, name='api_update_settings'),
     
     # company users url
-    path('company-users/<int:id>/', views.company_users_api_view, name='api_company_users_list')
+    path('company-users/<int:id>/', views.company_users_api_view, name='api_company_users_list'),
+    
+    # analytics urls
+    path('analytics/boxes/', views.BoxAnalyticsView.as_view(), name='box-analytics'),
+    path('analytics/gifts/', views.GiftAnalyticsView.as_view(), name='gift-analytics'),
+    path('analytics/gift-visits/', views.GiftVisitAnalyticsView.as_view(), name='gift-visit-analytics'),
+    path('analytics/campaigns/', views.CampaignAnalyticsView.as_view(), name='campaign-analytics'),
+    path('analytics/combined/', views.CombinedAnalyticsView.as_view(), name='combined-analytics'),
 ]
