@@ -27,8 +27,8 @@ urlpatterns = [
     path('giftvisits/<str:id>/delete/', views.gift_visit_delete, name='gift_visit_delete'),
     
     # box category urls
-    path('box-category/create/', views.create_box_category_view, name='box_category_create'),
     path('box-category/list/', views.box_category_list_view, name='box_category_list'),
+    path('box-category/create/', views.create_box_category_view, name='box_category_create'),
     path('box-category/detail/<int:id>/', views.box_category_detail_view, name='box_category_detail'),
     path('box-category/update/<int:id>/', views.update_box_category_view, name='box_category_update'),
     path('box-category/delete/<int:id>/', views.delete_box_category_view, name='delete_box_category'),

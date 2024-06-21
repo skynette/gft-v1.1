@@ -46,7 +46,7 @@ from .serializers import (
     TemplateSerializer,
     UserSerializer,
 )
-from .filters import UserFilter
+from .filters import BoxFilter, CampaignFilter, CompanyFilter, GiftFilter, GiftVisitFilter, UserFilter
 
 User = get_user_model()
 
@@ -55,10 +55,35 @@ class BoxListView(generics.GenericAPIView):
     queryset = Box.objects.all()
     serializer_class = AdminBoxSerializer
     permission_classes = [IsAdminUser]
+    filterset_class = BoxFilter
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+        drf_filters.SearchFilter,
+    ]
+    search_fields = ['title', 'receiver_name']
+    ordering_fields = ['created_at', 'title']
 
     @extend_schema(
-        description="List all boxes.",
+        description="List all boxes with filtering, searching, and sorting options.",
         responses={200: AdminBoxSerializer(many=True)},
+        parameters=[
+            {
+                'name': 'search',
+                'required': False,
+                'in': 'query',
+                'description': 'Search query',
+                'schema': {'type': 'string'}
+            },
+            {
+                'name': 'ordering',
+                'required': False,
+                'in': 'query',
+                'description': 'Ordering field',
+                'schema': {'type': 'string', 'enum': ['created_at', 'title']}
+            },
+            # Add filter parameters here
+        ],
         tags=["Admin Area"],
     )
     def get(self, request, *args, **kwargs):
@@ -179,11 +204,36 @@ class GiftListView(generics.GenericAPIView):
     queryset = Gift.objects.all()
     serializer_class = AdminGiftSerializer
     permission_classes = [IsAdminUser]
+    filterset_class = GiftFilter
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+        drf_filters.SearchFilter,
+    ]
+    search_fields = ['gift_title', 'gift_description']
+    ordering_fields = ['open_date', 'gift_title']
 
     @extend_schema(
-        description="List all gifts.",
+        description="List all gifts with filtering, searching, and sorting options.",
         responses={200: AdminGiftSerializer(many=True)},
         tags=["Admin Area"],
+        parameters=[
+            {
+                'name': 'search',
+                'required': False,
+                'in': 'query',
+                'description': 'Search query',
+                'schema': {'type': 'string'}
+            },
+            {
+                'name': 'ordering',
+                'required': False,
+                'in': 'query',
+                'description': 'Ordering field',
+                'schema': {'type': 'string', 'enum': ['open_date', 'gift_title']}
+            },
+            # Add filter parameters here
+        ]
     )
     def get(self, request, *args, **kwargs):
         """
@@ -327,11 +377,36 @@ class GiftVisitListView(generics.GenericAPIView):
     queryset = GiftVisit.objects.all()
     serializer_class = AdminGiftVisitSerializer
     permission_classes = [IsAdminUser]
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+        drf_filters.SearchFilter,
+    ]
+    filterset_class = GiftVisitFilter
+    search_fields = ['visitor__username']
+    ordering_fields = ['time_of_visit']
 
     @extend_schema(
-        description="List all gift visits.",
+        description="List all gift visits with filtering, searching, and sorting options.",
         responses={200: AdminGiftVisitSerializer(many=True)},
         tags=["Admin Area"],
+        parameters=[
+            {
+                'name': 'search',
+                'required': False,
+                'in': 'query',
+                'description': 'Search query',
+                'schema': {'type': 'string'}
+            },
+            {
+                'name': 'ordering',
+                'required': False,
+                'in': 'query',
+                'description': 'Ordering field',
+                'schema': {'type': 'string', 'enum': ['time_of_visit']}
+            },
+            # Add filter parameters here
+        ]
     )
     def get(self, request, *args, **kwargs):
         """
@@ -671,11 +746,36 @@ class CampaignListView(generics.GenericAPIView):
     queryset = Campaign.objects.all()
     serializer_class = AdminCampaignSerializer
     permission_classes = [IsAdminUser]
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+        drf_filters.SearchFilter,
+    ]
+    filterset_class = CampaignFilter
+    search_fields = ['name']
+    ordering_fields = ['created_at', 'name']
 
     @extend_schema(
-        description="List all campaigns.",
+        description="List all campaigns with filtering, searching, and sorting options.",
         responses={200: AdminCampaignSerializer(many=True)},
         tags=["Admin Area"],
+        parameters=[
+            {
+                'name': 'search',
+                'required': False,
+                'in': 'query',
+                'description': 'Search query',
+                'schema': {'type': 'string'}
+            },
+            {
+                'name': 'ordering',
+                'required': False,
+                'in': 'query',
+                'description': 'Ordering field',
+                'schema': {'type': 'string', 'enum': ['created_at', 'name']}
+            },
+            # Add filter parameters here
+        ]
     )
     def get(self, request, *args, **kwargs):
         """
@@ -784,11 +884,36 @@ campaign_delete_api_view = DeleteCampaignView.as_view()
 class CompanyListView(generics.GenericAPIView):
     serializer_class = AdminCompanySerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+        drf_filters.SearchFilter,
+    ]
+    filterset_class = CompanyFilter
+    search_fields = ['name', 'owner__username']
+    ordering_fields = ['created_at', 'name']
 
     @extend_schema(
+        description="List all companies with filtering, searching, and sorting options.",
         responses={200: AdminCompanySerializer(many=True)},
-        description="Retrieve a list of all companies.",
         tags=["Admin Area"],
+        parameters=[
+            {
+                'name': 'search',
+                'required': False,
+                'in': 'query',
+                'description': 'Search query',
+                'schema': {'type': 'string'}
+            },
+            {
+                'name': 'ordering',
+                'required': False,
+                'in': 'query',
+                'description': 'Ordering field',
+                'schema': {'type': 'string', 'enum': ['created_at', 'name']}
+            },
+            # Add filter parameters here
+        ]
     )
     def get(self, request, *args, **kwargs):
         companies = Company.objects.all()
