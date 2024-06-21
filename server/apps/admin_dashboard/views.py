@@ -2,11 +2,12 @@ from rest_framework import generics, status, filters as drf_filters
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django_filters import rest_framework as django_filters
+from datetime import datetime, timedelta
 from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
 from drf_spectacular.types import OpenApiTypes
 
 from apps.company_dashboard.views import CampaignCreateView
@@ -1715,3 +1716,88 @@ class AssignUserGroupView(generics.GenericAPIView):
 
 
 assign_user_group_view = AssignUserGroupView.as_view()
+
+
+class AdminMetricsView(generics.GenericAPIView):
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        summary="Get admin dashboard metrics",
+        description="Retrieve metrics data for the admin dashboard.",
+        responses={
+            200: OpenApiResponse(
+                response={
+                    'type': 'object',
+                    'properties': {
+                        'total_users': {'type': 'integer'},
+                        'total_boxes': {'type': 'integer'},
+                        'total_campaigns': {'type': 'integer'},
+                        'total_gifts': {'type': 'integer'},
+                        'users_percentage_increase': {'type': 'number', 'format': 'float'},
+                        'boxes_percentage_increase': {'type': 'number', 'format': 'float'},
+                        'campaigns_percentage_increase': {'type': 'number', 'format': 'float'},
+                        'gifts_percentage_increase': {'type': 'number', 'format': 'float'},
+                        # 'chart_labels': {'type': 'array', 'items': {'type': 'string'}},
+                        # 'user_data': {'type': 'array', 'items': {'type': 'integer'}},
+                        # 'max_y_axis_value': {'type': 'integer'},
+                        # 'step_size': {'type': 'integer'},
+                    }
+                },
+                description="A JSON object containing metrics data."
+            )
+        },
+        tags=['Admin Metrics'],
+    )
+    def get(self, request, *args, **kwargs):
+        # Calculate total counts
+        total_users = User.objects.count()
+        total_boxes = Box.objects.count()
+        total_campaigns = Campaign.current_objects.count()
+        total_gifts = Gift.objects.count()
+
+        # Calculate percentage increases (for example, from the previous month)
+        today = datetime.today()
+        last_month = today - timedelta(days=30)
+        
+        prev_total_users = User.objects.filter(date_joined__lt=last_month).count()
+        users_percentage_increase = ((total_users - prev_total_users) / prev_total_users) * 100 if prev_total_users > 0 else 0
+
+        prev_total_boxes = Box.objects.filter(created_at__lt=last_month).count()
+        boxes_percentage_increase = ((total_boxes - prev_total_boxes) / prev_total_boxes) * 100 if prev_total_boxes > 0 else 0
+
+        prev_total_campaigns = Campaign.current_objects.filter(created_at__lt=last_month).count()
+        campaigns_percentage_increase = ((total_campaigns - prev_total_campaigns) / prev_total_campaigns) * 100 if prev_total_campaigns > 0 else 0
+
+        prev_total_gifts = Gift.objects.filter(created_at__lt=last_month).count()
+        gifts_percentage_increase = ((total_gifts - prev_total_gifts) / prev_total_gifts) * 100 if prev_total_gifts > 0 else 0
+
+        # Chart data
+        # chart_labels = [last_month.strftime('%Y-%m-%d'), today.strftime('%Y-%m-%d')]
+        # user_data = [
+        #     User.objects.filter(date_joined__gte=last_month).count(),
+        #     total_users
+        # ]
+
+        # max_y_axis_value and step_size calculation
+        # max_y_axis_value = max(user_data) if user_data else 0
+        # step_size = max_y_axis_value // 5 if max_y_axis_value > 0 else 1
+
+        context = {
+            'total_users': total_users,
+            'total_boxes': total_boxes,
+            'total_campaigns': total_campaigns,
+            'total_gifts': total_gifts,
+            'users_percentage_increase': users_percentage_increase,
+            'boxes_percentage_increase': boxes_percentage_increase,
+            'campaigns_percentage_increase': campaigns_percentage_increase,
+            'gifts_percentage_increase': gifts_percentage_increase,
+            # 'chart_labels': chart_labels,
+            # 'user_data': user_data,
+            # 'max_y_axis_value': max_y_axis_value,
+            # 'step_size': step_size,
+        }
+
+        return Response(context)
+    
+    
+admin_metrics_api_view = AdminMetricsView.as_view()

@@ -80,4 +80,6 @@ urlpatterns = [
     path('assign-user-group/', views.assign_user_group_view, name='assign_user_group'),
     
     path("config-management/", views.config_management_view, name="config_management"),
+    
+    path('admin/metrics/', views.admin_metrics_api_view, name='admin-metrics'),
 ]
