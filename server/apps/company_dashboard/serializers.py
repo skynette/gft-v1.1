@@ -128,6 +128,11 @@ class BoxSerializer(serializers.ModelSerializer):
         
         return super().create(validated_data)
 
+class BoxSetupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Box
+        exclude = ["qr_code_v", 'pkid', "user", "box_campaign", "days_of_gifting", "last_opened", "is_company_setup", ]
+
 
 class BoxEditSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField(read_only=True)
@@ -177,6 +182,12 @@ class GiftSerializer(serializers.ModelSerializer):
         if obj.gift_campaign:
             return obj.gift_campaign.is_deleted
         return False
+
+class GiftSetupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Gift
+        exclude = ["qr_code_v", "created_at", "updated_at", "pkid"]
 
 
 class AddBoxesToCampaignSerializer(serializers.Serializer):

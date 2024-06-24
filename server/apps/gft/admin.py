@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class BoxAdmin(admin.ModelAdmin):
-    list_display = ['user', 'receiver_name', 'title',
+    list_display = ['id', 'user', 'receiver_name', 'title',
                     'open_date', 'days_of_gifting', 'pkid', 'is_setup']
     search_fields = ['user__username', 'receiver_name', 'title']
 
@@ -22,8 +22,8 @@ class BoxAdmin(admin.ModelAdmin):
 
 
 class GiftAdmin(admin.ModelAdmin):
-    list_display = ['open_date', 'user', 'gift_title', 'box_model', 'pkid']
-    search_fields = ['box_model__title', 'gift_title']
+    list_display = ['id', 'open_date', 'user', 'gift_title', 'box_model', 'pkid']
+    search_fields = ['box_model__title', 'gift_title', 'id']
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -34,7 +34,7 @@ class GiftAdmin(admin.ModelAdmin):
 
 
 class CampaignAdmin(admin.ModelAdmin):
-    list_display = ['name', 'duration', 'num_boxes']
+    list_display = ['id', 'name', 'duration', 'num_boxes']
     search_fields = ['name']
 
     # TODO: fix creating boxes twice
