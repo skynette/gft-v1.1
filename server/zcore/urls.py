@@ -19,6 +19,7 @@ urlpatterns = [
     path('auth/', include('apps.authentication.urls')),
     path('dashboard/', include('apps.company_dashboard.urls')),
     path('dashboard/admin/', include('apps.admin_dashboard.urls')),
+    path('dashboard/gifter/', include('apps.gifter_dashboard.urls')),
     path('supersecret/', admin.site.urls),
 ]
 

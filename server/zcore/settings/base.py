@@ -57,6 +57,7 @@ LOCAL_APPS = [
     'apps.gft',
     'apps.company_dashboard',
     'apps.admin_dashboard',
+    'apps.gifter_dashboard',
 ]
 
 
