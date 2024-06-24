@@ -1,22 +1,32 @@
-import './globals.css';
+import "./globals.css";
 import { Epilogue } from "next/font/google";
-import SessionProviderComponent from './providers/session-provider';
-import { Toaster } from 'react-hot-toast';
+import SessionProviderComponent from "./providers/session-provider";
+import { Toaster } from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 const epilogue = Epilogue({
-    subsets: ['latin'],
-    display: 'fallback',
+    subsets: ["latin"],
+    display: "fallback",
 });
 
 export const metadata = {
-    title: 'GFT',
-    description: 'Unwrap Happiness',
+    title: "GFT",
+    description: "Unwrap Happiness",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
     return (
         <html lang="en">
-            <body className={epilogue.className}>
+            <body
+                className={cn(
+                    "min-h-screen bg-background font-sans antialiased",
+                    epilogue.className
+                )}
+            >
                 <SessionProviderComponent>
                     {children}
                     <Toaster />
