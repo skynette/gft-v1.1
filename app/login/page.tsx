@@ -4,41 +4,67 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaApple } from 'react-icons/fa';
-import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import { ArrowRightCircle } from 'lucide-react';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import * as Yup from 'yup';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import FormikControl from '@/components/form-controls/FormikControl';
+import useToken from '@/lib/hooks/useToken';
+import { toast } from 'sonner';
+import useVerifyToken from '@/lib/hooks/useVerifyToken';
+
+interface UserInput {
+    email: string
+}
+
+interface OTPToken {
+    otp: string
+}
+
+const validationSchema = Yup.object().shape({
+    email: Yup.string().email('This email is invalid').required('Enter your email address'),
+});
+
+const otpTokenValidationSchema = Yup.object().shape({
+    otp: Yup.string().min(6, 'Your one-time password must be 6 characters.')
+});
 
 export default function Login() {
-    const [email, setEmail] = useState('');
-    const [token, setToken] = useState('');
-    const [stage, setStage] = useState<'request' | 'verify'>('request');
+    const [emailInitialValue, setEmailInitialValue] = useState<UserInput>({ email: '' });
+    const [token] = useState<OTPToken>({ otp: '' });
+    const [stage, setStage] = useState<'request' | 'verify'>('verify');
     const router = useRouter();
 
-    const BASE_URL = process.env.NEXT_PUBLIC_API_URL as string;
-
-    const handleRequestToken = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            await fetch(`${BASE_URL}/auth/email/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `email=${email}`,
-            });
+    const { mutate: mutateToken, isPending, isSuccess } = useToken({
+        onSuccess() {
             setStage('verify');
             toast.success('A new token has been sent to your email.');
-        } catch (error) {
-            console.error('Error requesting token:', error);
-            toast.error('Failed to request a token. Please try again.');
         }
+    });
+
+    const { mutate: mutateVerifyToken } = useVerifyToken({
+        onSuccess() {
+            toast.success('Email has been verified successfully!');
+        },
+        onError() {
+            toast.error('Unable to verify email');
+        },
+    })
+
+    const handleRequestToken = async (email: string) => {
+        mutateToken({ email });
+        setEmailInitialValue({ email })
     };
 
-    const handleSignIn = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSignIn = async (token: string) => {
 
         const result = await signIn('credentials', {
             redirect: false,
-            email,
+            email: emailInitialValue.email,
             token,
         });
         console.log("RESULT FROM NEXT AUTH", { result })
@@ -46,7 +72,7 @@ export default function Login() {
             console.error('Error signing in:', result.error);
             if (result.error.includes("token")) {
                 toast.error("Invalid or expired token. A new token has been sent to your email.");
-                await handleRequestToken(e); // Resend token
+                await handleRequestToken(emailInitialValue.email); // Resend token
             } else {
                 toast.error('Failed to sign in. Please try again.');
             }
@@ -67,93 +93,101 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 space-y-6">
-                <h2 className="text-2xl font-bold text-center text-gray-700">Sign In</h2>
-                <div>
-                    <button
-                        onClick={handleGoogleSignIn}
-                        className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                    >
-                        <FcGoogle className="w-5 h-5 mr-2" />
-                        Sign in with Google
-                    </button>
-                </div>
-                <div>
-                    <button
-                        onClick={handleAppleSignIn}
-                        disabled
-                        className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-black text-sm font-medium text-white hover:bg-gray-900"
-                    >
-                        <FaApple className="w-5 h-5 mr-2" />
-                        Sign in with Apple
-                    </button>
-                </div>
-                <div className="relative mt-6">
-                    <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                    </div>
-                </div>
-                {stage === 'request' ? (
-                    <form onSubmit={handleRequestToken} className="space-y-6">
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                Email address
-                            </label>
-                            <div className="mt-1">
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <button
-                                type="submit"
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                Request Token
-                            </button>
-                        </div>
-                    </form>
-                ) : (
-                    <form onSubmit={handleSignIn} className="space-y-6">
-                        <div>
-                            <label htmlFor="token" className="block text-sm font-medium text-gray-700">
-                                Token
-                            </label>
-                            <div className="mt-1">
-                                <input
-                                    id="token"
-                                    name="token"
-                                    type="text"
-                                    required
-                                    value={token}
-                                    onChange={(e) => setToken(e.target.value)}
-                                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <button
-                                type="submit"
-                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                Sign In
-                            </button>
-                        </div>
-                    </form>
-                )}
+        <div className='container h-screen grid grid-cols-[2fr_1.5fr]'>
+            <div className='flex flex-col items-center bg-blue-500 py-10'>
+                <Image src='/asset-1.png' width={200} height={200} alt='' />
+                <p className='mt-4 text-white font-bold text-4xl tracking-wider'>GFT</p>
+                <p className='text-white tracking-wide font-semibold text-2xl'>Redefining the <span className='underline underline-offset-1 italic'>gift giving experience!</span></p>
+                <p className='inline-flex items-center text-white mt-5'>
+                    Sign in to get started!
+                    <ArrowRightCircle size={40} strokeWidth={1} className='ml-2' />
+                </p>
             </div>
+
+            {stage === 'request' ?
+                <div className='w-full flex flex-col justify-center items-center py-10 px-16'>
+                    <h1 className='font-bold text-4xl tracking-wider mt-10'>GFT</h1>
+                    <p className='text-gray-700 font-medium text-lg tracking-wide mt-5'>Sign in to continue!</p>
+                    <Formik
+                        initialValues={emailInitialValue}
+                        onSubmit={(field) => {
+                            handleRequestToken(field.email);
+                        }}
+                        validationSchema={validationSchema}
+                        className="flex flex-col w-full mt-10 space-y-1">
+                        {
+                            () => (
+                                <Form className='w-full'>
+                                    <FormikControl
+                                        type='email'
+                                        name='email'
+                                        label='Email address'
+                                        placeholder='user@test.com'
+                                        control='input' />
+
+                                    <Button type='submit' className='w-full !mt-8 text-white'>Continue</Button>
+                                </Form>
+                            )
+                        }
+
+                    </Formik>
+
+                    <p className='uppercase text-gray-600 text-sm font-semibold my-8'>or</p>
+
+                    <div className='w-full flex flex-col space-y-3'>
+                        <Button variant='outline' className='items-center' onClick={handleGoogleSignIn}>
+                            <FcGoogle className="w-5 h-5 mr-2" />
+                            Sign in with Google
+                        </Button>
+
+                        <Button variant='outline' className='bg-black text-white items-center' onClick={handleAppleSignIn}>
+                            <FaApple className="w-5 h-5 mr-2" />
+                            Sign in with Apple
+                        </Button>
+                    </div>
+                </div>
+                :
+                (
+                    <div className='w-full flex flex-col justify-center items-center py-10 px-16'>
+                        <h1 className='font-bold text-4xl tracking-wider mt-10'>GFT</h1>
+                        <p className='text-gray-700 text-center font-medium text-lg tracking-wide mt-5'>Please check <span className='text-blue-500'>{emailInitialValue.email}</span> for the token sent!</p>
+                        <Formik
+                            initialValues={token}
+                            validationSchema={otpTokenValidationSchema}
+                            onSubmit={(field) => handleSignIn(field.otp)}
+                            className="flex flex-col items-center w-full mt-10 space-y-1">
+                            {
+                                ({ setFieldValue, errors }) => (
+                                    <Form className='w-full flex flex-col items-center'>
+                                        <Field name='otp'>
+                                            {
+                                                () => (
+                                                    <>
+                                                        <InputOTP onChange={(e) => setFieldValue('otp', e)} maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
+                                                            <InputOTPGroup>
+                                                                <InputOTPSlot index={0} />
+                                                                <InputOTPSlot index={1} />
+                                                                <InputOTPSlot index={2} />
+                                                                <InputOTPSlot index={3} />
+                                                                <InputOTPSlot index={4} />
+                                                                <InputOTPSlot index={5} />
+                                                            </InputOTPGroup>
+                                                        </InputOTP>
+                                                        <ErrorMessage name='otp' render={msg => <p>{errors.otp}</p>} />
+                                                    </>
+                                                )
+                                            }
+
+                                        </Field>
+                                        <p className='text-gray-600 text-xs'>Enter your one-time password.</p>
+                                        <Button type='submit' className='w-full !mt-8 text-white'>Continue</Button>
+                                    </Form>
+                                )
+                            }
+                        </Formik>
+                    </div>
+                )
+            }
         </div>
-    );
+    )
 }

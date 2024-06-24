@@ -1,0 +1,3 @@
+interface VerifyTokenResponse {
+    token: string
+}

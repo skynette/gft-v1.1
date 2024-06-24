@@ -1,12 +1,10 @@
 import "./globals.css";
 import { Epilogue } from "next/font/google";
-import SessionProviderComponent from "./providers/session-provider";
-import { Toaster } from "react-hot-toast";
-import { cn } from "@/lib/utils";
+import Providers from "./lib/providers";
 
 const epilogue = Epilogue({
     subsets: ["latin"],
-    display: "fallback",
+    display: "block",
 });
 
 export const metadata = {
@@ -21,16 +19,10 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body
-                className={cn(
-                    "min-h-screen bg-background font-sans antialiased",
-                    epilogue.className
-                )}
-            >
-                <SessionProviderComponent>
+            <body className={epilogue.className}>
+                <Providers>
                     {children}
-                    <Toaster />
-                </SessionProviderComponent>
+                </Providers>
             </body>
         </html>
     );
