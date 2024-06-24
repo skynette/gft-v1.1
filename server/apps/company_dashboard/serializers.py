@@ -324,3 +324,12 @@ class CombinedAnalyticsSerializer(serializers.Serializer):
     gifts = GiftAnalyticsSerializer()
     gift_visits = GiftVisitAnalyticsSerializer()
     campaigns = CampaignAnalyticsSerializer()
+
+
+class DashboardSerializer(serializers.Serializer):
+    total_boxes_owned = serializers.IntegerField()
+    boxes_received = serializers.IntegerField()
+    gift_boxes_opened = serializers.IntegerField()
+    weekdays = serializers.ListField(child=serializers.IntegerField())
+    gifts_given = serializers.ListField(child=serializers.IntegerField())
+    gifts_received = serializers.ListField(child=serializers.IntegerField())

@@ -4,12 +4,92 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.contrib.auth import get_user_model
-from apps.company_dashboard.serializers import BoxEditSerializer, BoxSetupSerializer, BoxSerializer, GiftSerializer, GiftSetupSerializer, NotificationSerializer, ShowNotificationSerializer
+from apps.company_dashboard.serializers import BoxSetupSerializer, BoxSerializer, DashboardSerializer, GiftSerializer, GiftSetupSerializer, NotificationSerializer, ShowNotificationSerializer
 from apps.gft.models import Box, Company, CompanyUser, Gift, Notification
 from apps.gft.permissions import APIPermissionValidator
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
+from django.utils import timezone
+from datetime import timedelta
 
 User = get_user_model()
+
+class DashboardView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    required_permissions = ["view_user_dashboard"]
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=DashboardSerializer,
+                examples=[
+                    OpenApiExample(
+                        name="Dashboard Data",
+                        value={
+                            "total_boxes_owned": 5,
+                            "boxes_received": 3,
+                            "gift_boxes_opened": 2,
+                            "weekdays": [1, 2, 3, 4, 5, 6, 7],
+                            "gifts_given": [0, 1, 0, 0, 1, 0, 1],
+                            "gifts_received": [1, 0, 2, 1, 0, 0, 1],
+                        }
+                    )
+                ]
+            ),
+            401: OpenApiResponse(
+                response={"detail": "Not allowed"},
+                description="Unauthorized access",
+                examples=[
+                    OpenApiExample(
+                        name="Unauthorized",
+                        value={"detail": "Not allowed"}
+                    )
+                ]
+            )
+        },
+        description="Returns the dashboard data for the user.",
+        tags=["Gifter"]
+    )
+    def get(self, request, *args, **kwargs):
+        if request.user.user_type == "company" or request.user.user_type == "super_admin":
+            return Response({"detail": "Not allowed"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        gift_boxes = Box.objects.filter(user=request.user)
+        gift_boxes_received = Box.objects.filter(receiver_email=request.user.email)
+        boxes_received = gift_boxes_received.count()
+        total_boxes_owned = gift_boxes.count()
+        gift_boxes_opened = Gift.objects.filter(user=request.user, opened=True).count()
+
+        # Get the number of gifts received everyday for the last 7 days
+        days = 7
+        now = timezone.now()
+        gift_sent_counts = []
+        gift_received_counts = []
+
+        for i in range(days):
+            start_date = now - timedelta(days=i+1)
+            end_date = now - timedelta(days=i)
+            sent_count = Gift.objects.filter(box_model__user=request.user, created_at__range=(start_date, end_date)).count()
+            received_count = Gift.objects.filter(box_model__receiver_email=request.user.email, created_at__range=(start_date, end_date)).count()
+            gift_sent_counts.append(sent_count)
+            gift_received_counts.append(received_count)
+
+        gift_sent_counts.reverse()
+        gift_received_counts.reverse()
+
+        context = {
+            "total_boxes_owned": total_boxes_owned,
+            "boxes_received": boxes_received,
+            "gift_boxes_opened": gift_boxes_opened,
+            "weekdays": list(range(1, days+1)),
+            "gifts_given": gift_sent_counts,
+            "gifts_received": gift_received_counts,
+        }
+
+        serializer = DashboardSerializer(context)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+dashboard_api_view = DashboardView.as_view()
 
 
 class SetupGiftBoxView(generics.GenericAPIView):
