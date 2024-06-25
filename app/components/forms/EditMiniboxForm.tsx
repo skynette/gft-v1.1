@@ -1,4 +1,4 @@
-import { GiftBoxValues } from "@/setup-box/page";
+import { GiftBoxValues } from "@/(routes)/dashboard/(gifter_dashboard)/gifter/setup-box/page";
 
 const EditMiniboxForm = ({ onPrev, onNext, data }: {
     onPrev: (data: GiftBoxValues) => void,

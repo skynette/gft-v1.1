@@ -80,16 +80,16 @@ export default function Login() {
             // Handle successful login
             toast.success('Successfully signed in');
             console.log('Successfully signed in');
-            router.push('/');
+            router.push('/dashboard');
         }
     };
 
     const handleGoogleSignIn = async () => {
-        signIn('google', { callbackUrl: '/' });
+        signIn('google', { callbackUrl: '/dashboard' });
     };
 
     const handleAppleSignIn = async () => {
-        signIn('apple', { callbackUrl: '/' });
+        signIn('apple', { callbackUrl: '/dashboard' });
     };
 
     return (

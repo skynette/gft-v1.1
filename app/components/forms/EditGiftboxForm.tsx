@@ -3,7 +3,7 @@
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import FormikControl from '../form-controls/FormikControl';
-import { GiftBoxValues } from '@/setup-box/page';
+import { GiftBoxValues } from '@/(routes)/dashboard/(gifter_dashboard)/gifter/setup-box/page';
 import { Button } from '../ui/button';
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import { ArrowRight } from 'lucide-react';

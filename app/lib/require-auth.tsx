@@ -1,4 +1,4 @@
-// lib/withAuth.tsx
+'use client'
 
 import { useEffect, ComponentType } from 'react';
 import { useSession } from 'next-auth/react';

@@ -6,6 +6,7 @@ import { queryClientOptions } from './utils';
 import { SessionProvider } from 'next-auth/react';
 import { Toaster } from 'sonner';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import ThemeProvider from '@/components/layout/ThemeToggle/theme-provider';
 
 function makeQueryClient() {
   return new QueryClient({
@@ -34,9 +35,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SessionProvider>
         {children}
       </SessionProvider>
+      </ThemeProvider>
       <Toaster richColors position='top-right' />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
