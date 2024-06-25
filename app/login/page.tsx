@@ -9,9 +9,9 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { ArrowRightCircle } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { OTPInput, REGEXP_ONLY_DIGITS } from 'input-otp';
 import * as Yup from 'yup';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { ErrorMessage, Field, FieldProps, Form, Formik } from 'formik';
 import FormikControl from '@/components/form-controls/FormikControl';
 import useToken from '@/lib/hooks/useToken';
 import { toast } from 'sonner';
@@ -21,7 +21,7 @@ interface UserInput {
     email: string
 }
 
-interface OTPToken {
+interface OTPInput {
     otp: string
 }
 
@@ -30,12 +30,12 @@ const validationSchema = Yup.object().shape({
 });
 
 const otpTokenValidationSchema = Yup.object().shape({
-    otp: Yup.string().min(6, 'Your one-time password must be 6 characters.')
+    otp: Yup.string().required('Please enter your otp').length(6, 'Your one-time pin must be 6 characters.')
 });
 
 export default function Login() {
     const [emailInitialValue, setEmailInitialValue] = useState<UserInput>({ email: '' });
-    const [token] = useState<OTPToken>({ otp: '' });
+    const otpInitialValue: OTPInput = { otp: '' };
     const [stage, setStage] = useState<'request' | 'verify'>('verify');
     const router = useRouter();
 
@@ -93,11 +93,11 @@ export default function Login() {
     };
 
     return (
-        <div className='container h-screen grid grid-cols-[2fr_1.5fr]'>
-            <div className='flex flex-col items-center bg-blue-500 py-10'>
+        <div className='6xl:container h-screen grid grid-cols-[2fr_1.5fr]'>
+            <div className='flex flex-col justify-center items-center bg-blue-500 py-10'>
                 <Image src='/asset-1.png' width={200} height={200} alt='' />
                 <p className='mt-4 text-white font-bold text-4xl tracking-wider'>GFT</p>
-                <p className='text-white tracking-wide font-semibold text-2xl'>Redefining the <span className='underline underline-offset-1 italic'>gift giving experience!</span></p>
+                <p className='text-white tracking-wide font-semibold text-2xl'>Redefining the <span className='underline underline-offset-1 italic'>gifting experience!</span></p>
                 <p className='inline-flex items-center text-white mt-5'>
                     Sign in to get started!
                     <ArrowRightCircle size={40} strokeWidth={1} className='ml-2' />
@@ -105,7 +105,7 @@ export default function Login() {
             </div>
 
             {stage === 'request' ?
-                <div className='w-full flex flex-col justify-center items-center py-10 px-16'>
+                <div className='w-full bg-gray-100 flex flex-col justify-center items-center py-10 px-16'>
                     <h1 className='font-bold text-4xl tracking-wider mt-10'>GFT</h1>
                     <p className='text-gray-700 font-medium text-lg tracking-wide mt-5'>Sign in to continue!</p>
                     <Formik
@@ -148,38 +148,36 @@ export default function Login() {
                 </div>
                 :
                 (
-                    <div className='w-full flex flex-col justify-center items-center py-10 px-16'>
+                    <div className='w-full bg-gray-100 flex flex-col justify-center items-center py-10 px-16'>
                         <h1 className='font-bold text-4xl tracking-wider mt-10'>GFT</h1>
                         <p className='text-gray-700 text-center font-medium text-lg tracking-wide mt-5'>Please check <span className='text-blue-500'>{emailInitialValue.email}</span> for the token sent!</p>
                         <Formik
-                            initialValues={token}
+                            initialValues={otpInitialValue}
                             validationSchema={otpTokenValidationSchema}
                             onSubmit={(field) => handleSignIn(field.otp)}
                             className="flex flex-col items-center w-full mt-10 space-y-1">
                             {
-                                ({ setFieldValue, errors }) => (
+                                () => (
                                     <Form className='w-full flex flex-col items-center'>
                                         <Field name='otp'>
                                             {
-                                                () => (
-                                                    <>
-                                                        <InputOTP onChange={(e) => setFieldValue('otp', e)} maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
-                                                            <InputOTPGroup>
-                                                                <InputOTPSlot index={0} />
-                                                                <InputOTPSlot index={1} />
-                                                                <InputOTPSlot index={2} />
-                                                                <InputOTPSlot index={3} />
-                                                                <InputOTPSlot index={4} />
-                                                                <InputOTPSlot index={5} />
-                                                            </InputOTPGroup>
-                                                        </InputOTP>
-                                                        <ErrorMessage name='otp' render={msg => <p>{errors.otp}</p>} />
-                                                    </>
+                                                ({ form }: FieldProps) => (
+                                                    <InputOTP onChange={e => form.setFieldValue('otp', e)} maxLength={6} pattern={REGEXP_ONLY_DIGITS}>
+                                                        <InputOTPGroup>
+                                                            <InputOTPSlot index={0} />
+                                                            <InputOTPSlot index={1} />
+                                                            <InputOTPSlot index={2} />
+                                                            <InputOTPSlot index={3} />
+                                                            <InputOTPSlot index={4} />
+                                                            <InputOTPSlot index={5} />
+                                                        </InputOTPGroup>
+                                                    </InputOTP>
                                                 )
                                             }
-
                                         </Field>
-                                        <p className='text-gray-600 text-xs'>Enter your one-time password.</p>
+
+                                        <p className='text-gray-600 text-xs mt-4'>Enter your one-time password.</p>
+                                        <ErrorMessage name='otp' render={msg => <p className='text-xs text-red-500'>{msg}</p>} />
                                         <Button type='submit' className='w-full !mt-8 text-white'>Continue</Button>
                                     </Form>
                                 )
