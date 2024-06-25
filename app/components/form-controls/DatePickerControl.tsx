@@ -2,17 +2,15 @@
 
 import { ErrorMessage, Field, FieldProps } from 'formik';
 import { FC } from 'react';
-import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { DatePicker } from '../ui/date-picker';
 
-interface InputProps {
+interface DatePickerProps {
     name: string;
     label: string;
-    type: string;
-    placeholder: string;
 }
 
-const InputControl: FC<InputProps> = ({ name, label, type, placeholder }) => {
+const DatePickerControl: FC<DatePickerProps> = ({ name, label }) => {
     return (
         <div>
             <Field name={name}>
@@ -20,8 +18,7 @@ const InputControl: FC<InputProps> = ({ name, label, type, placeholder }) => {
                     (props: FieldProps) => (
                         <div className='flex flex-col space-y-2'>
                             <Label htmlFor={name} className='font-normal text-sm'>{label}</Label>
-                            <Input type={type} className='rounded-lg w-full text-sm bg-white'
-                                id={name} placeholder={placeholder} {...props.field} />
+                            <DatePicker date={props.field.value} onChange={(e) => props.form.setFieldValue(name, e)} />
                         </div>
                     )
                 }
@@ -31,4 +28,4 @@ const InputControl: FC<InputProps> = ({ name, label, type, placeholder }) => {
     )
 }
 
-export default InputControl;
+export default DatePickerControl;

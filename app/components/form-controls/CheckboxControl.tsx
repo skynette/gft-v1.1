@@ -2,26 +2,23 @@
 
 import { ErrorMessage, Field, FieldProps } from 'formik';
 import { FC } from 'react';
-import { Input } from '../ui/input';
 import { Label } from '../ui/label';
+import { Checkbox } from '../ui/checkbox';
 
-interface InputProps {
+interface CheckboxProps {
     name: string;
     label: string;
-    type: string;
-    placeholder: string;
 }
 
-const InputControl: FC<InputProps> = ({ name, label, type, placeholder }) => {
+const CheckboxControl: FC<CheckboxProps> = ({ name, label }) => {
     return (
         <div>
             <Field name={name}>
                 {
                     (props: FieldProps) => (
-                        <div className='flex flex-col space-y-2'>
+                        <div className='flex items-center space-x-2'>
+                            <Checkbox id={name} checked={props.field.checked} onCheckedChange={(e) => props.form.setFieldValue(name, e.valueOf())} />
                             <Label htmlFor={name} className='font-normal text-sm'>{label}</Label>
-                            <Input type={type} className='rounded-lg w-full text-sm bg-white'
-                                id={name} placeholder={placeholder} {...props.field} />
                         </div>
                     )
                 }
@@ -31,4 +28,4 @@ const InputControl: FC<InputProps> = ({ name, label, type, placeholder }) => {
     )
 }
 
-export default InputControl;
+export default CheckboxControl;
