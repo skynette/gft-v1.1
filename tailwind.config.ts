@@ -12,6 +12,7 @@ module.exports = {
     container: {
       screens: {
         '2xl': '1536px',
+        '6xl': '2000px',
       },
       center: true,
     },
