@@ -7,7 +7,7 @@ import { FaApple } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { ArrowRightCircle } from 'lucide-react';
+import { ArrowRightCircle, Loader } from 'lucide-react';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { OTPInput, REGEXP_ONLY_DIGITS } from 'input-otp';
 import * as Yup from 'yup';
@@ -36,7 +36,7 @@ const otpTokenValidationSchema = Yup.object().shape({
 export default function Login() {
     const [emailInitialValue, setEmailInitialValue] = useState<UserInput>({ email: '' });
     const otpInitialValue: OTPInput = { otp: '' };
-    const [stage, setStage] = useState<'request' | 'verify'>('verify');
+    const [stage, setStage] = useState<'request' | 'verify'>('request');
     const router = useRouter();
 
     const { mutate: mutateToken, isPending, isSuccess } = useToken({
@@ -46,7 +46,7 @@ export default function Login() {
         }
     });
 
-    const { mutate: mutateVerifyToken } = useVerifyToken({
+    const { mutate: mutateVerifyToken, isPending: isVerifyPending } = useVerifyToken({
         onSuccess() {
             toast.success('Email has been verified successfully!');
         },
@@ -125,7 +125,10 @@ export default function Login() {
                                         placeholder='user@test.com'
                                         control='input' />
 
-                                    <Button type='submit' className='w-full !mt-8 text-white'>Continue</Button>
+                                    <Button type='submit' disabled={isPending} className='flex items-center w-full !mt-8 text-white'>
+                                        {isPending && <Loader className='h-5 w-5 mr-2 animate-spin'/>}
+                                        <p>Continue</p>
+                                    </Button>
                                 </Form>
                             )
                         }
