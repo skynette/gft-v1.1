@@ -113,11 +113,10 @@ export default function Login() {
                         onSubmit={(field) => {
                             handleRequestToken(field.email);
                         }}
-                        validationSchema={validationSchema}
-                        className="flex flex-col w-full mt-10 space-y-1">
+                        validationSchema={validationSchema}>
                         {
                             () => (
-                                <Form className='w-full'>
+                                <Form className='w-full flex flex-col mt-10 space-y-1'>
                                     <FormikControl
                                         type='email'
                                         name='email'
@@ -154,11 +153,10 @@ export default function Login() {
                         <Formik
                             initialValues={otpInitialValue}
                             validationSchema={otpTokenValidationSchema}
-                            onSubmit={(field) => handleSignIn(field.otp)}
-                            className="flex flex-col items-center w-full mt-10 space-y-1">
+                            onSubmit={(field) => handleSignIn(field.otp)}>
                             {
                                 () => (
-                                    <Form className='w-full flex flex-col items-center'>
+                                    <Form className='w-full flex flex-col items-center mt-10 space-y-1 '>
                                         <Field name='otp'>
                                             {
                                                 ({ form }: FieldProps) => (
