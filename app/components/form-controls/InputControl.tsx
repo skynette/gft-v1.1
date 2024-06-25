@@ -1,3 +1,5 @@
+'use client';
+
 import { ErrorMessage, Field, FieldProps } from 'formik';
 import { FC } from 'react';
 import { Input } from '../ui/input';

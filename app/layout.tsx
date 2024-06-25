@@ -4,7 +4,7 @@ import Providers from "./lib/providers";
 
 const epilogue = Epilogue({
     subsets: ["latin"],
-    display: "block",
+    display: "fallback",
 });
 
 export const metadata = {
