@@ -30,6 +30,7 @@
     "eslint-config-next": "13.4.1",
     "formik": "^2.4.6",
     "input-otp": "^1.2.4",
+    "libphonenumber-js": "^1.11.4",
     "lucide-react": "^0.396.0",
     "nanoid": "^5.0.7",
     "next": "13.4.1",
