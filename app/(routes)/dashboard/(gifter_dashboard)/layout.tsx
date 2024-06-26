@@ -1,21 +1,22 @@
+import GifterHeader from '@/components/layout/header-gifter';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'GFT - Gifter',
-  description: ''
+    title: 'GFT - Gifter',
+    description: ''
 };
 
 export default function DashboardLayout({
-  children
+    children
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return (
-    <>
-      <div className="flex h-screen overflow-hidden">
-        layout for gifter 
-        <main className="flex-1 overflow-hidden pt-16">{children}</main>
-      </div>
-    </>
-  );
+    return (
+        <>
+            <GifterHeader />
+            <div className="h-screen overflow-hidden">
+                <main className="overflow-hidden pt-16">{children}</main>
+            </div>
+        </>
+    );
 }

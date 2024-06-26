@@ -12,10 +12,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import requireAuth from '@/lib/require-auth';
 import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 function UserNav() {
-    const { data: session } = useSession();
-    console.log({ session })
+    const router = useRouter()
+    const { data: session, status } = useSession();
+    console.log({ session, status })
     if (session) {
         return (
             <DropdownMenu>
@@ -46,13 +48,9 @@ function UserNav() {
                         <DropdownMenuItem>
                             Profile
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            Billing
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => router.push('/dashboard/gifter/settings')}>
                             Settings
                         </DropdownMenuItem>
-                        <DropdownMenuItem>New Team</DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => signOut()}>
