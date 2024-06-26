@@ -14,8 +14,8 @@ export default function DashboardLayout({
     return (
         <>
             <GifterHeader />
-            <div className="h-screen overflow-hidden">
-                <main className="overflow-hidden pt-16">{children}</main>
+            <div className="">
+                <main className="pt-16">{children}</main>
             </div>
         </>
     );

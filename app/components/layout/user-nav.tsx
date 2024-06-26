@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import requireAuth from '@/lib/require-auth';
 import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 function UserNav() {
@@ -46,14 +47,14 @@ function UserNav() {
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                         <DropdownMenuItem>
-                            Profile
+                            <Link href={'/dashboard/gifter/settings/account'}>Profile</Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => router.push('/dashboard/gifter/settings')}>
-                            Settings
+                        <DropdownMenuItem>
+                            <Link href={'/dashboard/gifter/settings'}>Settings</Link>
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()}>
+                    <DropdownMenuItem onClick={() => signOut()} className='hover:cursor-pointer'>
                         Log out
                     </DropdownMenuItem>
                 </DropdownMenuContent>

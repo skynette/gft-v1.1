@@ -2,6 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { CellAction } from './cell-action'
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 export type GiftBoxColumn = {
     id: string
@@ -12,7 +14,17 @@ export type GiftBoxColumn = {
 export const columns: ColumnDef<GiftBoxColumn>[] = [
     {
         accessorKey: "name",
-        header: "Name",
+        header: ({ column }) => {
+            return (
+                <div
+                className="flex cursor-pointer w-fit"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Name
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </div>
+            )
+        },
     },
     {
         accessorKey: "createdAt",
