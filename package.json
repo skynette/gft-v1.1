@@ -23,6 +23,7 @@
     "@radix-ui/react-toast": "^1.2.1",
     "@radix-ui/react-tooltip": "^1.1.1",
     "@tanstack/react-query-devtools": "^5.45.1",
+    "@tanstack/react-table": "^8.17.3",
     "@total-typescript/ts-reset": "^0.5.1",
     "@types/node": "20.1.0",
     "@types/react-dom": "18.2.4",
