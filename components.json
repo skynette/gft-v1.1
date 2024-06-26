@@ -15,6 +15,7 @@
     "utils": "@/lib/utils",
     "constants": "@/constants",
     "types": "@/types",
-    "hooks": "@/lib/hooks"
+    "hooks": "@/lib/hooks",
+    "(routes)": "@/routes"
   }
 }

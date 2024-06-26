@@ -3,10 +3,10 @@
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import FormikControl from '../form-controls/FormikControl';
-import { GiftBoxValues } from '@/(routes)/dashboard/(gifter_dashboard)/gifter/setup-box/page';
 import { Button } from '../ui/button';
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import { ArrowRight } from 'lucide-react';
+import { GiftBoxValues } from '@/(routes)/dashboard/(gifter_dashboard)/gifter/gift-boxes/[box_id]/setup/page';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Enter the title').min(10, 'Title must be at least 10 characters'),
