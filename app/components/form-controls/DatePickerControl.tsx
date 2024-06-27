@@ -19,11 +19,12 @@ const DatePickerControl: FC<DatePickerProps> = ({ name, label }) => {
                         <div className='flex flex-col space-y-2'>
                             <Label htmlFor={name} className='font-normal text-sm'>{label}</Label>
                             <DatePicker date={props.field.value} onChange={(e) => props.form.setFieldValue(name, e)} />
+
+                            {props.form.errors[name] && <p className='text-red-500 text-xs'>{props.form.errors[name]}</p>}
                         </div>
                     )
                 }
             </Field>
-            <ErrorMessage name={name} render={msg => <small className='text-red-500 text-xs'>{msg}</small>} />
         </div>
     )
 }

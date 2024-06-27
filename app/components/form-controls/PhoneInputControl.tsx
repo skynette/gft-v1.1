@@ -21,7 +21,7 @@ const PhoneInputControl: FC<PhoneInputProps> = ({ name, label, type, placeholder
                         <div className='flex flex-col space-y-2'>
                             <Label htmlFor={name} className='font-normal text-sm'>{label}</Label>
                             <PhoneInput type={type} className='rounded-lg w-full text-sm bg-white'
-                                id={name} placeholder={placeholder} onChange={(e) => props.form.setFieldValue(name, e)} />
+                                id={name} name={name} value={props.field.value} placeholder={placeholder} onChange={(e) => props.form.setFieldValue(name, e)} />
                         </div>
                     )
                 }

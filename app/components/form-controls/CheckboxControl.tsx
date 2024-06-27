@@ -17,7 +17,7 @@ const CheckboxControl: FC<CheckboxProps> = ({ name, label }) => {
                 {
                     (props: FieldProps) => (
                         <div className='flex items-center space-x-2'>
-                            <Checkbox id={name} checked={props.field.checked} onCheckedChange={(e) => props.form.setFieldValue(name, e.valueOf())} />
+                            <Checkbox id={name} checked={props.field.value} onCheckedChange={(e) => props.form.setFieldValue(name, e.valueOf())} />
                             <Label htmlFor={name} className='font-normal text-sm'>{label}</Label>
                         </div>
                     )

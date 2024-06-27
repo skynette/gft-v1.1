@@ -1,12 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
 import EditGiftboxForm from '@/components/forms/EditGiftboxForm';
 import EditMiniboxForm from '@/components/forms/EditMiniboxForm';
 import requireAuth from '@/lib/require-auth';
 import useGetGiftbox from '@/lib/hooks/useGetGiftbox';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import useGetMinibox from '@/lib/hooks/useGetMinibox';
+import useSetMiniBox from '@/lib/hooks/useSetMinibox';
+import { toast } from 'sonner';
+
+export interface Minibox {
+    id: string;
+    title: string;
+    desc: string;
+    openDate: string;
+}
 
 export interface GiftBoxValues {
     title: string;
@@ -14,32 +24,59 @@ export interface GiftBoxValues {
     receiverPhone: string;
     openDate: string;
     open_after_a_day: boolean;
+    miniboxes: Minibox[];
 }
 
 const SetupBox = () => {
+    const boxId = useParams().box_id;
+    const router = useRouter();
+
     const steps = 2;
     const label = ['Edit receiver details', 'Edit mini boxes details']
     const [currentStep, setCurrentStep] = useState(0);
     const width = `${(100 / (steps - 1)) * (currentStep)}%`;
 
-    const boxId = useParams().box_id;
 
-    const { data: giftBox, } = useGetGiftbox(boxId);
-    console.log(giftBox);
+    const { data: giftBox } = useGetGiftbox(boxId);
+    const { data: miniBox, } = useGetMinibox(boxId);
+    const { mutate, isPending } = useSetMiniBox({
+        boxId, onSuccess() {
+            toast.success('Gifts updated successfully.');
+            router.replace('/dashboard/gifter');
+        },
+    });
 
     const [data, setData] = useState<GiftBoxValues>({
         title: '',
         receiverName: '',
         receiverPhone: '',
         openDate: '',
-        open_after_a_day: false
+        open_after_a_day: false,
+        miniboxes: [],
     });
+
+    useEffect(() => {
+        setData(prev => ({
+            ...prev,
+            title: giftBox?.title ?? '',
+            receiverName: giftBox?.receiver_name ?? '',
+            receiverPhone: giftBox?.receiver_phone ?? '',
+            openDate: giftBox?.open_date ?? '',
+            open_after_a_day: giftBox?.open_after_a_day ?? false,
+        }));
+
+    }, [giftBox]);
+
+    useEffect(() => {
+        const miniboxes = miniBox?.map(box => ({ id: box.id, title: box.gift_title, desc: box.gift_description, openDate: box.open_date })) ?? [];
+        setData(prev => ({ ...prev, miniboxes }));
+    }, [miniBox])
 
     const handleNextStep = (newData: GiftBoxValues, final: boolean) => {
         setData(prev => ({ ...prev, ...newData }));
 
         if (final) {
-            console.log(newData);
+            mutate(newData.miniboxes);
             return;
         }
 
@@ -54,7 +91,7 @@ const SetupBox = () => {
     const forms = [
         <EditGiftboxForm key={nanoid()} onNext={handleNextStep} data={data} />,
         <EditMiniboxForm key={nanoid()} onPrev={handlePrevStep} onNext={handleNextStep}
-            data={data} />
+            data={data} isPending={isPending} />
     ];
 
     return (
