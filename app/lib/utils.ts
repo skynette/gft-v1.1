@@ -1,5 +1,5 @@
+import { QueryClientConfig } from "@tanstack/react-query";
 import { type ClassValue, clsx } from "clsx"
-import { QueryClientConfig } from "react-query";
 import { twMerge } from "tailwind-merge"
 
 export const queryClientOptions: QueryClientConfig = {

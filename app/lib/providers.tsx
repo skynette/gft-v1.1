@@ -1,6 +1,6 @@
 'use client'
 
-import { MutationCache, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { queryClientOptions } from './utils';
 import { SessionProvider } from 'next-auth/react';
@@ -12,8 +12,8 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries:
-        { ...queryClientOptions.defaultOptions?.mutations },
-      mutations: { ...queryClientOptions.defaultOptions?.queries }
+        { ...queryClientOptions.defaultOptions?.queries },
+      mutations: { ...queryClientOptions.defaultOptions?.mutations }
     },
   })
 }
@@ -36,9 +36,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <SessionProvider>
-        {children}
-      </SessionProvider>
+        <SessionProvider>
+          {children}
+        </SessionProvider>
       </ThemeProvider>
       <Toaster richColors position='top-right' />
       <ReactQueryDevtools initialIsOpen={false} />
