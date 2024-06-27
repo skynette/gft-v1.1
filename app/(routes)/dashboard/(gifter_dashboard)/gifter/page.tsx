@@ -1,8 +1,11 @@
+'use client';
+
 import { giftBoxData } from "@/constants/data";
 import GiftBoxTableArea from "../components/table-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Overview } from "@/components/overview";
 import { DollarSign, Gift, LucideIcon, PackageOpen, User, UsersRound } from "lucide-react";
+import useGetDashboardMetrics from "@/lib/hooks/useGetDashboardMetrics";
 
 const GiftInfo = ({ Icon, title, value, rate }: { title: string, Icon: LucideIcon, value: string, rate: string }) => {
     return (
@@ -23,7 +26,9 @@ const GiftInfo = ({ Icon, title, value, rate }: { title: string, Icon: LucideIco
     )
 }
 
-const GifterDashboard = async () => {
+const GifterDashboard = () => {
+    const { data } = useGetDashboardMetrics();
+
     return (
         <div className="container flex-col">
 

@@ -1,10 +1,6 @@
-import GifterHeader from '@/components/layout/header-gifter';
-import type { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-    title: 'GFT - Gifter',
-    description: ''
-};
+import GifterHeader from '@/components/layout/header-gifter';
 
 export default function DashboardLayout({
     children
