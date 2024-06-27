@@ -39,15 +39,14 @@ const EditGiftboxForm = ({ onNext, data }: {
     });
 
     const handleSubmit = (values: GiftBoxValues) => {
-        // mutate({
-        //     title: values.title,
-        //     receiver_name: values.receiverName,
-        //     receiver_phone: values.receiverPhone,
-        //     open_after_a_day: values.open_after_a_day,
-        //     open_date: values.openDate,
-        //     is_setup: true,
-        // });
-        onNext(data, false);
+        mutate({
+            title: values.title,
+            receiver_name: values.receiverName,
+            receiver_phone: values.receiverPhone,
+            open_after_a_day: values.open_after_a_day,
+            open_date: values.openDate,
+            is_setup: true,
+        });
     };
 
     return (

@@ -93,8 +93,8 @@ const EditMiniboxForm = ({ onPrev, onNext, data, isPending }: {
                                             }
                                         </div>
                                     )
-                                }}>
-                            </FieldArray>
+                                }}
+                            />
                             {typeof errors.miniboxes === 'string' && <p className="!mt-1 text-red-500 text-sm">{errors.miniboxes}</p>}
 
                             <div className="flex space-x-2">
