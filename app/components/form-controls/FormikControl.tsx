@@ -3,6 +3,7 @@
 import CheckboxControl from "./CheckboxControl";
 import DatePickerControl from "./DatePickerControl";
 import InputControl from "./InputControl";
+import InputTextarea from "./InputTextArea";
 import PhoneInputControl from "./PhoneInputControl";
 
 interface ControlProps {
@@ -21,6 +22,7 @@ export default function FormikControl({ control, ...rest }: ControlProps) {
         case 'phone-input': return <PhoneInputControl {...rest} />
         case 'date-picker': return <DatePickerControl {...rest} />
         case 'checkbox': return <CheckboxControl {...rest} />
+        case 'textarea': return <InputTextarea {...rest} />
         default: return null
     }
 }

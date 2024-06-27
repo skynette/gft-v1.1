@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import EditGiftboxForm from '@/components/forms/EditGiftboxForm';
 import EditMiniboxForm from '@/components/forms/EditMiniboxForm';
+import requireAuth from '@/lib/require-auth';
+import useGetGiftbox from '@/lib/hooks/useGetGiftbox';
+import { useParams } from 'next/navigation';
 
 export interface GiftBoxValues {
     title: string;
@@ -17,7 +20,12 @@ const SetupBox = () => {
     const steps = 2;
     const label = ['Edit receiver details', 'Edit mini boxes details']
     const [currentStep, setCurrentStep] = useState(0);
-    const width = `${(100 / (steps - 1)) * (currentStep)}%`
+    const width = `${(100 / (steps - 1)) * (currentStep)}%`;
+
+    const boxId = useParams().box_id;
+
+    const { data: giftBox, } = useGetGiftbox(boxId);
+    console.log(giftBox);
 
     const [data, setData] = useState<GiftBoxValues>({
         title: '',
@@ -30,7 +38,10 @@ const SetupBox = () => {
     const handleNextStep = (newData: GiftBoxValues, final: boolean) => {
         setData(prev => ({ ...prev, ...newData }));
 
-        // if (final) {}
+        if (final) {
+            console.log(newData);
+            return;
+        }
 
         setCurrentStep(prev => ++prev);
     }
@@ -82,4 +93,4 @@ const SetupBox = () => {
     )
 }
 
-export default SetupBox;
+export default requireAuth(SetupBox);

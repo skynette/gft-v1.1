@@ -14,9 +14,7 @@ export default function DashboardLayout({
     return (
         <>
             <GifterHeader />
-            <div className="">
-                <main className="pt-16">{children}</main>
-            </div>
+            <main className="pt-16">{children}</main>
         </>
     );
 }
