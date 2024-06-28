@@ -41,7 +41,7 @@ import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recha
 //   }
 // ];
 
-export function Overview({ data }: { data: GiftOverview[] }) {
+export function Overview({ data }: { data?: GiftOverview[] }) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
