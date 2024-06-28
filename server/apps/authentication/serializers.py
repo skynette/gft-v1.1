@@ -129,7 +129,7 @@ class SocialAuthSerializer(serializers.Serializer):
     
     
 class UserUpdateSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(required=False)
+    image = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = User
