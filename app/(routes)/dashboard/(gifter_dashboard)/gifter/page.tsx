@@ -4,10 +4,18 @@ import { giftBoxData } from "@/constants/data";
 import GiftBoxTableArea from "../components/table-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Overview } from "@/components/overview";
-import { DollarSign, Gift, LucideIcon, PackageOpen, User, UsersRound } from "lucide-react";
+import { Gift, Loader, LucideIcon, PackageOpen, UsersRound } from "lucide-react";
 import useGetDashboardMetrics from "@/lib/hooks/useGetDashboardMetrics";
+import useGiftOverview from "@/lib/hooks/useGiftOverview";
+import { GiftBoxColumn } from "../components/columns";
 
-const GiftInfo = ({ Icon, title, value, rate }: { title: string, Icon: LucideIcon, value: string, rate: string }) => {
+export interface GiftOverview {
+    name: string;
+    totalGiftSent: number;
+    totalGiftReceived: number;
+}
+
+const GiftInfo = ({ Icon, title, value, rate }: { title: string, Icon: LucideIcon, value: number, rate: string }) => {
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -27,37 +35,47 @@ const GiftInfo = ({ Icon, title, value, rate }: { title: string, Icon: LucideIco
 }
 
 const GifterDashboard = () => {
-    const { data } = useGetDashboardMetrics();
+    const days = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun']
+
+    const { data, isPending } = useGetDashboardMetrics();
+    const barChartData: GiftOverview[] = data?.weekdays.map((day, index) => ({ name: days[index], totalGiftSent: data.gifts_given[index], totalGiftReceived: data.gifts_received[index] })) ?? [];
+
+    const { data: gifts } = useGiftOverview();
+    const giftSent: GiftBoxColumn[] = gifts?.at(0)?.data?.map((gift) => ({ id: gift.id, name: gift.title, createdAt: gift.created_at })) ?? [];
+    const giftReceived: GiftBoxColumn[] = gifts?.at(1)?.data?.map((gift) => ({ id: gift.id, name: gift.title, createdAt: gift.created_at })) ?? [];
+
+    console.log(giftSent)
+
+    if (isPending)
+        return (
+            <div className="w-screen h-screen flex flex-col items-center justify-center">
+                <Loader className="animate-spin w-12 h-12" />
+                <p className="font-normal text-lg">Fetching dashboard metrics...</p>
+            </div>
+        )
 
     return (
         <div className="container flex-col">
 
             <div className="grid gap-4 my-8 md:grid-cols-2 lg:grid-cols-4">
                 <GiftInfo
-                    Icon={DollarSign}
-                    title="Total Boxes Sent"
-                    value="45"
+                    Icon={Gift}
+                    title="Total Giftboxes Owned"
+                    value={data?.total_boxes_owned ?? 0}
                     rate="+20.1"
                 />
 
                 <GiftInfo
                     Icon={UsersRound}
-                    title="Gifts sent"
-                    value="+2350"
-                    rate="+180.1"
-                />
-
-                <GiftInfo
-                    Icon={Gift}
-                    title="Gifts opened"
-                    value="+2350"
+                    title="Total Boxes Received"
+                    value={data?.boxes_received ?? 0}
                     rate="+180.1"
                 />
 
                 <GiftInfo
                     Icon={PackageOpen}
-                    title="Boxes opened"
-                    value="+2350"
+                    title="Total Boxes Opened"
+                    value={data?.gift_boxes_opened ?? 0}
                     rate="+180.1"
                 />
             </div>
@@ -68,13 +86,14 @@ const GifterDashboard = () => {
                     <CardTitle>Overview</CardTitle>
                 </CardHeader>
                 <CardContent className="">
-                    <Overview />
+                    <Overview data={barChartData} />
                 </CardContent>
             </Card>
 
             {/* table section */}
             <div className="flex-1 space-y-4 pt-6">
-                <GiftBoxTableArea data={giftBoxData} />
+                <GiftBoxTableArea title={`Gift boxes sent (${giftSent.length ?? 0})`} data={giftSent} />
+                <GiftBoxTableArea title={`Gift boxes received (${giftReceived.length ?? 0})`} data={giftReceived} />
             </div>
         </div>
     );

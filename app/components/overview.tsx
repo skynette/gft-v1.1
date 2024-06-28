@@ -1,71 +1,47 @@
 'use client';
 
+import { GiftOverview } from '@/(routes)/dashboard/(gifter_dashboard)/gifter/page';
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-const data = [
-  {
-    name: 'Jan',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Feb',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Mar',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Apr',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'May',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Jun',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Jul',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Aug',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Sep',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Oct',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Nov',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  },
-  {
-    name: 'Dec',
-    totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
-    totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
-  }
-];
+// const data = [
+//   {
+//     name: 'Mon',
+//     totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
+//     totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
+//   },
+//   {
+//     name: 'Tue',
+//     totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
+//     totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
+//   },
+//   {
+//     name: 'Wed',
+//     totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
+//     totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
+//   },
+//   {
+//     name: 'Thur',
+//     totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
+//     totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
+//   },
+//   {
+//     name: 'Fri',
+//     totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
+//     totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
+//   },
+//   {
+//     name: 'Sat',
+//     totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
+//     totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
+//   },
+//   {
+//     name: 'Sun',
+//     totalGiftSent: Math.floor(Math.random() * 5000) + 1000,
+//     totalGiftReceived: Math.floor(Math.random() * 5000) + 1000,
+//   }
+// ];
 
-export function Overview() {
+export function Overview({ data }: { data: GiftOverview[] }) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>
@@ -73,15 +49,17 @@ export function Overview() {
           dataKey="name"
           stroke="#888888"
           fontSize={14}
-          tickLine={false}
-          axisLine={false}
+          tickLine={true}
+          axisLine={true}
         />
+
         <YAxis
           stroke="#888888"
           fontSize={14}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          tickLine={true}
+          axisLine={true}
+          allowDecimals={false}
+          tickFormatter={(value) => `${value}`}
         />
         <Tooltip />
         <Bar dataKey="totalGiftSent" name="Total gift sent" fill="#adfa1d" radius={[4, 4, 0, 0]} />

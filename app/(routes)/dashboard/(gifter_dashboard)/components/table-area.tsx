@@ -6,16 +6,17 @@ import { Separator } from "@/components/ui/separator";
 import { GiftBoxColumn, columns } from "./columns";
 
 interface GiftBoxTableAreaProps {
+    title: string;
     data: GiftBoxColumn[]
 }
 
-const GiftBoxTableArea = ({ data }: GiftBoxTableAreaProps) => {
+const GiftBoxTableArea = ({ title, data }: GiftBoxTableAreaProps) => {
 
     return (
         <>
             <div className="flex items-center justify-between">
                 <Heading
-                    title={`Gift Boxes (${data.length})`}
+                    title={title}
                     description="Manage your Gift Boxes here."
                 />
             </div>

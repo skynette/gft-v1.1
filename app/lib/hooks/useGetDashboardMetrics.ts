@@ -9,7 +9,8 @@ export default function useGetDashboardMetrics() {
 
     const { data, isPending, isSuccess, isError, error } = useQuery<DashboardResponse, AxiosError>({
         queryKey: ['dashboard-metrics'],
-        queryFn: () => getDashboardMetrics(session.data?.accessToken ?? '')
+        queryFn: () => getDashboardMetrics(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
     });
 
     return { data, isPending, isSuccess, isError, error };
