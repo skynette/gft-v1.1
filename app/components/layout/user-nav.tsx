@@ -47,9 +47,6 @@ function UserNav() {
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                         <DropdownMenuItem>
-                            <Link href={'/dashboard/gifter/settings/account'}>Profile</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
                             <Link href={'/dashboard/gifter/settings'}>Settings</Link>
                         </DropdownMenuItem>
                     </DropdownMenuGroup>

@@ -5,6 +5,7 @@ import DatePickerControl from "./DatePickerControl";
 import InputControl from "./InputControl";
 import InputTextarea from "./InputTextArea";
 import PhoneInputControl from "./PhoneInputControl";
+import SelectControl from "./SelectControl";
 
 interface ControlProps {
     name: string;
@@ -23,6 +24,7 @@ export default function FormikControl({ control, ...rest }: ControlProps) {
         case 'date-picker': return <DatePickerControl {...rest} />
         case 'checkbox': return <CheckboxControl {...rest} />
         case 'textarea': return <InputTextarea {...rest} />
+        case 'select': return <SelectControl {...rest} />
         default: return null
     }
 }

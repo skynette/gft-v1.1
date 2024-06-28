@@ -1,14 +1,11 @@
 import axiosInstance from "@/lib/axiosInstance";
-import { TokenRequest } from "@/lib/response-type/auth/TokenRequest";
-import { TokenResponse } from "@/lib/response-type/auth/TokenResponse";
-import { VerifyTokenRequest } from "@/lib/response-type/auth/VerifyTokenRequest";
+import { AccountRequest } from "@/lib/response-type/auth/AccountRequest";
 
-export const getToken = async (req: TokenRequest): Promise<TokenResponse> => {
-    const response = await axiosInstance.post('/auth/email/', { ...req });
-    return response.data;
-}
-
-export const verifyToken = async (req: VerifyTokenRequest): Promise<VerifyTokenRequest> => {
-    const response = await axiosInstance.post('/auth/email/', { ...req });
+export const updateProfile = async (token: string, req: AccountRequest): Promise<AccountRequest> => {
+    const response = await axiosInstance.patch(`/auth/user/update/`, {...req}, {
+        headers: {
+            Authorization: `Token ${token}`
+        }
+    });
     return response.data;
 }

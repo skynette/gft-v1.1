@@ -205,7 +205,6 @@ class UserUpdateView(generics.GenericAPIView):
                 {"detail": "Authentication credentials were not provided."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
-
         serializer = self.get_serializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -213,6 +212,7 @@ class UserUpdateView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+user_profile_update_api_view = UserUpdateView.as_view()
 user_profile_update_api_view = UserUpdateView.as_view()
 
 
@@ -261,3 +261,48 @@ class LogoutAPI(KnoxLogoutView):
 
 
 admin_logout_api_view = LogoutAPI.as_view()
+
+
+class UserDetailView(generics.GenericAPIView):
+    serializer_class = UserUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=UserUpdateSerializer,
+                description="User details successfully retrieved",
+                examples=[
+                    OpenApiExample(
+                        name="Success",
+                        value={
+                            "first_name": "John",
+                            "last_name": "Doe",
+                            "username": "john_doe",
+                            "mobile": "+23491234567",
+                            "contact_preference": "phone",
+                            "image": "http://example.com/media/image.jpg",
+                        },
+                    )
+                ],
+            ),
+            401: OpenApiResponse(description="Unauthorized"),
+            500: OpenApiResponse(description="Server Error"),
+        },
+        description="Retrieve the logged-in user's details",
+        tags=["User"],
+    )
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if not user.is_authenticated:
+            return Response(
+                {"detail": "Authentication credentials were not provided."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        serializer = self.get_serializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+user_detail_api_view = UserDetailView.as_view()

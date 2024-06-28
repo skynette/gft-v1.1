@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { verifyToken } from '@/network-api/auth/endpoint';
+import { verifyToken } from '@/network-api/account/endpoint';
 import { AxiosError } from 'axios';
 import { VerifyTokenRequest } from '../response-type/auth/VerifyTokenRequest';
 

@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { getToken } from '@/network-api/auth/endpoint';
+import { getToken } from '@/network-api/account/endpoint';
 import { AxiosError } from 'axios';
 import { TokenRequest } from '../response-type/auth/TokenRequest';
 import { TokenResponse } from '../response-type/auth/TokenResponse';
