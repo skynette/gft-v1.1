@@ -41,8 +41,8 @@ const GifterDashboard = () => {
     const barChartData: GiftOverview[] = data?.weekdays.map((day, index) => ({ name: days[index], totalGiftSent: data.gifts_given[index], totalGiftReceived: data.gifts_received[index] })) ?? [];
 
     const { data: gifts } = useGiftOverview();
-    const giftSent: GiftBoxColumn[] = gifts?.at(0)?.data?.map((gift) => ({ id: gift.id, name: gift.title, createdAt: gift.created_at })) ?? [];
-    const giftReceived: GiftBoxColumn[] = gifts?.at(1)?.data?.map((gift) => ({ id: gift.id, name: gift.title, createdAt: gift.created_at })) ?? [];
+    const giftSent: GiftBoxColumn[] = gifts?.at(0)?.data?.map((gift) => ({ id: gift.id, name: gift.title, owner:gift.owner, receiver_name: gift.receiver_name, days_of_gifting: gift.days_of_gifting, open_date: gift.open_date, createdAt: gift.created_at })) ?? [];
+    const giftReceived: GiftBoxColumn[] = gifts?.at(1)?.data?.map((gift) => ({ id: gift.id, name: gift.title, owner:gift.owner, receiver_name: gift.receiver_name, days_of_gifting: gift.days_of_gifting, open_date: gift.open_date, createdAt: gift.created_at })) ?? [];
 
     console.log(giftSent)
 

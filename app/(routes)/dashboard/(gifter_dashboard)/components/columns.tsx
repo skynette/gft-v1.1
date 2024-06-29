@@ -2,12 +2,16 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { CellAction } from './cell-action'
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { ArrowUpDown } from "lucide-react"
+import { format } from 'date-fns'
 
 export type GiftBoxColumn = {
     id: string
     name: string
+    owner: string
+    days_of_gifting: string
+    receiver_name: string
+    open_date: string
     createdAt: string
 }
 
@@ -17,7 +21,7 @@ export const columns: ColumnDef<GiftBoxColumn>[] = [
         header: ({ column }) => {
             return (
                 <div
-                className="flex cursor-pointer w-fit"
+                    className="flex cursor-pointer w-fit"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     Name
@@ -27,8 +31,26 @@ export const columns: ColumnDef<GiftBoxColumn>[] = [
         },
     },
     {
+        accessorKey: "owner",
+        header: "Owner",
+    },
+    {
+        accessorKey: "days_of_gifting",
+        header: "Days of Gifting",
+    },
+    {
+        accessorKey: "receiver_name",
+        header: "Receiver Name",
+    },
+    {
+        accessorKey: "open_date",
+        header: "Open Date",
+        cell: ({ row }) => format(new Date(row.original.open_date), 'yyyy-MM-dd HH:mm:ss'),
+    },
+    {
         accessorKey: "createdAt",
         header: "Date",
+        cell: ({ row }) => format(new Date(row.original.createdAt), 'yyyy-MM-dd HH:mm:ss'),
     },
     {
         id: "actions",
