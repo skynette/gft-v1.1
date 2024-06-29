@@ -49,7 +49,10 @@ const handler = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user, account, profile }) {
+        async jwt({ token, user, account, session, trigger, profile }) {
+            if (trigger === 'update')
+                return { ...token, ...session.user }
+
             if (account && profile) {
                 // If the user logged in with an OAuth provider
                 const url = `${BASE_URL}/auth/login/social/`;
@@ -58,8 +61,8 @@ const handler = NextAuth({
                         provider: account.provider,
                         providerAccountId: profile.sub || "",
                         email: profile.email,
-                        first_name: profile.given_name || "",
-                        last_name: profile.family_name || "",
+                        first_name: profile.name?.split(' ')[0] || "",
+                        last_name: profile.name?.split(' ')[1] || "",
                         image: profile.picture,
                     });
 
@@ -67,6 +70,7 @@ const handler = NextAuth({
 
                     token.id = userData.user.id;
                     token.accessToken = userData.token;
+                    token.name = profile.name;
                     token.firstName = userData.user.first_name;
                     token.lastName = userData.user.last_name;
                     token.email = userData.user.email;
@@ -86,6 +90,7 @@ const handler = NextAuth({
         async session({ session, token }) {
             session.accessToken = token.accessToken as string;
             session.user.id = token.id as string;
+            session.user.name = token.name as string;
             session.user.firstName = token.firstName as string;
             session.user.lastName = token.lastName as string;
             session.user.email = token.email as string;

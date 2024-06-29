@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { verifyToken } from '@/network-api/account/endpoint';
 import { AxiosError } from 'axios';
 import { VerifyTokenRequest } from '../response-type/auth/VerifyTokenRequest';
+import { verifyToken } from '@/network-api/auth/endpoint';
 
 export default function useVerifyToken({ onSuccess, onError }: { onSuccess?: () => void, onError?: () => void }) {
     const { mutate, data, isPending, isSuccess, isError, error, variables } = useMutation<VerifyTokenResponse, AxiosError, VerifyTokenRequest>({

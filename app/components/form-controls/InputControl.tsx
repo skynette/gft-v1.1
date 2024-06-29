@@ -10,9 +10,10 @@ interface InputProps {
     label: string;
     type: string;
     placeholder: string;
+    disabled?: boolean;
 }
 
-const InputControl: FC<InputProps> = ({ name, label, type, placeholder }) => {
+const InputControl: FC<InputProps> = ({ name, label, type, disabled, placeholder }) => {
     return (
         <div>
             <Field name={name}>
@@ -20,7 +21,7 @@ const InputControl: FC<InputProps> = ({ name, label, type, placeholder }) => {
                     (props: FieldProps) => (
                         <div className='flex flex-col space-y-2'>
                             <Label htmlFor={name} className='font-normal text-sm'>{label}</Label>
-                            <Input type={type} className='rounded-lg w-full text-sm bg-white'
+                            <Input type={type} disabled={disabled} className='rounded-lg w-full text-sm bg-white'
                                 id={name} placeholder={placeholder} {...props.field} />
                         </div>
                     )

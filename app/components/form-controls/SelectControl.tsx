@@ -9,11 +9,12 @@ interface SelectProps {
     name: string;
     label: string;
     placeholder?: string;
+    defaultValue?: string;
     options?: { option: string, value: string }[];
     handleChange?: (key: string) => void;
 }
 
-function SelectControl({ name, label, placeholder, options, handleChange }: SelectProps) {
+function SelectControl({ name, label, placeholder, defaultValue, options, handleChange }: SelectProps) {
     return (
         <div className='w-full'>
             <Field name={name}>
@@ -21,7 +22,7 @@ function SelectControl({ name, label, placeholder, options, handleChange }: Sele
                     (props: FieldProps) => (
                         <div className='w-full flex flex-col space-y-1'>
                             <Label htmlFor={name} className='text-gray-700 text-sm'>{label}</Label>
-                            <Select onValueChange={(value) => {
+                            <Select defaultValue={defaultValue} onValueChange={(value) => {
                                 props.form.setFieldValue(name, value);
                                 if (handleChange)
                                     handleChange(value);
@@ -42,9 +43,9 @@ function SelectControl({ name, label, placeholder, options, handleChange }: Sele
                         </div>
                     )
                 }
-            </Field>
+            </Field >
             <ErrorMessage name={name} render={msg => <small className='text-red-500 text-xs'>{msg}</small>} />
-        </div>
+        </div >
     )
 }
 

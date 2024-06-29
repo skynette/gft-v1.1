@@ -13,6 +13,8 @@ interface ControlProps {
     type: string;
     placeholder: string;
     control: string;
+    disabled?: boolean;
+    defaultValue?: string;
     options?: { option: string, value: string }[];
     handleChange?: (key: string) => void;
 }

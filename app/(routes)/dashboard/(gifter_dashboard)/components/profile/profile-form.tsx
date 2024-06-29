@@ -8,6 +8,9 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import useUpdateUser from '@/lib/hooks/useUpdateUser';
+import { useSession } from 'next-auth/react';
+import useGetProfile from '@/lib/hooks/useGetProfile';
+import { useQueryClient } from '@tanstack/react-query';
 
 const profileFormSchema = Yup.object().shape({
     fullname: Yup.string().required('Fullname is required').trim()
@@ -25,22 +28,37 @@ const profileFormSchema = Yup.object().shape({
 
 type ProfileFormValues = Yup.InferType<typeof profileFormSchema>;
 
-const defaultValues: ProfileFormValues = {
-    fullname: '',
-    username: '',
-    email: '',
-    phone: '',
-    contactPreference: 'phone',
-};
-
 export default function ProfileForm() {
-    const { mutate, isPending } = useUpdateUser({onSuccess() {
-        toast.success('Profile updated');
-    },});
+    const queryClient = useQueryClient();
+    const { data, update } = useSession();
+    const { data: profile } = useGetProfile()
 
-    const onSubmit = (values: ProfileFormValues, actions: FormikHelpers<ProfileFormValues>) => {
-        toast.success('You submitted the following values:',)
-        console.log(values)
+    const { mutate, isPending } = useUpdateUser({
+        onSuccess(variables) {
+            update({
+                ...data,
+                user: {
+                    ...data?.user,
+                    firstName: variables?.first_name,
+                    lastName: variables?.last_name,
+                    name: variables.first_name + ' ' + variables.last_name,
+                    mobile: variables.mobile,
+                    contactPreference: variables.contact_preference,
+                }
+            }).then(() => queryClient.invalidateQueries({ queryKey: ['profile'] }));
+        },
+    });
+
+
+    const defaultValues: ProfileFormValues = {
+        fullname: (profile?.first_name ?? '') + ' ' + (profile?.last_name ?? ''),
+        username: profile?.username ?? '',
+        email: data?.user.email ?? '',
+        phone: profile?.mobile ?? '',
+        contactPreference: profile?.contact_preference ?? 'phone',
+    };
+
+    const onSubmit = async (values: ProfileFormValues) => {
         mutate({
             first_name: values.fullname.split(' ')[0],
             last_name: values.fullname.split(' ')[1],
@@ -56,6 +74,7 @@ export default function ProfileForm() {
             initialValues={defaultValues}
             validationSchema={profileFormSchema}
             onSubmit={onSubmit}
+            enableReinitialize={true}
         >
             <Form className='w-full max-w-xl flex flex-col space-y-5 mt-[5%]'>
                 <FormikControl
@@ -78,6 +97,7 @@ export default function ProfileForm() {
                     type='email'
                     name='email'
                     label='Email'
+                    disabled={true}
                     placeholder='user@mail.com'
                     control='input'
                 />
@@ -95,7 +115,8 @@ export default function ProfileForm() {
                     name='contactPreference'
                     label='Contact preference'
                     placeholder='Select contact preference'
-                    options={[{option: 'Mobile', value: 'mobile'}, {option: 'Email', value: 'email'}]}
+                    defaultValue={profile?.contact_preference}
+                    options={[{ option: 'Phone', value: 'phone' }, { option: 'Email', value: 'email' }]}
                     control='select'
                 />
 
