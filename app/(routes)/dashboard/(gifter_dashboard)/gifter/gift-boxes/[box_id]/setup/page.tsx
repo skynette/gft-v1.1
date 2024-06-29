@@ -67,16 +67,16 @@ const SetupBox = () => {
 
     }, [giftBox]);
 
-    // useEffect(() => {
-    //     const miniboxes = miniBox?.map(box => ({ id: box.id, title: box.gift_title, desc: box.gift_description, openDate: box.open_date })) ?? [];
-    //     setData(prev => ({ ...prev, miniboxes }));
-    // }, [miniBox])
-
     const handleNextStep = (newData: GiftBoxValues, final: boolean) => {
         setData(prev => ({ ...prev, ...newData }));
 
         if (final) {
-            mutate(newData.miniboxes);
+            mutate(newData.miniboxes.map(item => ({
+                gift_title: item.title,
+                gift_description: item.desc,
+                open_date: item.openDate,
+                id: item.id
+            })));
             return;
         }
 

@@ -1,6 +1,6 @@
 export interface MiniboxRequest {
     id: string;
-    title: string;
-    desc: string;
-    openDate: string;
+    gift_title: string;
+    gift_description: string;
+    open_date: string;
 }
