@@ -1,6 +1,5 @@
 'use client';
 
-import { giftBoxData } from "@/constants/data";
 import GiftBoxTableArea from "../components/table-area";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Overview } from "@/components/overview";
