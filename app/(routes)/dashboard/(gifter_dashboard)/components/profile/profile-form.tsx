@@ -35,7 +35,7 @@ export default function ProfileForm() {
 
     const { mutate, isPending } = useUpdateUser({
         onSuccess(variables) {
-            toast.success('Profile udpated')
+            toast.success('Profile updated');
             update({
                 ...data,
                 user: {
@@ -77,59 +77,63 @@ export default function ProfileForm() {
             onSubmit={onSubmit}
             enableReinitialize={true}
         >
-            <Form className='w-full max-w-xl flex flex-col space-y-5 mt-[5%]'>
-                <FormikControl
-                    type='text'
-                    name='fullname'
-                    label='Full name'
-                    placeholder='Town Hall'
-                    control='input'
-                />
+            {
+                ({ values }) => (
+                    <Form className='w-full max-w-xl flex flex-col space-y-5 mt-[5%]'>
+                        <FormikControl
+                            type='text'
+                            name='fullname'
+                            label='Full name'
+                            placeholder='Town Hall'
+                            control='input'
+                        />
 
-                <FormikControl
-                    type='text'
-                    name='username'
-                    label='Username'
-                    placeholder='john_doe'
-                    control='input'
-                />
+                        <FormikControl
+                            type='text'
+                            name='username'
+                            label='Username'
+                            placeholder='john_doe'
+                            control='input'
+                        />
 
-                <FormikControl
-                    type='email'
-                    name='email'
-                    label='Email'
-                    disabled={true}
-                    placeholder='user@mail.com'
-                    control='input'
-                />
+                        <FormikControl
+                            type='email'
+                            name='email'
+                            label='Email'
+                            disabled={true}
+                            placeholder='user@mail.com'
+                            control='input'
+                        />
 
-                <FormikControl
-                    type='text'
-                    name='phone'
-                    label='Phone'
-                    placeholder='phone number'
-                    control='phone-input'
-                />
+                        <FormikControl
+                            type='text'
+                            name='phone'
+                            label='Phone'
+                            placeholder='phone number'
+                            control='phone-input'
+                        />
 
-                <FormikControl
-                    type='text'
-                    name='contactPreference'
-                    label='Contact preference'
-                    placeholder='Select contact preference'
-                    defaultValue={profile?.contact_preference}
-                    options={[{ option: 'Phone', value: 'phone' }, { option: 'Email', value: 'email' }]}
-                    control='select'
-                />
+                        <FormikControl
+                            type='text'
+                            name='contactPreference'
+                            label='Contact preference'
+                            placeholder='Select contact preference'
+                            defaultValue={values.contactPreference}
+                            options={[{ option: 'Phone', value: 'phone' }, { option: 'Email', value: 'email' }]}
+                            control='select'
+                        />
 
-                <Button
-                    type='submit'
-                    className='w-fit'
-                    isLoading={isPending}
-                    disabled={isPending}
-                >
-                    Update profile
-                </Button>
-            </Form>
+                        <Button
+                            type='submit'
+                            className='w-fit'
+                            isLoading={isPending}
+                            disabled={isPending}
+                        >
+                            Update profile
+                        </Button>
+                    </Form>
+                )
+            }
         </Formik>
     );
 

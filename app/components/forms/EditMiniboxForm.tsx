@@ -9,9 +9,8 @@ import { GiftBoxValues } from "@/(routes)/dashboard/(gifter_dashboard)/gifter/gi
 import useGetGiftbox from "@/lib/hooks/useGetGiftbox";
 import { useParams } from "next/navigation";
 import { Separator } from "../ui/separator";
-import { nanoid } from "nanoid";
-import React from "react";
-import useSetMiniBox from "@/lib/hooks/useSetMinibox";
+import React, { Dispatch, SetStateAction, useEffect } from "react";
+import useGetMinibox from "@/lib/hooks/useGetMinibox";
 
 const ErrorMessage = ({ name }: { name: string }) => (
     <Field
@@ -23,16 +22,22 @@ const ErrorMessage = ({ name }: { name: string }) => (
     />
 );
 
-const EditMiniboxForm = ({ onPrev, onNext, data, isPending }: {
+const EditMiniboxForm = ({ onPrev, onNext, data, setData, isPending }: {
     onPrev: (data: GiftBoxValues) => void,
     onNext: (data: GiftBoxValues, final: boolean) => void,
-    data: GiftBoxValues, isPending: boolean
+    data: GiftBoxValues, setData: Dispatch<SetStateAction<GiftBoxValues>>, isPending: boolean
 }) => {
 
     const handleSubmit = (data: GiftBoxValues) => { onNext(data, true) }
 
     const boxId = useParams().box_id;
     const { data: giftBox } = useGetGiftbox(boxId);
+    const { data: miniBox } = useGetMinibox(boxId);
+
+    useEffect(() => {
+        const miniboxes = miniBox?.map(box => ({ id: box.id, title: box.gift_title, desc: box.gift_description, openDate: box.open_date })) ?? [];
+        setData(prev => ({ ...prev, miniboxes }));
+    }, [miniBox]);
 
     return (
         <Formik

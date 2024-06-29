@@ -36,9 +36,9 @@ const SetupBox = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const width = `${(100 / (steps - 1)) * (currentStep)}%`;
 
-
     const { data: giftBox } = useGetGiftbox(boxId);
-    const { data: miniBox, } = useGetMinibox(boxId);
+    // const { data: miniBox } = useGetMinibox(boxId);
+
     const { mutate, isPending } = useSetMiniBox({
         boxId, onSuccess() {
             toast.success('Gifts updated successfully.');
@@ -67,10 +67,10 @@ const SetupBox = () => {
 
     }, [giftBox]);
 
-    useEffect(() => {
-        const miniboxes = miniBox?.map(box => ({ id: box.id, title: box.gift_title, desc: box.gift_description, openDate: box.open_date })) ?? [];
-        setData(prev => ({ ...prev, miniboxes }));
-    }, [miniBox])
+    // useEffect(() => {
+    //     const miniboxes = miniBox?.map(box => ({ id: box.id, title: box.gift_title, desc: box.gift_description, openDate: box.open_date })) ?? [];
+    //     setData(prev => ({ ...prev, miniboxes }));
+    // }, [miniBox])
 
     const handleNextStep = (newData: GiftBoxValues, final: boolean) => {
         setData(prev => ({ ...prev, ...newData }));
@@ -91,7 +91,7 @@ const SetupBox = () => {
     const forms = [
         <EditGiftboxForm key={nanoid()} onNext={handleNextStep} data={data} />,
         <EditMiniboxForm key={nanoid()} onPrev={handlePrevStep} onNext={handleNextStep}
-            data={data} isPending={isPending} />
+            data={data} setData={setData} isPending={isPending} />
     ];
 
     return (
