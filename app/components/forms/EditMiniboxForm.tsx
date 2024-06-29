@@ -34,14 +34,11 @@ const EditMiniboxForm = ({ onPrev, onNext, data, setData, isPending }: {
     const { data: giftBox } = useGetGiftbox(boxId);
     const { data: miniBox } = useGetMinibox(boxId);
 
-    useEffect(() => {
-        const miniboxes = miniBox?.map(box => ({ id: box.id, title: box.gift_title, desc: box.gift_description, openDate: box.open_date })) ?? [];
-        setData(prev => ({ ...prev, miniboxes }));
-    }, [miniBox]);
+    const miniboxes = miniBox?.map(box => ({ id: box.id, title: box.gift_title, desc: box.gift_description, openDate: box.open_date })) ?? [];
 
     return (
         <Formik
-            initialValues={data}
+            initialValues={{ ...data, miniboxes }}
             validationSchema={Yup.object({
                 miniboxes: Yup.array().of(Yup.object({
                     title: Yup.string().required('Enter the title').min(5, 'Title must be at least 10 characters'),
@@ -57,9 +54,9 @@ const EditMiniboxForm = ({ onPrev, onNext, data, setData, isPending }: {
                     return (
                         <Form className="w-full bg-gray-50 max-w-xl flex flex-col space-y-5 shadow-md rounded-lg p-8 mt-[5%]">
                             <FieldArray
-                                name="miniboxes"
-                                render={arrayHelpers => {
-                                    return (
+                                name="miniboxes">
+                                {
+                                    () => (
                                         <div>
                                             {
                                                 Array.from({ length: Number(giftBox?.days_of_gifting) ?? 0 }).map((_, index) => (
@@ -98,8 +95,9 @@ const EditMiniboxForm = ({ onPrev, onNext, data, setData, isPending }: {
                                             }
                                         </div>
                                     )
-                                }}
-                            />
+                                }
+
+                            </FieldArray>
                             {typeof errors.miniboxes === 'string' && <p className="!mt-1 text-red-500 text-sm">{errors.miniboxes}</p>}
 
                             <div className="flex space-x-2">
