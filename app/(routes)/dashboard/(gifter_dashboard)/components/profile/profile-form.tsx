@@ -35,6 +35,7 @@ export default function ProfileForm() {
 
     const { mutate, isPending } = useUpdateUser({
         onSuccess(variables) {
+            toast.success('Profile udpated')
             update({
                 ...data,
                 user: {
