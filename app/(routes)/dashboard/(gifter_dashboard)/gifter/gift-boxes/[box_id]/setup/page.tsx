@@ -36,7 +36,6 @@ const SetupBox = () => {
     const width = `${(100 / (steps - 1)) * (currentStep)}%`;
 
     const { data: giftBox } = useGetGiftbox(boxId);
-    // const { data: miniBox } = useGetMinibox(boxId);
 
     const { mutate, isPending } = useSetMiniBox({
         boxId, onSuccess() {
