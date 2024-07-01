@@ -85,11 +85,11 @@ export default function Login() {
     };
 
     const handleGoogleSignIn = async () => {
-        signIn('google', { callbackUrl: '/dashboard' });
+        signIn('google', { callbackUrl: '/dashboard/gifter' });
     };
 
     const handleAppleSignIn = async () => {
-        signIn('apple', { callbackUrl: '/dashboard' });
+        signIn('apple', { callbackUrl: '/dashboard/gifter' });
     };
 
     return (

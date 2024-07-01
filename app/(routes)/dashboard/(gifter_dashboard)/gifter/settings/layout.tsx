@@ -21,7 +21,7 @@ export default function GifterSettings({
                     Settings
                 </h1>
                 <p className='text-muted-foreground'>
-                    Manage your account settings and set e-mail preferences.
+                    Manage your account settings and set e-mail preferences. lol
                 </p>
             </div>
             <Separator className='my-6' />

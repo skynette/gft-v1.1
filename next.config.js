@@ -12,7 +12,10 @@ const nextConfig = {
                 pathname: '/do3tlu1ph/**'
             }
         ]
-    }
+    },
+    experimental: {
+        serverActions: true,
+    },
 }
 
 module.exports = nextConfig

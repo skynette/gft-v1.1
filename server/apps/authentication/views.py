@@ -281,6 +281,7 @@ class UserDetailView(generics.GenericAPIView):
                             "username": "john_doe",
                             "mobile": "+23491234567",
                             "contact_preference": "phone",
+                            "role": "user",
                             "image": "http://example.com/media/image.jpg",
                         },
                     )

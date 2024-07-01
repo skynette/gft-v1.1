@@ -1,4 +1,3 @@
-'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,26 +9,26 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import requireAuth from '@/lib/require-auth';
-import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Session } from '../../../types';
+import { SignOutButton } from '../sign-out-button';
 
-function UserNav() {
-    const router = useRouter()
-    const { data: session, status } = useSession();
-    console.log({ session, status })
-    if (session) {
+interface UserNavProps {
+    currUser: Session['user'] | null;
+}
+
+function UserNav({ currUser }: UserNavProps) {
+    if (currUser) {
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                         <Avatar className="h-8 w-8">
                             <AvatarImage
-                                src={session.user?.image ?? ''}
-                                alt={session.user?.name ?? ''}
+                                src={currUser.image ?? ''}
+                                alt={currUser.name ?? ''}
                             />
-                            <AvatarFallback>{session.user?.email?.[0]}</AvatarFallback>
+                            <AvatarFallback>{currUser.email?.[0]}</AvatarFallback>
                         </Avatar>
                     </Button>
                 </DropdownMenuTrigger>
@@ -37,10 +36,10 @@ function UserNav() {
                     <DropdownMenuLabel className="font-normal">
                         <div className="flex flex-col space-y-1">
                             <p className="text-sm font-medium leading-none">
-                                {session.user?.name}
+                                {currUser.name}
                             </p>
                             <p className="text-xs leading-none text-muted-foreground">
-                                {session.user?.email}
+                                {currUser.email}
                             </p>
                         </div>
                     </DropdownMenuLabel>
@@ -51,13 +50,14 @@ function UserNav() {
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()} className='hover:cursor-pointer'>
-                        Log out
+                    <DropdownMenuItem>
+                        <SignOutButton />
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         );
     }
-    return <></>
+    return null;
 }
-export default requireAuth(UserNav);
+
+export default UserNav;

@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
 import EditGiftboxForm from '@/components/forms/EditGiftboxForm';
 import EditMiniboxForm from '@/components/forms/EditMiniboxForm';
-import requireAuth from '@/lib/require-auth';
 import useGetGiftbox from '@/lib/hooks/useGetGiftbox';
 import { useParams, useRouter } from 'next/navigation';
 import useGetMinibox from '@/lib/hooks/useGetMinibox';
@@ -130,4 +129,4 @@ const SetupBox = () => {
     )
 }
 
-export default requireAuth(SetupBox);
+export default SetupBox;

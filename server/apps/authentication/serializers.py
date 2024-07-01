@@ -130,7 +130,13 @@ class SocialAuthSerializer(serializers.Serializer):
     
 class UserUpdateSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)
+    role = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'username', 'mobile', 'contact_preference', 'image']
+        fields = ['first_name', 'last_name', 'username', 'mobile', 'contact_preference', 'image', 'role']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['role'] = instance.user_type
+        return representation
