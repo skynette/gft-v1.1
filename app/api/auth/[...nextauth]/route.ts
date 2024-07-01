@@ -75,9 +75,9 @@ const handler = NextAuth({
                     token.lastName = userData.user.last_name;
                     token.email = userData.user.email;
                     token.picture = profile?.picture as string;
+                    token.role = userData.user.role;
 
                 } catch (error) {
-                    console.error('Error handling OAuth user:', error);
                     return token;
                 }
             } else if (user) {
@@ -95,6 +95,7 @@ const handler = NextAuth({
             session.user.lastName = token.lastName as string;
             session.user.email = token.email as string;
             session.user.picture = token.picture as string;
+            session.user.role = token.role as string;
             return session;
         },
     },

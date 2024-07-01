@@ -21,7 +21,7 @@ const sidebarNavItems = [
 export default function GifterSettings() {
     return (
         <>
-            <div className='container space-y-0.5'>
+            <div className='container space-y-0.5 pt-16'>
                 <h1 className='text-2xl font-bold tracking-tight md:text-3xl'>
                     Settings
                 </h1>

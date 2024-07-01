@@ -2,10 +2,7 @@ import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(req: NextRequest) {
-    console.log("[MIDDLEWARE] running")
     const token = await getToken({ req });
-
-    console.log({ token })
 
     const { pathname } = req.nextUrl;
 

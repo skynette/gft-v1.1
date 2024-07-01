@@ -30,7 +30,7 @@ class RegisterView(generics.GenericAPIView):
 
     @extend_schema(
         request=RegisterSerializer,
-        responses=RegisterSerializer,
+        responses=UserUpdateSerializer,
         description="Register a new user",
         tags=["Authentication"],
     )
@@ -158,7 +158,7 @@ class SocialAuthView(generics.GenericAPIView):
             user.save()
 
         token, _ = Token.objects.get_or_create(user=user)
-        data = {"user": RegisterSerializer(user).data, "token": token.key}
+        data = {"user": UserUpdateSerializer(user).data, "token": token.key}
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -237,7 +237,7 @@ class LoginAPI(generics.GenericAPIView):
         user = serializer.validated_data["user"]
         login(request, user)
         _, token = AuthToken.objects.create(user)
-        return Response({"user": UserSerializer(user).data, "token": token})
+        return Response({"user": UserUpdateSerializer(user).data, "token": token})
 
 
 admin_login_api_view = LoginAPI.as_view()

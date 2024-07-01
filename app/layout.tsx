@@ -5,6 +5,7 @@ import GifterHeader from '@/components/layout/header-gifter';
 import { getCurrentUser } from "./lib/actions";
 import { ReactNode } from "react";
 import { User } from "../types";
+import { redirect } from "next/navigation";
 
 const epilogue = Epilogue({
     subsets: ["latin"],
@@ -23,16 +24,12 @@ interface RootLayoutProps {
 export default async function RootLayout({ children }: RootLayoutProps) {
     const currUser: User | undefined = await getCurrentUser();
 
-    if (!currUser) {
-        throw new Error("User not found");
-    }
-
     return (
         <html lang="en">
             <body className={epilogue.className}>
                 <Providers>
-                    <GifterHeader currUser={currUser} />
-                    <main className="pt-16">
+                    {currUser && <GifterHeader currUser={currUser} />}
+                    <main className="">
                         {children}
                     </main>
                 </Providers>

@@ -44,6 +44,10 @@ function UserNav({ currUser }: UserNavProps) {
                         </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        User type: {currUser.role}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                         <DropdownMenuItem>
                             <Link href={'/dashboard/gifter/settings'}>Settings</Link>

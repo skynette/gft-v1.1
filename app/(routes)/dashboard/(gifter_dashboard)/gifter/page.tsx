@@ -52,7 +52,7 @@ const GifterDashboard = () => {
         )
 
     return (
-        <div className="container flex-col">
+        <div className="container flex-col pt-16">
 
             <div className="grid gap-4 my-8 md:grid-cols-2 lg:grid-cols-4">
                 <GiftInfo

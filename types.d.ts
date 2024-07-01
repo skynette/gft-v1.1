@@ -11,5 +11,6 @@ export interface Session {
     lastName?: string
     image: string
     picture?: string
+    role: string
   }
   
