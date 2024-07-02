@@ -30,7 +30,7 @@ const Notifications = () => {
                     {
                         unreadData?.map(notification => (
                             <Link href={`/dashboard/gifter/notifications/${notification.id}`}>
-                                <DropdownMenuItem asChild>
+                                <DropdownMenuItem asChild className="hover:cursor-pointer">
                                     <div className="flex items-start gap-3">
                                         <div className="flex-shrink-0">
                                             <Avatar className="h-10 w-10">

@@ -14,6 +14,7 @@ import {
     VisibilityState,
     getPaginationRowModel,
     useReactTable,
+    Row,
 } from "@tanstack/react-table"
 
 import {
@@ -34,22 +35,28 @@ import {
 
 
 import { useState } from "react"
+import { Trash } from "lucide-react"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     searchKey: string
+    // onDelete?: (rows: Row<TData>[]) => void
+    disabled?: boolean;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     searchKey,
+    // onDelete,
+    disabled,
 }: DataTableProps<TData, TValue>) {
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const [rowSelection, setRowSelection] = useState({})
 
     const table = useReactTable({
         data,
@@ -61,24 +68,40 @@ export function DataTable<TData, TValue>({
         onColumnFiltersChange: setColumnFilters,
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
+        onRowSelectionChange: setRowSelection,
         state: {
             sorting,
             columnFilters,
             columnVisibility,
+            rowSelection,
         },
     })
 
     return (
         <div>
             <div className="flex items-center py-4">
-                <Input
-                    placeholder="Search..."
-                    value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn(searchKey)?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
+                <div className="flex items-center gap-4">
+                    <Input
+                        placeholder="Search..."
+                        value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn(searchKey)?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
+                    />
+                    {table.getFilteredSelectedRowModel().rows.length > 0 && (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="ml-auto font-normal text-xs"
+                            // disabled={disabled}
+                        >
+                            <Trash className="h-5 w-5 mr-2" />
+                            Delete ({table.getFilteredSelectedRowModel().rows.length})
+                        </Button>
+                    )}
+                </div>
+
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">
@@ -155,6 +178,11 @@ export function DataTable<TData, TValue>({
             </div>
 
             <div className="flex items-center justify-end space-x-2 py-4">
+                <div className="flex-1 text-sm text-muted-foreground">
+                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                    {table.getFilteredRowModel().rows.length} row(s) selected.
+                </div>
+
                 <Button
                     variant="outline"
                     size="sm"

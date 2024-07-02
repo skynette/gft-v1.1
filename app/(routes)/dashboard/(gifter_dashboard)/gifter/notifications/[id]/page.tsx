@@ -43,12 +43,12 @@ const NotificationDetail = () => {
         <div className="container flex flex-col">
             <div className="bg-primary px-4 md:px-6 py-3 flex items-center justify-between">
                 <Button onClick={() => router.back()} variant="ghost" size="icon" className="rounded-full">
-                    <ArrowLeftIcon className="w-5 h-5" />
+                    <ArrowLeftIcon className="w-5 h-5 text-white" />
                     <span className="sr-only">Back</span>
                 </Button>
-                <h1 className="text-lg font-medium">Notification Details</h1>
-                <Button isLoading={isPending} disabled={isPending} onClick={() => mutate(notificationId)} variant="secondary" size="sm">
-                    Mark as Read
+                <h1 className="text-lg text-white font-medium">Notification Details</h1>
+                <Button isLoading={isPending} disabled={isPending || notification?.read} onClick={() => mutate(notificationId)} variant="secondary" size="sm">
+                    {notification?.read ? 'read' : 'Mark as read'}
                 </Button>
             </div>
             <main className="flex-1 p-4 md:p-6">
@@ -56,18 +56,9 @@ const NotificationDetail = () => {
                     <h2 className="text-2xl font-bold mb-4">{notification?.gift.gift_title}</h2>
                     <div className="space-y-4 text-muted-foreground">
                         <p>
-                            We're excited to announce the release of our latest feature! This new update will help you streamline your
-                            workflow and boost productivity.
+                            {notification?.message}.
                         </p>
-                        <p>
-                            Some of the key highlights include improved collaboration tools, automated deployment, and enhanced
-                            analytics. We've been working hard to deliver these improvements based on your valuable feedback.
-                        </p>
-                        <p>
-                            To get started, simply log in to your account and navigate to the features section. If you have any
-                            questions or need assistance, don't hesitate to reach out to our support team.
-                        </p>
-                        <p>We hope you enjoy using the new features and we look forward to your continued feedback.</p>
+                        <p>{new Date(notification?.timestamp!).toLocaleString()}.</p>
                     </div>
                 </div>
             </main>
