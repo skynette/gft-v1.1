@@ -72,6 +72,7 @@ export const authOptions: NextAuthOptions = {
 
                     token.id = userData.user.id;
                     token.accessToken = userData.token;
+                    token.companyAPIKey = userData?.companyAPIKey || '';
                     token.name = profile.name;
                     token.firstName = userData.user.first_name;
                     token.lastName = userData.user.last_name;
@@ -87,11 +88,13 @@ export const authOptions: NextAuthOptions = {
                 // If the user logged in with credentials
                 token.id = user.id;
                 token.accessToken = user.token;
+                token.role = user.role;
             }
             return token;
         },
         async session({ session, token }) {
             session.accessToken = token.accessToken as string;
+            session.companyAPIKey = token.companyAPIKey as string;
             session.user.id = token.id as string;
             session.user.name = token.name as string;
             session.user.firstName = token.firstName as string;

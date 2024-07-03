@@ -19,7 +19,6 @@ export function CalendarDateRangePicker({
     from: new Date(2023, 0, 20),
     to: addDays(new Date(2023, 0, 20), 20),
   });
-  console.log({ date });
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>

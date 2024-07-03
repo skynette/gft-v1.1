@@ -67,7 +67,6 @@ export default function Login() {
             email: emailInitialValue.email,
             token,
         });
-        console.log("RESULT FROM NEXT AUTH", { result })
         if (result?.error) {
             console.error('Error signing in:', result.error);
             if (result.error.includes("token")) {

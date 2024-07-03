@@ -1,6 +1,7 @@
 export interface Session {
     user: User
     accessToken: string
+    companyAPIKey?: string
   }
   
   export interface User {

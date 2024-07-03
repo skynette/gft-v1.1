@@ -70,6 +70,7 @@ const handler = NextAuth({
 
                     token.id = userData.user.id;
                     token.accessToken = userData.token;
+                    token.companyAPIKey = userData?.companyAPIKey || '';
                     token.name = profile.name;
                     token.firstName = userData.user.first_name;
                     token.lastName = userData.user.last_name;
@@ -84,11 +85,13 @@ const handler = NextAuth({
                 // If the user logged in with credentials
                 token.id = user.id;
                 token.accessToken = user.token;
+                token.role = user.token;
             }
             return token;
         },
         async session({ session, token }) {
             session.accessToken = token.accessToken as string;
+            session.companyAPIKey = token.companyAPIKey as string;
             session.user.id = token.id as string;
             session.user.name = token.name as string;
             session.user.firstName = token.firstName as string;

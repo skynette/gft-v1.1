@@ -18,6 +18,7 @@ from drf_spectacular.utils import extend_schema, OpenApiExample, extend_schema_v
 from drf_spectacular.utils import OpenApiResponse
 
 from helpers.utils import validate_phone
+from apps.gft.models import CompanyApiKey
 
 
 User = get_user_model()
@@ -156,9 +157,16 @@ class SocialAuthView(generics.GenericAPIView):
             user.last_name = user.last_name or last_name
             user.provider = provider
             user.save()
-
+            
         token, _ = Token.objects.get_or_create(user=user)
-        data = {"user": UserUpdateSerializer(user).data, "token": token.key}
+        
+        if user.user_type == "company":
+            companyAPIKey = CompanyApiKey.objects.filter(company__owner=user).first()
+            data = {"user": UserUpdateSerializer(user).data, "token": token.key, "companyAPIKey": companyAPIKey.key}
+            print("data", data)
+        else:
+            data = {"user": UserUpdateSerializer(user).data, "token": token.key, "companyAPIKey": ''}
+            print("data", data)
 
         return Response(data, status=status.HTTP_200_OK)
 
@@ -213,7 +221,6 @@ class UserUpdateView(generics.GenericAPIView):
 
 
 user_profile_update_api_view = UserUpdateView.as_view()
-user_profile_update_api_view = UserUpdateView.as_view()
 
 
 @extend_schema_view(
@@ -237,7 +244,14 @@ class LoginAPI(generics.GenericAPIView):
         user = serializer.validated_data["user"]
         login(request, user)
         _, token = AuthToken.objects.create(user)
-        return Response({"user": UserUpdateSerializer(user).data, "token": token})
+        data = {}
+        if user.user_type == "company":
+            companyAPIKey = CompanyApiKey.objects.filter(company__owner=user).first()
+            data = {"user": UserUpdateSerializer(user).data, "token": token.key, "companyAPIKey": companyAPIKey.key}
+        else:
+            data = {"user": UserUpdateSerializer(user).data, "token": token.key, "companyAPIKey": ''}
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 admin_login_api_view = LoginAPI.as_view()
