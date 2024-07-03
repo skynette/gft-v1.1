@@ -6,7 +6,7 @@ import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { AlertModal } from "@/components/modals/alert-modal"
-import { GiftBoxColumn } from "./columns"
+import { GiftBoxColumn } from "./columns-gift-received"
 import { toast } from "sonner"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
@@ -15,20 +15,17 @@ interface CellActionProps {
     data: GiftBoxColumn
 }
 
-export const CellAction: React.FC<CellActionProps> = ({ data }) => {
-
+export const CellActionGiftSent: React.FC<CellActionProps> = ({ data }) => {
     const session = useSession();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
-    console.log(session.data?.user);
-    console.log(data);
-
     const onCopy = (id: string) => {
         navigator.clipboard.writeText(id)
         toast.success('copied.')
     }
+
     const onDelete = async () => {
         try {
             setLoading(true)
@@ -62,14 +59,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                     <DropdownMenuLabel>
                         Actions
                     </DropdownMenuLabel>
-                    {data.receiver_email != session.data?.user.email && (
-                        <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/gifter/gift-boxes/${data.id}/setup?edit=${true}`}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Update
-                            </Link>
-                        </DropdownMenuItem>
-                    )}
+                    <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/gifter/gift-boxes/${data.id}/setup?edit=${true}`}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Update
+                        </Link>
+                    </DropdownMenuItem>
 
                     <DropdownMenuItem onClick={() => onCopy(data.id)}>
                         <Copy className="mr-2 h-4 w-4" />

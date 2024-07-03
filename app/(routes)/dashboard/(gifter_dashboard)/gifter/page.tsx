@@ -6,7 +6,8 @@ import { Overview } from "@/components/overview";
 import { Gift, Loader, LucideIcon, PackageOpen, UsersRound } from "lucide-react";
 import useGetDashboardMetrics from "@/lib/hooks/useGetDashboardMetrics";
 import useGiftOverview from "@/lib/hooks/useGiftOverview";
-import { GiftBoxColumn } from "../components/columns";
+import { GiftBoxColumn, columnsGiftReceived } from "../components/columns-gift-received";
+import { columnsGiftSent } from "../components/columns-gift-sent";
 
 export interface GiftOverview {
     name: string;
@@ -40,8 +41,8 @@ const GifterDashboard = () => {
     const barChartData: GiftOverview[] = data?.weekdays?.map((day, index) => ({ name: days[index], totalGiftSent: data.gifts_given[index], totalGiftReceived: data.gifts_received[index] })) ?? [];
 
     const { data: gifts } = useGiftOverview();
-    const giftSent: GiftBoxColumn[] = gifts?.at(0)?.data?.map((gift) => ({ id: gift.id, name: gift.title, owner: gift.owner, receiver_name: gift.receiver_name, receiver_email: gift.receiver_email, days_of_gifting: gift.days_of_gifting, open_date: gift.open_date, createdAt: gift.created_at })) ?? [];
-    const giftReceived: GiftBoxColumn[] = gifts?.at(1)?.data?.map((gift) => ({ id: gift.id, name: gift.title, owner: gift.owner, receiver_name: gift.receiver_name, receiver_email: gift.receiver_email, days_of_gifting: gift.days_of_gifting, open_date: gift.open_date, createdAt: gift.created_at })) ?? [];
+    const giftSent: GiftBoxColumn[] = gifts?.at(0)?.data?.map((gift) => ({ id: gift.id, name: gift.title, owner: gift.owner, receiver_name: gift.receiver_name, days_of_gifting: gift.days_of_gifting, open_date: gift.open_date, createdAt: gift.created_at })) ?? [];
+    const giftReceived: GiftBoxColumn[] = gifts?.at(1)?.data?.map((gift) => ({ id: gift.id, name: gift.title, owner: gift.owner, receiver_name: gift.receiver_name, days_of_gifting: gift.days_of_gifting, open_date: gift.open_date, createdAt: gift.created_at })) ?? [];
 
     if (isPending)
         return (
@@ -89,8 +90,8 @@ const GifterDashboard = () => {
 
             {/* table section */}
             <div className="flex-1 space-y-4 pt-6">
-                <GiftBoxTableArea title={`Gift boxes sent (${giftSent.length ?? 0})`} data={giftSent} />
-                <GiftBoxTableArea title={`Gift boxes received (${giftReceived.length ?? 0})`} data={giftReceived} />
+                <GiftBoxTableArea title={`Gift boxes sent (${giftSent.length ?? 0})`} data={giftSent} columns={columnsGiftSent} />
+                <GiftBoxTableArea title={`Gift boxes received (${giftReceived.length ?? 0})`} data={giftReceived} columns={columnsGiftReceived} />
             </div>
         </div>
     );
