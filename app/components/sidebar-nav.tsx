@@ -65,6 +65,7 @@ export default function SidebarNav({
         >
           {items.map((item) => (
             <Link
+              prefetch
               key={item.href}
               href={item.href}
               className={cn(

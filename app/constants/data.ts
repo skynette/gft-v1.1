@@ -129,7 +129,7 @@ export const navItems: NavItem[] = [
   {
     title: 'Campaigns',
     href: '/dashboard/campaigns',
-    icon: 'box',
+    icon: 'campaign',
     label: 'boxes'
   },
   {
@@ -137,6 +137,12 @@ export const navItems: NavItem[] = [
     href: '/dashboard/users',
     icon: 'employee',
     label: 'employee'
+  },
+  {
+    title: 'API Keys',
+    href: '/dashboard/api-keys',
+    icon: 'key',
+    label: 'keys'
   },
   {
     title: 'Company Profile',

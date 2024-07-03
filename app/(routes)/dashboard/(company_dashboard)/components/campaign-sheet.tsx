@@ -2,22 +2,23 @@
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 
-interface BoxSheetProps {
+interface CampaignSheetProps {
     isOpen: boolean
     onClose: () => void
 }
-export const BoxSheet = ({isOpen, onClose}: BoxSheetProps) => {
+export const CampaignSheet = ({isOpen, onClose}: CampaignSheetProps) => {
     return (
         <Sheet open={isOpen} onOpenChange={onClose} >
             <SheetContent className="min-w-[50%]">
                 <SheetHeader>
                     <SheetTitle>
-                        Create Box
+                        Create Campaign
                     </SheetTitle>
                     <SheetDescription>
-                        Manage box
+                        Manage Campaign
                     </SheetDescription>
                 </SheetHeader>
+                
             </SheetContent>
         </Sheet >
     )
