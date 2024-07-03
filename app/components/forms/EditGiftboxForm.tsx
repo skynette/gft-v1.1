@@ -8,8 +8,10 @@ import { isValidPhoneNumber } from 'react-phone-number-input'
 import { ArrowRight } from 'lucide-react';
 import { GiftBoxValues } from '@/(routes)/dashboard/(gifter_dashboard)/gifter/gift-boxes/[box_id]/setup/page';
 import useSetGifterBox from '@/lib/hooks/useSetGifterBox';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
+import useEditGifterbox from '@/lib/hooks/useEditGifterBox';
+import { useQueryClient } from '@tanstack/react-query';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Enter the title').min(10, 'Title must be at least 10 characters'),
@@ -25,11 +27,14 @@ const EditGiftboxForm = ({ onNext, data }: {
     onNext: (data: GiftBoxValues, final: boolean) => void, data: GiftBoxValues
 }) => {
 
+    const queryClient = useQueryClient();
+    const router = useRouter();
+    const isEdit = useSearchParams().get('edit') ?? null;
     const boxId = useParams().box_id;
 
-    const { mutate, isPending } = useSetGifterBox({
+    const { mutate: mutateSetupGift, isPending: isPendingStep } = useSetGifterBox({
         boxId, onSuccess() {
-            toast.success('Gifter updated successfully');
+            toast.success('Gift box(es) setup successfully');
             onNext(data, false);
         },
         onError(error) {
@@ -38,15 +43,39 @@ const EditGiftboxForm = ({ onNext, data }: {
         },
     });
 
+    const { mutate: mutateEdit, isPending: isPendingEdit } = useEditGifterbox({
+        boxId, onSuccess() {
+            toast.success('Gift box(es) edit successfully');
+            queryClient.invalidateQueries({ queryKey: ['gift-sent'] });
+            queryClient.invalidateQueries({ queryKey: ['box', boxId] });
+            router.back();
+        },
+        onError(error) {
+            // @ts-ignore
+            error.response?.status === 400 && toast.error(error.response.data?.message)
+        },
+    });
+
     const handleSubmit = (values: GiftBoxValues) => {
-        mutate({
-            title: values.title,
-            receiver_name: values.receiverName,
-            receiver_phone: values.receiverPhone,
-            open_after_a_day: values.open_after_a_day,
-            open_date: values.openDate,
-            is_setup: true,
-        });
+        if (isEdit === 'true')
+            mutateEdit({
+                title: values.title,
+                receiver_name: values.receiverName,
+                receiver_phone: values.receiverPhone,
+                open_after_a_day: values.open_after_a_day,
+                open_date: values.openDate,
+                is_setup: true,
+            });
+
+        if (isEdit === null)
+            mutateSetupGift({
+                title: values.title,
+                receiver_name: values.receiverName,
+                receiver_phone: values.receiverPhone,
+                open_after_a_day: values.open_after_a_day,
+                open_date: values.openDate,
+                is_setup: true,
+            });
     };
 
     return (
@@ -99,8 +128,8 @@ const EditGiftboxForm = ({ onNext, data }: {
 
                 <Button
                     type='submit'
-                    disabled={isPending}
-                    isLoading={isPending}
+                    disabled={isPendingEdit || isPendingEdit}
+                    isLoading={isPendingEdit || isPendingEdit}
                     className='inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50'
                 >
                     Continue <ArrowRight size={18} className='text-white ml-2' />

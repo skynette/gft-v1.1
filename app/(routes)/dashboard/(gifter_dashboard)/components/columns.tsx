@@ -9,6 +9,7 @@ export type GiftBoxColumn = {
     id: string
     name: string
     owner: string
+    receiver_email: string
     days_of_gifting: string
     receiver_name: string
     open_date: string

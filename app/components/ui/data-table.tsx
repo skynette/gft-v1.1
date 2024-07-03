@@ -94,7 +94,7 @@ export function DataTable<TData, TValue>({
                             size="sm"
                             variant="outline"
                             className="ml-auto font-normal text-xs"
-                            // disabled={disabled}
+                        // disabled={disabled}
                         >
                             <Trash className="h-5 w-5 mr-2" />
                             Delete ({table.getFilteredSelectedRowModel().rows.length})

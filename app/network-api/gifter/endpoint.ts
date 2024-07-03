@@ -40,3 +40,11 @@ export const setMinibox = async (id: string, token: string, req: MiniboxRequest[
     return response.data;
 }
 
+export const editGiftBox = async (boxId: string, token: string, req: BoxSetupRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/gifter/gift-boxes/${boxId}/edit/`, { ...req }, {
+        headers: {
+            Authorization: `Token ${token}`
+        }
+    });
+    return response.data;
+}
