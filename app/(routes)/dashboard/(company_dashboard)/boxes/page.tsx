@@ -9,9 +9,14 @@ import React, { useState } from 'react'
 import { columns } from '../components/box-columns'
 import { mockData } from '@/constants/data'
 import { BoxSheet } from '../components/box-sheet'
+import useGetCompanyBox from '@/lib/hooks/useGetCompanyBox'
 
 export default function BoxPage() {
-    const [openSheet, setIsOpenSheet] = useState(false)
+    const [openSheet, setIsOpenSheet] = useState(false);
+
+    const { data: companyBox } = useGetCompanyBox();
+    console.log(companyBox);
+
     return (
         <div className='p-10'>
             <div className="flex items-center justify-between">
@@ -30,10 +35,10 @@ export default function BoxPage() {
                 data={mockData}
                 searchKey="title"
                 disabled={false}
-                // onDelete={() => {}}
+            // onDelete={() => {}}
             />
 
-        <BoxSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)}/>
+            <BoxSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }

@@ -117,7 +117,7 @@ export const authOptions: NextAuthOptions = {
                 token.accessToken = user.token;
                 token.role = user.role;
                 token.email = user.email;
-                token.apiKey = user.companyAPIKey;
+                token.companyAPIKey = user.companyAPIKey;
             }
             return token;
         },

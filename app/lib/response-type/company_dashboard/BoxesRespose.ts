@@ -1,3 +1,7 @@
+export interface CompanyBoxResponse {
+    result: BoxResponse;
+}
+
 export interface BoxResponse {
     user: number
     owner: string
