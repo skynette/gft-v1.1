@@ -203,7 +203,22 @@ class ViewBoxGiftsView(generics.GenericAPIView):
         tags=["Gifter"],
     )
     def get(self, request, box_id, *args, **kwargs):
-        box = get_object_or_404(Box, id=box_id, user=request.user)
+        box = get_object_or_404(Box, id=box_id)
+        authorized = False
+        
+        # Check if the request user is the owner
+        if box.user == request.user:
+            authorized = True
+        
+        # Check if the request user is the receiver
+        elif request.user.email == box.receiver_email or getattr(request.user, 'mobile', None) == box.receiver_phone:
+            authorized = True
+        else:
+            authorized = False
+
+        if not authorized:
+            return Response({"detail": "Unauthorized to view this box gifts"}, status=status.HTTP_403_FORBIDDEN)
+
         gifts = Gift.objects.filter(box_model=box).order_by('open_date')
         serializer = GiftSerializer(gifts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
