@@ -60,7 +60,7 @@ export const CellActionGiftReceived: React.FC<CellActionProps> = ({ data }) => {
                         Actions
                     </DropdownMenuLabel>
                     <DropdownMenuItem asChild>
-                        <Link href='/dashboard/gifter/view-gifts'>
+                        <Link href={`/dashboard/gifter/view-gifts?boxId=${data.id}`}>
                             <Eye className="mr-2 h-4 w-4" />
                             View gifts
                         </Link>
