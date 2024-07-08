@@ -1,22 +1,21 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { CellAction } from './cell-action'
 import { ArrowUpDown } from "lucide-react"
 import { format } from 'date-fns'
+import { CellActionGiftReceived } from "./cell-action-gift-received"
 
 export type GiftBoxColumn = {
     id: string
     name: string
     owner: string
-    receiver_email: string
     days_of_gifting: string
     receiver_name: string
     open_date: string
     createdAt: string
 }
 
-export const columns: ColumnDef<GiftBoxColumn>[] = [
+export const columnsGiftReceived: ColumnDef<GiftBoxColumn>[] = [
     {
         accessorKey: "name",
         header: ({ column }) => {
@@ -55,6 +54,6 @@ export const columns: ColumnDef<GiftBoxColumn>[] = [
     },
     {
         id: "actions",
-        cell: ({ row }) => <CellAction data={row.original} />
+        cell: ({ row }) => <CellActionGiftReceived data={row.original} />
     },
 ]

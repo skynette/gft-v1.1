@@ -3,14 +3,14 @@
 import { DataTable } from "@/components/ui/data-table";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { GiftBoxColumn, columns } from "./columns";
 
-interface GiftBoxTableAreaProps {
+interface GiftBoxTableAreaProps<TData, TValue> {
     title: string;
-    data: GiftBoxColumn[]
+    columns: any;
+    data: TData[];
 }
 
-const GiftBoxTableArea = ({ title, data }: GiftBoxTableAreaProps) => {
+export function GiftBoxTableArea<TData, TValue>({ title, columns, data }: GiftBoxTableAreaProps<TData, TValue>) {
 
     return (
         <>
