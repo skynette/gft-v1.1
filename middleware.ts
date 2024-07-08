@@ -37,7 +37,7 @@ const getDefaultRedirect = (role: Token['role']): string => {
         user: '/dashboard/metrics/',
         company: '/dashboard'
     };
-    return defaultRedirects[role] || '/';
+    return defaultRedirects[role] || '/dashboard/gifter';
 };
 
 export async function middleware(req: NextRequest) {

@@ -120,6 +120,10 @@ class SuperAdminUserProfileSerializer(BaseUserProfileSerializer):
         fields = "__all__"
 
 
+class CredentialSerializer(serializers.Serializer):
+    token = serializers.CharField(max_length=100, required=True, allow_blank=False)
+    
+
 class SocialAuthSerializer(serializers.Serializer):
     provider = serializers.ChoiceField(choices=User.PROVIDER_CHOICES)
     email = serializers.EmailField()

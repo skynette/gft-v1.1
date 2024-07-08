@@ -21,7 +21,6 @@ CSRF_TRUSTED_ORIGINS = [
     "http://gftv1.vercel.app",
     "https://gft.up.railway.app",
     "http://gft.up.railway.app",
-    "https://c47a-102-89-32-56.ngrok-free.app",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]

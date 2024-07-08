@@ -1,3 +1,4 @@
+import json
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
@@ -6,6 +7,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from django.contrib.auth import get_user_model, login
 from apps.admin_dashboard.serializers import UserSerializer
 from apps.authentication.serializers import (
+    CredentialSerializer,
     RegisterSerializer,
     SocialAuthSerializer,
     UserUpdateSerializer,
@@ -96,6 +98,65 @@ class RegisterView(generics.GenericAPIView):
 
 
 register_api_view = RegisterView.as_view()
+
+class CredentialLogin(generics.GenericAPIView):
+    serializer_class = CredentialSerializer
+
+    @extend_schema(
+        request=None,
+        responses={
+            200: OpenApiResponse(
+                response={"application/json": {}},
+                description="Successful registration or login",
+                examples=[
+                    OpenApiExample(
+                        name="Success",
+                        value={
+                            "user": {
+                                "id": "VoZkCadJP9",
+                                "username": "user_hdrZnk7n",
+                                "first_name": "string",
+                                "last_name": "string",
+                                "email": "user@example.com",
+                                "mobile": "+234980000000",
+                                "provider": "credentials",
+                            },
+                            "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                        },
+                    )
+                ],
+            ),
+            400: OpenApiResponse(description="Bad Request"),
+            500: OpenApiResponse(description="Server Error"),
+        },
+        description="Register or login a user using social account",
+        tags=["Authentication"],
+    )
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        token = data.get("token")
+        token = Token.objects.filter(key=token).first()
+        
+        if not token:
+            return Response({"message": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)             
+        
+        user = token.user
+        
+        if user.user_type == "company":
+            companyAPIKey = CompanyApiKey.objects.filter(company__owner=user).first()
+            data = {"user": UserUpdateSerializer(user).data, "token": token.key, "companyAPIKey": companyAPIKey.key}
+            print("data", data)
+        else:
+            data = {"user": UserUpdateSerializer(user).data, "token": token.key, "companyAPIKey": ''}
+            print("data", data)
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+credential_login_api_view = CredentialLogin.as_view()
 
 
 class SocialAuthView(generics.GenericAPIView):

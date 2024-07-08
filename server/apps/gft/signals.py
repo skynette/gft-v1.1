@@ -1,7 +1,7 @@
 import threading
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Box, Company, CompanyBoxes, Gift, Campaign
+from .models import Box, Company, CompanyApiKey, CompanyBoxes, Gift, Campaign
 from datetime import timedelta
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -13,6 +13,13 @@ def create_company(sender, instance, created, **kwargs):
     """create company for company type users"""
     if created and instance.user_type == 'company':
         Company.objects.create(owner=instance, name=f'{instance.username} company')
+
+
+@receiver(post_save, sender=Company)
+def create_company_api_key(sender, instance, created, **kwargs):
+    """create company api key for newly created company"""
+    if created:
+        CompanyApiKey.objects.create(company=instance)
 
 
 class CreateGiftBoxThread(threading.Thread):

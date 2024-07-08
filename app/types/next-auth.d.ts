@@ -13,13 +13,19 @@ declare module "next-auth" {
             image: string;
             picture?: string;
             role: string;
+            companyAPIKey?: string;
         };
     }
-
-    interface User {
+    interface User extends DefaultUser {
+        companyAPIKey?: string;
         token?: string;
         role?: string;
     }
+
+    // interface User {
+    //     token?: string;
+    //     role?: string;
+    // }
 
     interface JWT {
         accessToken?: string;

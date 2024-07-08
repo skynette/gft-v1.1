@@ -39,9 +39,37 @@ export const authOptions: NextAuthOptions = {
 
                     const user = tokenResponse.data;
 
-                    if (user) {
-                        return { email: credentials?.email, ...user };
+                    // now to login with credentials endpoint
+                    try {
+                        const url = `${BASE_URL}/auth/login/credentials/`;
+                        const userDataResponse = await axios.post(url, {
+                            token: user.token,
+                        });
+                        const userData = userDataResponse.data
+                        if (userData) {
+                            const data = {
+                                id: userData.user.id,
+                                email: userData.user.email,
+                                provider: userData.user.provider,
+                                first_name: userData.user.email,
+                                last_name: userData.user.last_name,
+                                username: userData.user.username,
+                                mobile: userData.user.mobile,
+                                contact_preference: userData.user.contact_preference,
+                                image: userData.user.image,
+                                role: userData.user.role,
+                                token: userData.token,
+                                companyAPIKey: userData.companyAPIKey,
+                            }
+                            return data;
+                        }
+                    } catch (error) {
+                        console.error('Error authorizing user:', error);
+                        return null;
                     }
+                    // if (user) {
+                    //     return { email: credentials?.email, ...user };
+                    // }
                     return null;
                 } catch (error) {
                     console.error('Error authorizing user:', error);
@@ -81,7 +109,6 @@ export const authOptions: NextAuthOptions = {
                     token.role = userData.user.role;
 
                 } catch (error) {
-                    console.error('Error handling OAuth user:', error);
                     return token;
                 }
             } else if (user) {
@@ -89,6 +116,8 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.accessToken = user.token;
                 token.role = user.role;
+                token.email = user.email;
+                token.apiKey = user.companyAPIKey;
             }
             return token;
         },

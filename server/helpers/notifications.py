@@ -75,6 +75,9 @@ def send_email_with_callback_token(user, email_token, **kwargs):
                 else:
                     sg = SendGridAPIClient(apikey)
                     response = sg.send(message)
+                    message = message.get()
+                    message = message['content'][0]['value']
+                    print(f'\n[+] {message}')
                     print("Email sent successfully:", response)
                 return True
             except Exception as e:

@@ -78,7 +78,7 @@ export default function Login() {
         } else {
             // Handle successful login
             toast.success('Successfully signed in');
-            console.log('Successfully signed in');
+            console.log('Successfully signed in, now pusing to dashboard');
             router.push('/dashboard');
         }
     };

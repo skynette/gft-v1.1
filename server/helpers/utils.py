@@ -644,6 +644,7 @@ def send_email(receiver_email: str, subject: str, html_content: str) -> Dict[str
         # Send email using SendGrid API
         sg = SendGridAPIClient(api_key)
         response = sg.send(message)
+        print("email message", html_content)
         print("Email sent successfully:", response)
         return {'status': True, 'message': 'Email sent successfully'}
     except Exception as e:
