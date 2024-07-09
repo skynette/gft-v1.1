@@ -9,10 +9,11 @@ import { columns } from '../components/campaign-columns'
 import { useState } from 'react'
 import { CampaignSheet } from '../components/campaign-sheet'
 import useGetCompanyCampaign from '@/lib/hooks/useGetCompanyCampaigns'
+import LoadingSkeleton from '@/components/skeleton'
 
 export default function CampaignsPage() {
     const [openSheet, setIsOpenSheet] = useState(false)
-    const { data: companyCampaigns } = useGetCompanyCampaign();
+    const { data: companyCampaigns, isPending, isSuccess } = useGetCompanyCampaign();
 
     return (
         <div className='p-10'>
@@ -26,12 +27,16 @@ export default function CampaignsPage() {
                     Create Campaign
                 </Button>
             </div>
-            <Separator />
-            <DataTable
-                columns={columns}
-                data={companyCampaigns ?? []}
-                searchKey="name"
-            />
+            <Separator className='my-4' />
+            {isPending && <LoadingSkeleton />}
+            {
+                isSuccess &&
+                <DataTable
+                    columns={columns}
+                    data={companyCampaigns ?? []}
+                    searchKey="name"
+                />
+            }
             <CampaignSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )

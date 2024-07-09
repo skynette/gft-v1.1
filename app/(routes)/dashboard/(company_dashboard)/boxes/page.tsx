@@ -9,11 +9,12 @@ import React, { useState } from 'react'
 import { columns } from '../components/box-columns'
 import { BoxSheet } from '../components/box-sheet'
 import useGetCompanyBox from '@/lib/hooks/useGetCompanyBox'
+import LoadingSkeleton from '@/components/skeleton'
 
 export default function BoxPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
 
-    const { data: companyBox } = useGetCompanyBox();
+    const { data: companyBox, isPending, isSuccess } = useGetCompanyBox();
 
     return (
         <div className='p-10'>
@@ -27,13 +28,17 @@ export default function BoxPage() {
                     Create Box
                 </Button>
             </div>
-            <Separator />
-            <DataTable
-                columns={columns}
-                data={companyBox?.results ?? []}
-                searchKey="title"
-                disabled={false}
-            />
+            <Separator className='my-4'/>
+            {isPending && <LoadingSkeleton />}
+            {
+                isSuccess &&
+                <DataTable
+                    columns={columns}
+                    data={companyBox?.results ?? []}
+                    searchKey="title"
+                    disabled={false}
+                />
+            }
 
             <BoxSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
