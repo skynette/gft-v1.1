@@ -8,9 +8,11 @@ import { Plus } from 'lucide-react'
 import { columns } from '../components/campaign-columns'
 import { useState } from 'react'
 import { CampaignSheet } from '../components/campaign-sheet'
+import useGetCompanyCampaign from '@/lib/hooks/useGetCompanyCampaigns'
 
 export default function CampaignsPage() {
     const [openSheet, setIsOpenSheet] = useState(false)
+    const { data: companyCampaigns } = useGetCompanyCampaign();
 
     return (
         <div className='p-10'>
@@ -27,10 +29,10 @@ export default function CampaignsPage() {
             <Separator />
             <DataTable
                 columns={columns}
-                data={[]}
+                data={companyCampaigns ?? []}
                 searchKey="name"
             />
-        <CampaignSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)}/>
+            <CampaignSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }

@@ -4,14 +4,19 @@ import { MobileSidebar } from "./mobile-sidebar";
 import UserNav from "./user-nav";
 import Link from "next/link";
 import Image from "next/image";
+import { Session } from "../../../types";
 
-export default function Header() {
+interface HeaderProps {
+    currUser: Session['user'] | null;
+}
+
+export default function Header({ currUser }: HeaderProps) {
     return (
         <div className="supports-backdrop-blur:bg-background/60 fixed left-0 right-0 top-0 z-20 border-b bg-background/95 backdrop-blur">
             <nav className="flex h-14 items-center justify-between px-4">
                 <div className="hidden lg:block">
                     <Link href={"/dashboard"}>
-                        <Image alt="logo" src={"/images/logo.webp"} width={30} height={30}/>
+                        <Image alt="logo" src={"/images/logo.webp"} width={30} height={30} />
                     </Link>
                 </div>
 
@@ -20,7 +25,7 @@ export default function Header() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* <UserNav /> */}
+                    <UserNav currUser={currUser} />
                     <ThemeToggle />
                 </div>
             </nav>

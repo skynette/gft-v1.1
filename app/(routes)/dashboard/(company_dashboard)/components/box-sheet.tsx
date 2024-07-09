@@ -17,7 +17,7 @@ export const BoxSheet = ({ isOpen, onClose }: BoxSheetProps) => {
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    <CreateBoxForm />
+                    <CreateBoxForm onClose={onClose}/>
                 </SheetHeader>
             </SheetContent>
         </Sheet >

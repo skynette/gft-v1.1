@@ -64,6 +64,16 @@ export const getCompanyBox = async (token: string, apiKey: string): Promise<Comp
     return response.data;
 }
 
+export const getCompanyCampaigns = async (token: string, apiKey: string): Promise<CampaignResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/campaigns/all/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
 export const getCompanyCategoryBox = async (token: string, apiKey: string): Promise<CompanyCatboxResponse[]> => {
     const response = await axiosInstance.get('/dashboard/company-boxes/', {
         headers: {

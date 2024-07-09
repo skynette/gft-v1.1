@@ -2,7 +2,7 @@ import "./globals.css";
 import { Epilogue } from "next/font/google";
 import Providers from "./lib/providers";
 import GifterHeader from '@/components/layout/header-gifter';
-import { getCompanyAPIKey, getCurrentUser, getSession } from "./lib/actions";
+import { getCurrentUser } from "./lib/actions";
 import { ReactNode } from "react";
 import { User } from "../types";
 
@@ -22,8 +22,6 @@ interface RootLayoutProps {
 
 export default async function RootLayout({ children }: RootLayoutProps) {
     const currUser: User | undefined = await getCurrentUser();
-    const session = await getSession();
-    console.log({ session })
     return (
         <html lang="en">
             <body className={epilogue.className}>

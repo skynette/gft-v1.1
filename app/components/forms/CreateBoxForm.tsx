@@ -7,7 +7,7 @@ import { Button } from '../ui/button';
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import { ArrowRight } from 'lucide-react';
 import useGetCompanyCategorybox from '@/lib/hooks/useGetCompanyCategorybox';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CreateBoxRequest } from '@/lib/response-type/company_dashboard/CreateBoxRequest';
 import { createBox } from '@/network-api/dashboard/endpoint';
 import { useSession } from 'next-auth/react';
@@ -28,15 +28,18 @@ const validationSchema = Yup.object().shape({
 
 type CreateFormSchema = Yup.InferType<typeof validationSchema>;
 
-const CreateBoxForm = () => {
+const CreateBoxForm = ({ onClose }: { onClose: () => void }) => {
     const session = useSession();
     const { data } = useGetCompanyCategorybox();
+    const client = useQueryClient()
     const boxCategory = data?.map(box => ({ option: box.box_type.name, value: box.box_type.id.toString() }));
 
     const { mutate, isPending } = useMutation<any, AxiosError, CreateBoxRequest>({
         mutationFn: (req: CreateBoxRequest) => createBox(session?.data?.accessToken ?? '', session?.data?.companyAPIKey ?? '', req),
         onSuccess(data, variables, context) {
             toast.success('Box created successfully');
+            onClose();
+            client.invalidateQueries({queryKey: ['company-box']})
         },
     });
 

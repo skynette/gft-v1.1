@@ -39,10 +39,6 @@ export const columns: ColumnDef<CampaignColumns>[] = [
         header: "Name",
     },
     {
-        accessorKey: "company_boxes",
-        header: "Company Boxes",
-    },
-    {
         accessorKey: "duration",
         header: "Duration",
     },
