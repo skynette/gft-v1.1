@@ -12,20 +12,30 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AnalyticsResponse } from "@/lib/response-type/dashboard/AnalyticsResponse";
-import { getAnalytics } from "@/network-api/dashboard/endpoint";
-import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import useCompanyDashboardMetrics, { useCompanyChartData } from "@/lib/hooks/useCompanyDashboardMetrics";
 import { useSession } from "next-auth/react";
 
 export default function page() {
     const session = useSession();
+    const { data, isPending } = useCompanyDashboardMetrics();
+    const { data: chartData, isPending: chartDataLoading } = useCompanyChartData();
 
-    const { data } = useQuery<AnalyticsResponse, AxiosError>({
-        queryKey: ['analytics'],
-        queryFn: () => getAnalytics(session.data?.accessToken ?? ''),
-        enabled: session.status === 'authenticated'
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const chartDataFormatted = months.map(month => {
+        const boxData = chartData?.boxes.find(box => box.month === month);
+        const campaignData = chartData?.campaigns.find(campaign => campaign.month === month);
+
+        return {
+            name: month,
+            totalBoxes: boxData ? boxData.total_boxes : 0,
+            totalCampaigns: campaignData ? campaignData.total_campaigns : 0
+        };
     });
 
     return (
@@ -33,7 +43,7 @@ export default function page() {
             <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
                 <div className="flex items-center justify-between space-y-2">
                     <h2 className="text-3xl font-bold tracking-tight">
-                        Hi, Welcome back X21 👋
+                        Hi, Welcome back {session.data?.user.email} 👋
                     </h2>
                     <div className="hidden items-center space-x-2 md:flex">
                         <CalendarDateRangePicker />
@@ -43,15 +53,12 @@ export default function page() {
                 <Tabs defaultValue="overview" className="space-y-4">
                     <TabsList>
                         <TabsTrigger value="overview">Overview</TabsTrigger>
-                        <TabsTrigger value="analytics">Analytics</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">
-                                        Total Boxes
-                                    </CardTitle>
+                                    <CardTitle className="text-sm font-medium">Total Boxes</CardTitle>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -66,9 +73,11 @@ export default function page() {
                                     </svg>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">$45,231.89</div>
-                                    <p className="text-xs text-muted-foreground">
-                                        +20.1% from last month
+                                    <div className="text-2xl font-bold">
+                                        {isPending ? <Skeleton className="w-full h-8" /> : data?.boxes.total_boxes}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-3">
+                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.boxes.boxes_percentage_increase}% increase from last month`}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -91,17 +100,17 @@ export default function page() {
                                     </svg>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">+2350</div>
-                                    <p className="text-xs text-muted-foreground">
-                                        +180.1% from last month
+                                    <div className="text-2xl font-bold">
+                                        {isPending ? <Skeleton className="w-full h-8" /> : data?.gifts.total_gifts}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-3">
+                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.gifts.gifts_percentage_increase}% increase from last month`}
                                     </p>
                                 </CardContent>
                             </Card>
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">
-                                        Campaigns
-                                    </CardTitle>
+                                    <CardTitle className="text-sm font-medium">Campaigns</CardTitle>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -117,17 +126,17 @@ export default function page() {
                                     </svg>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">+12,234</div>
-                                    <p className="text-xs text-muted-foreground">
-                                        +19% from last month
+                                    <div className="text-2xl font-bold">
+                                        {isPending ? <Skeleton className="w-full h-8" /> : data?.campaigns.total_campaigns}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-3">
+                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.campaigns.campaigns_percentage_increase}% increase from last month`}
                                     </p>
                                 </CardContent>
                             </Card>
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-sm font-medium">
-                                        Gift Visits
-                                    </CardTitle>
+                                    <CardTitle className="text-sm font-medium">Gift Visits</CardTitle>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -142,9 +151,11 @@ export default function page() {
                                     </svg>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold">+573</div>
-                                    <p className="text-xs text-muted-foreground">
-                                        +201 since last hour
+                                    <div className="text-2xl font-bold">
+                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.gift_visits.total_gift_visits}`}
+                                    </div>
+                                    <p className="text-xs text-muted-foreground mt-3">
+                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.gift_visits.gift_visits_percentage_increase} increase from last month`}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -157,7 +168,7 @@ export default function page() {
                                     <CardTitle>Overview</CardTitle>
                                 </CardHeader>
                                 <CardContent className="pl-2">
-                                    <DashboardOverview />
+                                    <DashboardOverview chartDataFormatted={chartDataFormatted} loading={chartDataLoading}/>
                                 </CardContent>
                             </Card>
                             <Card className="col-span-4 md:col-span-3">

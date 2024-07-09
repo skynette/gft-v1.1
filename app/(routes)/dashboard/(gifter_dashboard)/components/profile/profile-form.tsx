@@ -11,6 +11,7 @@ import useUpdateUser from '@/lib/hooks/useUpdateUser';
 import { useSession } from 'next-auth/react';
 import useGetProfile from '@/lib/hooks/useGetProfile';
 import { useQueryClient } from '@tanstack/react-query';
+import { SyncLoader } from 'react-spinners';
 
 const profileFormSchema = Yup.object().shape({
     fullname: Yup.string().required('Fullname is required').trim()
@@ -31,7 +32,7 @@ type ProfileFormValues = Yup.InferType<typeof profileFormSchema>;
 export default function ProfileForm() {
     const queryClient = useQueryClient();
     const { data, update } = useSession();
-    const { data: profile } = useGetProfile()
+    const { data: profile, isPending: profileLoading } = useGetProfile();
 
     const { mutate, isPending } = useUpdateUser({
         onSuccess(variables) {
@@ -50,6 +51,9 @@ export default function ProfileForm() {
         },
     });
 
+    if (profileLoading) {
+        return <SyncLoader size={15} color='#3b82f6'/>;
+    }
 
     const defaultValues: ProfileFormValues = {
         fullname: (profile?.first_name ?? '') + ' ' + (profile?.last_name ?? ''),
@@ -136,5 +140,4 @@ export default function ProfileForm() {
             }
         </Formik>
     );
-
 }

@@ -2,7 +2,6 @@ import axiosInstance from "@/lib/axiosInstance";
 import { CompanyBoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose";
 import { CompanyCatboxResponse } from "@/lib/response-type/company_dashboard/CompanyboxResponse";
 import { CreateBoxRequest } from "@/lib/response-type/company_dashboard/CreateBoxRequest";
-import { AnalyticsResponse } from "@/lib/response-type/dashboard/AnalyticsResponse";
 import { DashboardResponse } from "@/lib/response-type/dashboard/DashboardResponse";
 import { GiftOverviewResponse } from "@/lib/response-type/dashboard/GiftOverResponse";
 import { NotificationResponse } from "@/lib/response-type/dashboard/NotificationResponse";
@@ -54,6 +53,26 @@ export const markNotificationAsRead = async (token: string, notificationId: stri
 }
 
 // COMPANY ENDPOINT
+export const getCompanyDashboardMetrics = async (token: string, apiKey: string): Promise<CompanyDashboardResponse> => {
+    const response = await axiosInstance.get('/dashboard/analytics/combined/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
+export const getCompanyChartData = async (token: string, apiKey: string): Promise<CompanyChartResponse> => {
+    const response = await axiosInstance.get('/dashboard/analytics/charts/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
 export const getCompanyBox = async (token: string, apiKey: string): Promise<CompanyBoxResponse> => {
     const response = await axiosInstance.get('/dashboard/boxes/', {
         headers: {
@@ -103,13 +122,3 @@ export const createBox = async (token: string, apiKey: string, req: CreateBoxReq
     });
     return response.data;
 }
-
-export const getAnalytics = async (token: string): Promise<AnalyticsResponse> => {
-    const response = await axiosInstance.get('/analytics/combined/', {
-        headers: {
-            Authorization: `Token ${token}`,
-        }
-    });
-    return response.data;
-}
-

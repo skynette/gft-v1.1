@@ -7,6 +7,7 @@ import { SessionProvider } from 'next-auth/react';
 import { Toaster } from 'sonner';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ThemeProvider from '@/components/layout/ThemeToggle/theme-provider';
+import Next13ProgressBar from 'next13-progressbar';
 
 function makeQueryClient() {
   return new QueryClient({
@@ -38,6 +39,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         <SessionProvider>
           {children}
+          <Next13ProgressBar height="4px" color="#0A2FFF" options={{ showSpinner: false }} showOnShallow />
         </SessionProvider>
       </ThemeProvider>
       <Toaster richColors position='top-right' />
