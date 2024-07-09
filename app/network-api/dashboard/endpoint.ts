@@ -1,5 +1,8 @@
 import axiosInstance from "@/lib/axiosInstance";
 import { CompanyBoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose";
+import { CompanyCatboxResponse } from "@/lib/response-type/company_dashboard/CompanyboxResponse";
+import { CreateBoxRequest } from "@/lib/response-type/company_dashboard/CreateBoxRequest";
+import { AnalyticsResponse } from "@/lib/response-type/dashboard/AnalyticsResponse";
 import { DashboardResponse } from "@/lib/response-type/dashboard/DashboardResponse";
 import { GiftOverviewResponse } from "@/lib/response-type/dashboard/GiftOverResponse";
 import { NotificationResponse } from "@/lib/response-type/dashboard/NotificationResponse";
@@ -55,8 +58,38 @@ export const getCompanyBox = async (token: string, apiKey: string): Promise<Comp
     const response = await axiosInstance.get('/dashboard/boxes/', {
         headers: {
             Authorization: `Token ${token}`,
-            'gft-api-key': `${apiKey}`
+            'gft-api-key': `${apiKey}`,
         }
     });
     return response.data;
 }
+
+export const getCompanyCategoryBox = async (token: string, apiKey: string): Promise<CompanyCatboxResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/company-boxes/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
+export const createBox = async (token: string, apiKey: string, req: CreateBoxRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/boxes/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
+export const getAnalytics = async (token: string): Promise<AnalyticsResponse> => {
+    const response = await axiosInstance.get('/analytics/combined/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+

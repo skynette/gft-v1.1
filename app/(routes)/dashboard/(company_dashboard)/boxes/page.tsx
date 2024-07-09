@@ -7,7 +7,6 @@ import { Separator } from '@/components/ui/separator'
 import { Plus } from 'lucide-react'
 import React, { useState } from 'react'
 import { columns } from '../components/box-columns'
-import { mockData } from '@/constants/data'
 import { BoxSheet } from '../components/box-sheet'
 import useGetCompanyBox from '@/lib/hooks/useGetCompanyBox'
 
@@ -15,7 +14,6 @@ export default function BoxPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
 
     const { data: companyBox } = useGetCompanyBox();
-    console.log(companyBox);
 
     return (
         <div className='p-10'>
@@ -32,10 +30,9 @@ export default function BoxPage() {
             <Separator />
             <DataTable
                 columns={columns}
-                data={mockData}
+                data={companyBox?.results ?? []}
                 searchKey="title"
                 disabled={false}
-            // onDelete={() => {}}
             />
 
             <BoxSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />

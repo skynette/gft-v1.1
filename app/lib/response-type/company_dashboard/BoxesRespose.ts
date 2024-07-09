@@ -1,5 +1,5 @@
 export interface CompanyBoxResponse {
-    result: BoxResponse;
+    results: BoxResponse[];
 }
 
 export interface BoxResponse {

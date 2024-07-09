@@ -5,6 +5,7 @@ import { ArrowUpDown } from "lucide-react"
 import { format } from 'date-fns'
 import { CellAction } from "./box-cell-action"
 import { Checkbox } from "@/components/ui/checkbox"
+import { BoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose"
 
 export type BoxColumn = {
     user: number
@@ -27,7 +28,7 @@ export type BoxColumn = {
 }
 
 
-export const columns: ColumnDef<BoxColumn>[] = [
+export const columns: ColumnDef<BoxResponse>[] = [
     {
         id: "select",
         header: ({ table }) => (

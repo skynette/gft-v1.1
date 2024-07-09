@@ -1,3 +1,5 @@
+'use client';
+
 import { DashboardOverview } from "@/components/dashboard-overview";
 import { CalendarDateRangePicker } from "@/components/date-range-picker";
 import { RecentSales } from "@/components/recent-sales";
@@ -11,8 +13,21 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AnalyticsResponse } from "@/lib/response-type/dashboard/AnalyticsResponse";
+import { getAnalytics } from "@/network-api/dashboard/endpoint";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { useSession } from "next-auth/react";
 
 export default function page() {
+    const session = useSession();
+
+    const { data } = useQuery<AnalyticsResponse, AxiosError>({
+        queryKey: ['analytics'],
+        queryFn: () => getAnalytics(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
+    });
+
     return (
         <ScrollArea className="h-full">
             <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
