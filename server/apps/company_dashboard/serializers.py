@@ -108,10 +108,6 @@ class BoxSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context['request'].user
         validated_data['user'] = user
-        
-        # Ensure that open_date is a date object
-        if 'open_date' in validated_data and isinstance(validated_data['open_date'], datetime):
-            validated_data['open_date'] = validated_data['open_date'].date()
             
         box_category = validated_data.pop('box_category')
         company_boxes = CompanyBoxes.objects.get(company=self.context['request'].user.company, box_type=box_category)
