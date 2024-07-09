@@ -6,9 +6,9 @@ import EditGiftboxForm from '@/components/forms/EditGiftboxForm';
 import EditMiniboxForm from '@/components/forms/EditMiniboxForm';
 import useGetGiftbox from '@/lib/hooks/useGetGiftbox';
 import { useParams, useRouter } from 'next/navigation';
-import useGetMinibox from '@/lib/hooks/useGetMinibox';
 import useSetMiniBox from '@/lib/hooks/useSetMinibox';
 import { toast } from 'sonner';
+import { SyncLoader } from 'react-spinners';
 
 export interface Minibox {
     id: string;
@@ -31,11 +31,11 @@ const SetupBox = () => {
     const router = useRouter();
 
     const steps = 2;
-    const label = ['Edit receiver details', 'Edit mini boxes details']
+    const label = ['Edit receiver details', 'Edit mini boxes details'];
     const [currentStep, setCurrentStep] = useState(0);
     const width = `${(100 / (steps - 1)) * (currentStep)}%`;
 
-    const { data: giftBox } = useGetGiftbox(boxId);
+    const { data: giftBox, isPending: boxDataLoading } = useGetGiftbox(boxId);
 
     const { mutate, isPending } = useSetMiniBox({
         boxId, onSuccess() {
@@ -54,15 +54,16 @@ const SetupBox = () => {
     });
 
     useEffect(() => {
-        setData(prev => ({
-            ...prev,
-            title: giftBox?.title ?? '',
-            receiverName: giftBox?.receiver_name ?? '',
-            receiverPhone: giftBox?.receiver_phone ?? '',
-            openDate: giftBox?.open_date ?? '',
-            open_after_a_day: giftBox?.open_after_a_day ?? false,
-        }));
-
+        if (giftBox) {
+            setData(prev => ({
+                ...prev,
+                title: giftBox?.title ?? '',
+                receiverName: giftBox?.receiver_name ?? '',
+                receiverPhone: giftBox?.receiver_phone ?? '',
+                openDate: giftBox?.open_date ?? '',
+                open_after_a_day: giftBox?.open_after_a_day ?? false,
+            }));
+        }
     }, [giftBox]);
 
     const handleNextStep = (newData: GiftBoxValues, final: boolean) => {
@@ -123,7 +124,13 @@ const SetupBox = () => {
                     }
                 </div>
             </div>
-            {forms[currentStep]}
+            {boxDataLoading ? (
+                <div className="flex justify-center items-center h-64">
+                    <SyncLoader size={15} color='#3b82f6'/>
+                </div>
+            ) : (
+                forms[currentStep]
+            )}
         </div>
     )
 }

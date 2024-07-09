@@ -34,7 +34,7 @@ const getAllowedRoutes = (role: Token['role']): RegExp[] => {
 const getDefaultRedirect = (role: Token['role']): string => {
     const defaultRedirects = {
         super_admin: '/admin',
-        user: '/dashboard/metrics/',
+        user: '/dashboard/gifter/',
         company: '/dashboard'
     };
     return defaultRedirects[role] || '/dashboard/gifter';

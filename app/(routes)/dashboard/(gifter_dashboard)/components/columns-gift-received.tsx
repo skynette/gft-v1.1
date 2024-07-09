@@ -48,11 +48,6 @@ export const columnsGiftReceived: ColumnDef<GiftBoxColumn>[] = [
         cell: ({ row }) => format(new Date(row.original.open_date), 'yyyy-MM-dd HH:mm:ss'),
     },
     {
-        accessorKey: "createdAt",
-        header: "Date",
-        cell: ({ row }) => format(new Date(row.original.createdAt), 'yyyy-MM-dd HH:mm:ss'),
-    },
-    {
         id: "actions",
         cell: ({ row }) => <CellActionGiftReceived data={row.original} />
     },

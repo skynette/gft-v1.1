@@ -62,21 +62,21 @@ const GifterDashboard = () => {
                     Icon={Gift}
                     title="Total Giftboxes Owned"
                     value={data?.total_boxes_owned ?? 0}
-                    rate="+20.1"
+                    rate="+0"
                 />
 
                 <GiftInfo
                     Icon={UsersRound}
                     title="Total Boxes Received"
                     value={data?.boxes_received ?? 0}
-                    rate="+180.1"
+                    rate="+0"
                 />
 
                 <GiftInfo
                     Icon={PackageOpen}
                     title="Total Boxes Opened"
                     value={data?.gift_boxes_opened ?? 0}
-                    rate="+180.1"
+                    rate="+0"
                 />
             </div>
 
