@@ -33,7 +33,6 @@ class CreateCampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
         fields = [
-            "company",
             "name",
             "company_boxes",
             "duration",

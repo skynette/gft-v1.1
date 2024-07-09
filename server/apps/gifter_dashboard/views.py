@@ -332,3 +332,19 @@ class MarkNotificationReadView(generics.GenericAPIView):
 
 
 mark_notification_read_api_view = MarkNotificationReadView.as_view()
+
+
+class MarkAllNotificationsReadView(generics.GenericAPIView):
+    serializer_class = NotificationSerializer
+
+    @extend_schema(
+        responses={200: "All notifications marked as read."},
+        description="Marks all notifications as read for the user.",
+        tags=["Gifter"],
+    )
+    def get(self, request, *args, **kwargs):
+        notifications = Notification.objects.filter(user=request.user, read=False)
+        notifications.update(read=True)
+        return Response({'message': 'All notifications marked as read.'}, status=status.HTTP_200_OK)
+
+mark_all_notifications_read_api_view = MarkAllNotificationsReadView.as_view()
