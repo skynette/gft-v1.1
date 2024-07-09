@@ -64,6 +64,16 @@ export const getCompanyBox = async (token: string, apiKey: string): Promise<Comp
     return response.data;
 }
 
+export const deleteBox = async (token: string, apiKey: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/boxes/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
 export const getCompanyCampaigns = async (token: string, apiKey: string): Promise<CampaignResponse[]> => {
     const response = await axiosInstance.get('/dashboard/campaigns/all/', {
         headers: {
