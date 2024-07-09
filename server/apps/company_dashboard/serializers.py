@@ -319,6 +319,7 @@ class CombinedAnalyticsSerializer(serializers.Serializer):
     gifts = GiftAnalyticsSerializer()
     gift_visits = GiftVisitAnalyticsSerializer()
     campaigns = CampaignAnalyticsSerializer()
+    boxes = BoxAnalyticsSerializer()
 
 
 class DashboardSerializer(serializers.Serializer):
@@ -328,3 +329,22 @@ class DashboardSerializer(serializers.Serializer):
     weekdays = serializers.ListField(child=serializers.IntegerField())
     gifts_given = serializers.ListField(child=serializers.IntegerField())
     gifts_received = serializers.ListField(child=serializers.IntegerField())
+
+
+class CompanyDashboardChartSerializer(serializers.Serializer):
+    boxes = serializers.ListField(
+        child=serializers.DictField(child=serializers.IntegerField())
+    )
+    campaigns = serializers.ListField(
+        child=serializers.DictField(child=serializers.IntegerField())
+    )
+
+
+class MonthDataSerializer(serializers.Serializer):
+    month = serializers.CharField()
+    total_boxes = serializers.IntegerField()
+    total_campaigns = serializers.IntegerField()
+
+class CompanyDashboardChartSerializer(serializers.Serializer):
+    boxes = MonthDataSerializer(many=True)
+    campaigns = MonthDataSerializer(many=True)

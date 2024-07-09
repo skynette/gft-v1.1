@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
@@ -27,6 +28,7 @@ from .serializers import (
     CombinedAnalyticsSerializer,
     CompanyAPIKeySerializer,
     CompanyBoxesSerializer,
+    CompanyDashboardChartSerializer,
     CompanySerializer,
     CompanyUserSerializer,
     CreateCampaignSerializer,
@@ -965,7 +967,8 @@ class BoxAnalyticsView(generics.GenericAPIView):
 
 
 class GiftAnalyticsView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
 
     @extend_schema(
         responses=GiftAnalyticsSerializer,
@@ -1009,7 +1012,8 @@ class GiftAnalyticsView(generics.GenericAPIView):
 
 
 class GiftVisitAnalyticsView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
 
     @extend_schema(
         responses=GiftVisitAnalyticsSerializer,
@@ -1054,7 +1058,8 @@ class GiftVisitAnalyticsView(generics.GenericAPIView):
 
 
 class CampaignAnalyticsView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
 
     @extend_schema(
         responses=CampaignAnalyticsSerializer,
@@ -1098,7 +1103,8 @@ class CampaignAnalyticsView(generics.GenericAPIView):
 
 
 class CombinedAnalyticsView(generics.GenericAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
 
     @extend_schema(
         responses=CombinedAnalyticsSerializer,
@@ -1220,3 +1226,68 @@ class CombinedAnalyticsView(generics.GenericAPIView):
 
         serializer = CombinedAnalyticsSerializer(data)
         return Response(serializer.data)
+
+
+class CompanyDashboardChartData(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+
+    @extend_schema(
+        responses=CompanyDashboardChartSerializer,
+        description="Get combined analytics for boxes and campaigns related to the logged-in company for each month from January to December",
+        examples=[
+            OpenApiExample(
+                "Example response",
+                value={
+                    "boxes": [
+                        {"month": "January", "total_boxes": 100},
+                        {"month": "February", "total_boxes": 120},
+                    ],
+                    "campaigns": [
+                        {"month": "January", "total_campaigns": 20},
+                        {"month": "February", "total_campaigns": 25},
+                    ]
+                },
+            )
+        ],
+    )
+    def get(self, request):
+        company = request.user.company
+        current_year = now().year
+        months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ]
+        
+        boxes_data = []
+        campaigns_data = []
+
+        for month_index in range(1, 13):
+            month_name = datetime(current_year, month_index, 1).strftime("%B")
+            total_boxes = Box.objects.filter(
+                box_campaign__company=company, created_at__year=current_year, created_at__month=month_index
+            ).count()
+
+            total_campaigns = Campaign.objects.filter(
+                company=company, created_at__year=current_year, created_at__month=month_index
+            ).count()
+
+            boxes_data.append({
+                "month": month_name,
+                "total_boxes": total_boxes,
+            })
+
+            campaigns_data.append({
+                "month": month_name,
+                "total_campaigns": total_campaigns,
+            })
+
+        data = {
+            "boxes": boxes_data,
+            "campaigns": campaigns_data,
+        }
+
+        return Response(data)
+
+
+company_dashboard_chart_data = CompanyDashboardChartData.as_view()

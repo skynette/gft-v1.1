@@ -51,4 +51,5 @@ urlpatterns = [
     path('analytics/gift-visits/', views.GiftVisitAnalyticsView.as_view(), name='gift-visit-analytics'),
     path('analytics/campaigns/', views.CampaignAnalyticsView.as_view(), name='campaign-analytics'),
     path('analytics/combined/', views.CombinedAnalyticsView.as_view(), name='combined-analytics'),
+    path('analytics/charts/', views.company_dashboard_chart_data, name='chart-data'),
 ]

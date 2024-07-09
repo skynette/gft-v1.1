@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 import os
 from pathlib import Path
-from datetime import timedelta
 
 # logging
 import logging
