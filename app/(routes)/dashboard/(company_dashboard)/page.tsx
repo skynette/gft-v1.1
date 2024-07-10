@@ -15,6 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useCompanyDashboardMetrics, { useCompanyChartData } from "@/lib/hooks/useCompanyDashboardMetrics";
+import useGetCompanyBox from "@/lib/hooks/useGetCompanyBox";
 import { useSession } from "next-auth/react";
 
 export default function page() {
@@ -22,6 +23,9 @@ export default function page() {
     const { data, isPending } = useCompanyDashboardMetrics();
     const { data: chartData, isPending: chartDataLoading } = useCompanyChartData();
 
+    const { data: boxSalesData, isPending: boxSalesLoading, isSuccess } = useGetCompanyBox();
+    const numSold = boxSalesData?.results.filter((item) => item.is_setup)
+    const salesData = numSold?.slice(0,5)
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -168,18 +172,18 @@ export default function page() {
                                     <CardTitle>Overview</CardTitle>
                                 </CardHeader>
                                 <CardContent className="pl-2">
-                                    <DashboardOverview chartDataFormatted={chartDataFormatted} loading={chartDataLoading}/>
+                                    <DashboardOverview chartDataFormatted={chartDataFormatted} loading={chartDataLoading} />
                                 </CardContent>
                             </Card>
                             <Card className="col-span-4 md:col-span-3">
                                 <CardHeader>
                                     <CardTitle>Recent Box Sales</CardTitle>
                                     <CardDescription>
-                                        You made 265 sales this month.
+                                        You made {numSold?.length ?? 0} sales this month.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <RecentSales />
+                                    <RecentSales data={salesData ?? []} loading={boxSalesLoading}/>
                                 </CardContent>
                             </Card>
                         </div>

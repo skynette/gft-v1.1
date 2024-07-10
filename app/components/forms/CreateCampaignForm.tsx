@@ -41,7 +41,7 @@ const CreateCampaignForm = ({ onClose }: { onClose: () => void }) => {
         onSuccess(data, variables, context) {
             toast.success('Campaign created successfully');
             onClose();
-            client.invalidateQueries({ queryKey: ['company-campaigns'] })
+            client.invalidateQueries({ queryKey: ['company-campaigns', 'company-box'] })
         },
     });
 
