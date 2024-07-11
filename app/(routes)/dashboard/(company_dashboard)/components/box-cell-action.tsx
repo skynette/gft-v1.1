@@ -9,23 +9,28 @@ import { toast } from "sonner"
 import { BoxColumn } from "./box-columns"
 import useDeleteBox from "@/lib/hooks/useDeleteBox"
 import { useQueryClient } from "@tanstack/react-query"
+import { BoxSheet } from "./box-sheet"
+import { createQueryString } from "@/lib/utils"
+import { usePathname, useRouter } from "next/navigation"
 
 interface CellActionProps {
     data: BoxColumn
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
+    const router = useRouter();
+    const pathname = usePathname();
     const client = useQueryClient()
-    const [open, setOpen] = useState(false)
+    const [openSheet, setIsOpenSheet] = useState(false)
     const { mutate, isPending } = useDeleteBox({
         onSuccess() {
             client.invalidateQueries({ queryKey: ['company-box'] })
             toast.success('deleted successfully.')
-            setOpen(false)
+            setIsOpenSheet(false)
         },
         onError(error) {
             toast.error("deletion failed")
-            setOpen(false)
+            setIsOpenSheet(false)
         },
     });
 
@@ -35,12 +40,16 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     }
     return (
         <>
-            <AlertModal
-                isOpen={open}
-                onClose={() => setOpen(false)}
+            {/* <AlertModal
+                isOpen={openSheet}
+                onClose={() => setIsOpenSheet(false)}
                 onConfirm={() => mutate(data.id)}
                 loading={isPending}
-            />
+            /> */}
+            <BoxSheet isOpen={openSheet} onClose={() => {
+                setIsOpenSheet(false);
+                createQueryString(pathname, router, 'query', '');
+            }} />
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
@@ -52,7 +61,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                     <DropdownMenuLabel>
                         Actions
                     </DropdownMenuLabel>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => {
+                        createQueryString(pathname, router, 'query', 'update');
+                        setIsOpenSheet(true);
+                    }}>
                         <Edit className="mr-2 h-4 w-4" />
                         Update
                     </DropdownMenuItem>
@@ -60,7 +72,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                         <Copy className="mr-2 h-4 w-4" />
                         Copy Id
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setOpen(true)}>
+                    <DropdownMenuItem onClick={() => setIsOpenSheet(true)}>
                         <Trash className="mr-2 h-4 w-4" />
                         Delete
                     </DropdownMenuItem>

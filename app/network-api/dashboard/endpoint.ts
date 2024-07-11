@@ -124,6 +124,16 @@ export const createBox = async (token: string, apiKey: string, req: CreateBoxReq
     return response.data;
 }
 
+export const updateBox = async (id: string, token: string, apiKey: string, req: CreateBoxRequest): Promise<any> => {
+    const response = await axiosInstance.post(`/dashboard/boxes/${id}/edit`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
 export const createCampaign = async (token: string, apiKey: string, req: CreateCampaignRequest): Promise<any> => {
     const formData = new FormData();
     formData.append('name', req.name);
