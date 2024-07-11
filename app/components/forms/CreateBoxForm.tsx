@@ -61,7 +61,7 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
         receiverEmail: initialValue?.receiver_email ?? '',
         receiverPhone: initialValue?.receiver_phone ?? '',
         receiverName: initialValue?.receiver_name ?? '',
-        openDate: parse(initialValue?.open_date ?? '', 'dd-MM-yyyy', new Date()),
+        openDate: new Date(initialValue?.open_date ?? new Date()),
         open_after_a_day: initialValue?.open_after_a_day,
         boxCategory: initialValue?.box_campaign.toString() ?? '',
     }
@@ -74,13 +74,13 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
                     receiver_email: values?.receiverEmail ?? '',
                     receiver_name: values?.receiverName ?? '',
                     receiver_phone: values?.receiverPhone ?? '',
-                    open_date: parse(values?.openDate?.toISOString() ?? '', 'dd-MM-yyy', new Date()),
-                    box_category: +values?.boxCategory ?? 0,
+                    open_date: values?.openDate,
                     is_setup: false,
                     is_company_setup: false,
                     last_opened: new Date(),
                     open_after_a_day: false,
                 });
+            else toast.info('Cannot update a box that has been set by customer');
         } else mutateCreate({
             title: values.title ?? '',
             receiver_email: values.receiverEmail ?? '',
@@ -94,8 +94,6 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
             open_after_a_day: false,
         });
     };
-
-    console.log(initialValue?.box_campaign)
 
     return (
         <Formik
@@ -138,16 +136,18 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
                         control='phone-input'
                     />
 
-                    <FormikControl
+                    {query !== 'update' && (
+                        <FormikControl
                         type='text'
                         name='boxCategory'
                         label='Box category'
                         placeholder='Select box category'
                         control='select'
-                        defaultValue={initialValue?.box_campaign}
+                        disabled={query === 'update' ? true : false}
+                        defaultValue={initialValue?.box_campaign.toString()}
                         options={boxCategory ?? []}
                         handleChange={(value) => setFieldValue('boxCategory', value)}
-                    />
+                    />)}
 
                     <FormikControl
                         type='text'
@@ -167,7 +167,7 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
 
                     <Button
                         type='submit'
-                        disabled={!(isValid && dirty) || isCreatePending || isUpdatePending}
+                        disabled={isCreatePending || isUpdatePending}
                         isLoading={isCreatePending || isUpdatePending}
                         className='inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50'
                     >

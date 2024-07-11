@@ -125,7 +125,7 @@ export const createBox = async (token: string, apiKey: string, req: CreateBoxReq
 }
 
 export const updateBox = async (id: string, token: string, apiKey: string, req: CreateBoxRequest): Promise<any> => {
-    const response = await axiosInstance.post(`/dashboard/boxes/${id}/edit`, req, {
+    const response = await axiosInstance.put(`/dashboard/boxes/${id}/edit/`, req, {
         headers: {
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,

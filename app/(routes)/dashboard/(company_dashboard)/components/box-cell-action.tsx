@@ -6,15 +6,15 @@ import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
 import { useState } from "react"
 import { AlertModal } from "@/components/modals/alert-modal"
 import { toast } from "sonner"
-import { BoxColumn } from "./box-columns"
 import useDeleteBox from "@/lib/hooks/useDeleteBox"
 import { useQueryClient } from "@tanstack/react-query"
 import { BoxSheet } from "./box-sheet"
 import { createQueryString } from "@/lib/utils"
 import { usePathname, useRouter } from "next/navigation"
+import { BoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose"
 
 interface CellActionProps {
-    data: BoxColumn
+    data: BoxResponse
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -46,10 +46,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                 onConfirm={() => mutate(data.id)}
                 loading={isPending}
             /> */}
-            <BoxSheet isOpen={openSheet} onClose={() => {
-                setIsOpenSheet(false);
-                createQueryString(pathname, router, 'query', '');
-            }} />
+            <BoxSheet
+                isOpen={openSheet}
+                title="Update box"
+                initialValue={data}
+                onClose={() => {
+                    setIsOpenSheet(false);
+                    createQueryString(pathname, router, 'query', '');
+                }} />
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-8 w-8 p-0">
