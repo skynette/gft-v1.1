@@ -19,7 +19,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     const [open, setOpen] = useState(false)
     const { mutate, isPending } = useDeleteBox({
         onSuccess() {
-            client.invalidateQueries({queryKey: ['company-box']})
+            client.invalidateQueries({ queryKey: ['company-box'] })
             toast.success('deleted successfully.')
             setOpen(false)
         },

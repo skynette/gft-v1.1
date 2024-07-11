@@ -115,7 +115,7 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
                         options={boxCategory ?? []}
                         defaultValue={initialValue?.company_boxes ?? 0}
                         handleChange={(value) => setFieldValue('company_boxes', value)}
-                        disabled={true}
+                        disabled={query === 'update' ? true : false}
                     />
 
                     <FormikControl
@@ -124,7 +124,7 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
                         label='Campaign duration (days)'
                         placeholder='3'
                         control='input'
-                        disabled={true}
+                        disabled={query === 'update' ? true : false}
                     />
 
                     <FormikControl
