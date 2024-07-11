@@ -6,3 +6,5 @@ export interface CreateCampaignRequest {
     header_image: any
     open_after_a_day: boolean
 }
+
+export type UpdateCampaignRequest = Omit<CreateCampaignRequest, 'company_boxes' | 'duration'>;

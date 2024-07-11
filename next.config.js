@@ -10,6 +10,11 @@ const nextConfig = {
                 hostname: 'res.cloudinary.com',
                 port: '',
                 pathname: '/do3tlu1ph/**'
+            },
+            {
+                protocol: 'http',
+                hostname: 'gft.up.railway.app',
+                port: '',
             }
         ]
     },

@@ -2,7 +2,7 @@ import axiosInstance from "@/lib/axiosInstance";
 import { CompanyBoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose";
 import { CompanyCatboxResponse } from "@/lib/response-type/company_dashboard/CompanyboxResponse";
 import { CreateBoxRequest } from "@/lib/response-type/company_dashboard/CreateBoxRequest";
-import { CreateCampaignRequest } from "@/lib/response-type/company_dashboard/CreateCampaignRequest";
+import { CreateCampaignRequest, UpdateCampaignRequest } from "@/lib/response-type/company_dashboard/CreateCampaignRequest";
 import { DashboardResponse } from "@/lib/response-type/dashboard/DashboardResponse";
 import { GiftOverviewResponse } from "@/lib/response-type/dashboard/GiftOverResponse";
 import { NotificationResponse } from "@/lib/response-type/dashboard/NotificationResponse";
@@ -134,6 +134,25 @@ export const createCampaign = async (token: string, apiKey: string, req: CreateC
     formData.append('open_after_a_day', req.open_after_a_day.toString());
 
     const response = await axiosInstance.post('/dashboard/campaigns/create/', formData, {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
+}
+
+export const updateCampaign = async (id: string, token: string, apiKey: string, req: UpdateCampaignRequest): Promise<any> => {
+    const formData = new FormData();
+    formData.append('name', req.name);
+    formData.append('num_boxes', req.num_boxes.toString());
+    formData.append('open_after_a_day', req.open_after_a_day.toString());
+
+    if (typeof req.header_image === 'object')
+        formData.append('header_image', req.header_image);
+
+    const response = await axiosInstance.put(`/dashboard/campaigns/${id}/update/`, formData, {
         headers: {
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,

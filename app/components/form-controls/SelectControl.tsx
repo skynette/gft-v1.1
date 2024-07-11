@@ -9,12 +9,13 @@ interface SelectProps {
     name: string;
     label: string;
     placeholder?: string;
-    defaultValue?: string;
+    defaultValue?: string | number;
     options?: { option: string, value: string }[];
+    disabled?: boolean;
     handleChange?: (key: string) => void;
 }
 
-function SelectControl({ name, label, placeholder, defaultValue, options, handleChange }: SelectProps) {
+function SelectControl({ name, label, placeholder, defaultValue, options, disabled, handleChange }: SelectProps) {
     return (
         <div className='w-full'>
             <Field name={name}>
@@ -22,7 +23,7 @@ function SelectControl({ name, label, placeholder, defaultValue, options, handle
                     (props: FieldProps) => (
                         <div className='w-full flex flex-col space-y-1'>
                             <Label htmlFor={name} className='text-gray-700 text-sm'>{label}</Label>
-                            <Select defaultValue={defaultValue} onValueChange={(value) => {
+                            <Select disabled={disabled} defaultValue={defaultValue?.toString()} onValueChange={(value) => {
                                 props.form.setFieldValue(name, value);
                                 if (handleChange)
                                     handleChange(value);

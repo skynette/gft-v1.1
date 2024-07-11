@@ -20,3 +20,18 @@ export const queryClientOptions: QueryClientConfig = {
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+export const createQueryString = (pathname: string, router: any, name: string, value: string) => {
+  const searchParams = new URLSearchParams(window.location.search)
+  if (value) {
+    if (!Array.isArray(value)) {
+      if (!searchParams.has(name)) searchParams.append(name, value)
+      else searchParams.set(name, value)
+    } else {
+      if (!searchParams.has(name)) searchParams.append(name, value.join())
+      else searchParams.set(name, value.join())
+    }
+  } else if (searchParams.has(name)) searchParams.delete(name)
+  const newUrl = pathname + '?' + searchParams.toString()
+  router.push(newUrl)
+}

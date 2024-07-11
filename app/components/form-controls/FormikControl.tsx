@@ -14,7 +14,7 @@ interface ControlProps {
     placeholder: string;
     control: string;
     disabled?: boolean;
-    defaultValue?: string;
+    defaultValue?: string | number;
     options?: { option: string, value: string }[];
     handleChange?: (key: string) => void;
 }

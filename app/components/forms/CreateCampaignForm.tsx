@@ -6,56 +6,80 @@ import FormikControl from '../form-controls/FormikControl';
 import { Button } from '../ui/button';
 import { ArrowRight, CloudUpload, XCircle } from 'lucide-react';
 import useGetCompanyCategorybox from '@/lib/hooks/useGetCompanyCategorybox';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createCampaign } from '@/network-api/dashboard/endpoint';
-import { useSession } from 'next-auth/react';
-import { AxiosError } from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { CreateCampaignRequest } from '@/lib/response-type/company_dashboard/CreateCampaignRequest';
 import { useState } from 'react';
 import Dropzone from 'react-dropzone';
 import { Input } from '../ui/input';
 import { nanoid } from 'nanoid';
 import Image from 'next/image';
+import { CampaignColumns } from '@/(routes)/dashboard/(company_dashboard)/components/campaign-columns';
+import { useSearchParams } from 'next/navigation';
+import useCreateCampaign from '@/lib/hooks/useCreateCampaign';
+import useUpdateCampaign from '@/lib/hooks/useUpdateCampaign';
 
-const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Provide campaign name'),
-    company_boxes: Yup.string().required('Select company'),
-    duration: Yup.number().required('Provide campaign duration').min(1, 'Duration too low'),
-    num_boxes: Yup.number().required('Provide number of boxes').min(1, 'Number of boxes too low'),
-    header_image: Yup.mixed().required('Provide campaign image'),
-    open_after_a_day: Yup.boolean().optional(),
-});
-
-type CreateCampaignFormSchema = Yup.InferType<typeof validationSchema>;
-
-const CreateCampaignForm = ({ onClose }: { onClose: () => void }) => {
-    const session = useSession();
+const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: CampaignColumns, onClose: () => void }) => {
     const { data } = useGetCompanyCategorybox();
+    const query = useSearchParams().get('query') ?? null;
     const client = useQueryClient()
     const boxCategory = data?.map(box => ({ option: box.box_type.name, value: box.box_type.id.toString() }));
-    const [headerImg, setHeaderImg] = useState<any | null>('');
+    const [headerImg, setHeaderImg] = useState<any | null>(initialValue?.header_image ?? '');
 
-    const { mutate, isPending } = useMutation<any, AxiosError, CreateCampaignRequest>({
-        mutationFn: (req: CreateCampaignRequest) => createCampaign(session?.data?.accessToken ?? '', session?.data?.companyAPIKey ?? '', req),
-        onSuccess(data, variables, context) {
+    const createValidationSchema = Yup.object().shape({
+        name: Yup.string().required('Provide campaign name'),
+        company_boxes: Yup.string().required('Select company'),
+        duration: Yup.number().required('Provide campaign duration').min(1, 'Duration too low'),
+        num_boxes: Yup.number().required('Provide number of boxes').min(1, 'Number of boxes too low'),
+        header_image: Yup.mixed().required('Provide campaign image'),
+        open_after_a_day: Yup.boolean().optional(),
+    });
+
+    const updateValidationSchema = Yup.object().shape({
+        name: Yup.string().required('Provide campaign name'),
+        num_boxes: Yup.number().required('Provide number of boxes').min(initialValue?.num_boxes ?? 1, 'Number of boxes can\'t be less than previously set value'),
+        header_image: Yup.mixed().required('Provide campaign image'),
+        open_after_a_day: Yup.boolean().optional(),
+    });
+
+    type CreateCampaignFormSchema = Yup.InferType<typeof createValidationSchema>;
+
+    const { mutate: createMutate, isPending: isCreatePending } = useCreateCampaign({
+        onSuccess() {
             toast.success('Campaign created successfully');
             onClose();
-            client.invalidateQueries({ queryKey: ['company-campaigns', 'company-box'] })
+            client.invalidateQueries({ queryKey: ['company-campaigns'] });
+            client.invalidateQueries({ queryKey: ['company-box'] });
+        },
+    });
+
+    const { mutate: updateMutate, isPending: isUpdatePending } = useUpdateCampaign({
+        id: initialValue?.id ?? '',
+        onSuccess() {
+            toast.success('Campaign updated successfully');
+            onClose();
+            client.invalidateQueries({ queryKey: ['company-campaigns'] });
+            client.invalidateQueries({ queryKey: ['company-box'] });
         },
     });
 
     const initialValues: CreateCampaignFormSchema = {
-        name: '',
-        company_boxes: '',
-        duration: 0,
-        num_boxes: 0,
-        header_image: '',
-        open_after_a_day: false
+        name: initialValue?.name ?? '',
+        company_boxes: initialValue?.company_boxes.toString() ?? '',
+        duration: initialValue?.duration ?? 0,
+        num_boxes: initialValue?.num_boxes ?? 0,
+        header_image: initialValue?.header_image ?? '',
+        open_after_a_day: initialValue?.open_after_a_day ?? false
     }
 
     const handleSubmit = (values: CreateCampaignFormSchema) => {
-        mutate({
+        if (query === 'update')
+            updateMutate({
+                name: values.name,
+                num_boxes: values.num_boxes,
+                header_image: values.header_image,
+                open_after_a_day: values.open_after_a_day ?? false,
+            });
+        else createMutate({
             name: values.name,
             company_boxes: values.company_boxes,
             duration: values.duration,
@@ -68,10 +92,11 @@ const CreateCampaignForm = ({ onClose }: { onClose: () => void }) => {
     return (
         <Formik
             initialValues={initialValues}
-            validationSchema={validationSchema}
+            validationSchema={query === 'update' ? updateValidationSchema : createValidationSchema}
             onSubmit={handleSubmit}
+            enableReinitialize={true}
         >
-            {({ errors, setFieldValue }) => (
+            {({ isValid, dirty, errors, setFieldValue }) => (
                 <Form className='w-full flex flex-col space-y-5 mt-[5%]'>
                     <FormikControl
                         type='text'
@@ -88,7 +113,9 @@ const CreateCampaignForm = ({ onClose }: { onClose: () => void }) => {
                         placeholder='Select box category'
                         control='select'
                         options={boxCategory ?? []}
+                        defaultValue={initialValue?.company_boxes ?? 0}
                         handleChange={(value) => setFieldValue('company_boxes', value)}
+                        disabled={true}
                     />
 
                     <FormikControl
@@ -97,6 +124,7 @@ const CreateCampaignForm = ({ onClose }: { onClose: () => void }) => {
                         label='Campaign duration (days)'
                         placeholder='3'
                         control='input'
+                        disabled={true}
                     />
 
                     <FormikControl
@@ -105,14 +133,6 @@ const CreateCampaignForm = ({ onClose }: { onClose: () => void }) => {
                         label='Number of boxes'
                         placeholder='10'
                         control='input'
-                    />
-
-                    <FormikControl
-                        type='text'
-                        name='openDate'
-                        label='Open date'
-                        placeholder=''
-                        control='date-picker'
                     />
 
                     <FormikControl
@@ -167,7 +187,7 @@ const CreateCampaignForm = ({ onClose }: { onClose: () => void }) => {
                             <div className='flex mt-2 space-x-2 items-center justify-center bg-slate-200 my-2 p-2'>
                                 {
                                     <div key={nanoid()} className='relative'>
-                                        <Image src={headerImg} width={150} height={150} alt='' />
+                                        <Image src={headerImg ?? initialValue?.header_image} width={150} height={150} alt='' />
                                         <Button type='button' onClick={() => {
                                             setFieldValue('header_image', '');
                                             setHeaderImg(null);
@@ -185,8 +205,8 @@ const CreateCampaignForm = ({ onClose }: { onClose: () => void }) => {
 
                     <Button
                         type='submit'
-                        disabled={isPending}
-                        isLoading={isPending}
+                        disabled={((!(isValid && dirty)) || isCreatePending || isUpdatePending)}
+                        isLoading={isCreatePending || isUpdatePending}
                         className='inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50'
                     >
                         Continue <ArrowRight size={18} className='text-white ml-2' />

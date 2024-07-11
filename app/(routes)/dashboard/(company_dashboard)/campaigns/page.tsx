@@ -12,7 +12,7 @@ import useGetCompanyCampaign from '@/lib/hooks/useGetCompanyCampaigns'
 import LoadingSkeleton from '@/components/skeleton'
 
 export default function CampaignsPage() {
-    const [openSheet, setIsOpenSheet] = useState(false)
+    const [openSheet, setIsOpenSheet] = useState(false);
     const { data: companyCampaigns, isPending, isSuccess } = useGetCompanyCampaign();
 
     return (
@@ -37,7 +37,7 @@ export default function CampaignsPage() {
                     searchKey="name"
                 />
             }
-            <CampaignSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
+            <CampaignSheet title='Create Campaign' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }
