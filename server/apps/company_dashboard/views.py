@@ -27,6 +27,7 @@ from .serializers import (
     CampaignSerializer,
     CombinedAnalyticsSerializer,
     CompanyAPIKeySerializer,
+    CompanyApiKeyUsageResponseSerializer,
     CompanyBoxesSerializer,
     CompanyDashboardChartSerializer,
     CompanySerializer,
@@ -612,6 +613,47 @@ box_category_retrieve_update_destroy_api_view = (
 
 
 class CompanyApiKeyUsageView(generics.GenericAPIView):
+    serializer_class = CompanyApiKeyUsageResponseSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ["view_company_dashboard"]
+
+    @extend_schema(
+        request=None,
+        description="Retrieve API keys info",
+        responses={
+            200: CompanyApiKeyUsageResponseSerializer,
+        },
+        tags=["Company API Key Usage"],
+    )
+    def get(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        if not company:
+            return Response(
+                {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        total_requests = CompanyApiKey.objects.filter(company=company).aggregate(
+            total_requests=Sum("num_of_requests_made")
+        )["total_requests"]
+
+        api_keys = CompanyApiKey.objects.filter(company=company)
+        results = CompanyAPIKeySerializer(api_keys, many=True).data
+
+        response_data = {
+            "metrics": {
+                "total_requests": total_requests
+            },
+            "results": results
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
+company_api_key_usage_view = CompanyApiKeyUsageView.as_view()
+
+
+class CompanyApiKeyUsageByIDView(generics.GenericAPIView):
     serializer_class = CompanyAPIKeySerializer
     permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
     authentication_classes = [APIKeyAuthentication]
@@ -640,7 +682,7 @@ class CompanyApiKeyUsageView(generics.GenericAPIView):
         return Response({"total_requests": total_requests}, status=status.HTTP_200_OK)
 
 
-company_api_key_usage_view = CompanyApiKeyUsageView.as_view()
+company_api_key_usage_by_id_view = CompanyApiKeyUsageByIDView.as_view()
 
 
 class CompanyView(generics.GenericAPIView):

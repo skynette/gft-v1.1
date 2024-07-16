@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axiosInstance";
 import { CompanyBoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose";
+import { CompanyAPIKeyResponse } from "@/lib/response-type/company_dashboard/CompanyAPIKeyResponse";
 import { CompanyUserResponse } from "@/lib/response-type/company_dashboard/CompanyUserResponse";
 import { CompanyCatboxResponse } from "@/lib/response-type/company_dashboard/CompanyboxResponse";
 import { CreateBoxRequest } from "@/lib/response-type/company_dashboard/CreateBoxRequest";
@@ -107,6 +108,16 @@ export const getCompanyCampaigns = async (token: string, apiKey: string): Promis
 
 export const getCompanyUsers = async (token: string, apiKey: string): Promise<CompanyUserResponse[]> => {
     const response = await axiosInstance.get('/dashboard/company-users/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
+export const getCompanyAPIKey = async (token: string, apiKey: string): Promise<CompanyAPIKeyResponse> => {
+    const response = await axiosInstance.get('/dashboard/api-key-usage/', {
         headers: {
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,
