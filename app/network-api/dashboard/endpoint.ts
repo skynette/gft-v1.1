@@ -1,5 +1,6 @@
 import axiosInstance from "@/lib/axiosInstance";
 import { CompanyBoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose";
+import { CompanyUserResponse } from "@/lib/response-type/company_dashboard/CompanyUserResponse";
 import { CompanyCatboxResponse } from "@/lib/response-type/company_dashboard/CompanyboxResponse";
 import { CreateBoxRequest } from "@/lib/response-type/company_dashboard/CreateBoxRequest";
 import { CreateCampaignRequest, UpdateCampaignRequest } from "@/lib/response-type/company_dashboard/CreateCampaignRequest";
@@ -96,6 +97,16 @@ export const deleteBox = async (token: string, apiKey: string, id: string): Prom
 
 export const getCompanyCampaigns = async (token: string, apiKey: string): Promise<CampaignResponse[]> => {
     const response = await axiosInstance.get('/dashboard/campaigns/all/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
+export const getCompanyUsers = async (token: string, apiKey: string): Promise<CompanyUserResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/company-users/', {
         headers: {
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,

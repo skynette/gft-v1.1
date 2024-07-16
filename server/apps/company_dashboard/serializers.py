@@ -223,10 +223,18 @@ class CompanyAPIKeySerializer(serializers.ModelSerializer):
     
 
 class CompanyUserSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    company = serializers.SerializerMethodField()
+    
     class Meta:
         model = CompanyUser
         fields = '__all__'
 
+    def get_user(self, obj):
+        return UserProfileSerializer(obj.user).data
+    
+    def get_company(self, obj):
+        return obj.company.name
 
 class CompanySerializer(serializers.ModelSerializer):
 

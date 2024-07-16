@@ -726,7 +726,7 @@ class UpdateSettingsView(generics.GenericAPIView):
 update_settings_api_view = UpdateSettingsView.as_view()
 
 
-class CompanyUsersView(generics.GenericAPIView):
+class CompanyUsersByIDView(generics.GenericAPIView):
     serializer_class = CompanyUserSerializer
     permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
     authentication_classes = [APIKeyAuthentication]
@@ -743,6 +743,35 @@ class CompanyUsersView(generics.GenericAPIView):
     )
     def get(self, request, id, *args, **kwargs):
         company = Company.objects.filter(id=id).first()
+        if not company:
+            return Response(
+                {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        company_users = company.get_company_users()
+        serializer = CompanyUserSerializer(
+            company_users, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+company_users_by_id_api_view = CompanyUsersByIDView.as_view()
+
+
+class CompanyUsersView(generics.GenericAPIView):
+    serializer_class = CompanyUserSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ["view_company_dashboard"]
+
+    @extend_schema(
+        request=None,
+        description="Retrieve list of users for authenticated company.",
+        responses=CompanyUserSerializer(many=True),
+        tags=["Company Users"],
+    )
+    def get(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
         if not company:
             return Response(
                 {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
