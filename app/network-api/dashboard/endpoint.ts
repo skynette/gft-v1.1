@@ -1,4 +1,5 @@
 import axiosInstance from "@/lib/axiosInstance";
+import { BoxAllocationResponse } from "@/lib/response-type/company_dashboard/BoxAllocationResponse";
 import { CompanyBoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose";
 import { CompanyAPIKeyResponse } from "@/lib/response-type/company_dashboard/CompanyAPIKeyResponse";
 import { CompanyUserResponse } from "@/lib/response-type/company_dashboard/CompanyUserResponse";
@@ -78,6 +79,16 @@ export const getCompanyChartData = async (token: string, apiKey: string): Promis
 
 export const getCompanyBox = async (token: string, apiKey: string): Promise<CompanyBoxResponse> => {
     const response = await axiosInstance.get('/dashboard/boxes/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
+export const getBoxAllocation = async (token: string, apiKey: string): Promise<BoxAllocationResponse> => {
+    const response = await axiosInstance.get('/dashboard/company-boxes/', {
         headers: {
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,

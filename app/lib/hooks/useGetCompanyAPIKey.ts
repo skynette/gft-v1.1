@@ -8,7 +8,7 @@ export default function useGetCompanyAPIKey() {
     const session = useSession();
 
     const { data, isPending, isSuccess, isError, error } = useQuery<CompanyAPIKeyResponse, AxiosError>({
-        queryKey: ['company-users'],
+        queryKey: ['company-api-keys'],
         queryFn: () => getCompanyAPIKey(session.data?.accessToken ?? '', session.data?.companyAPIKey ?? ''),
         enabled: session.status === 'authenticated'
     });

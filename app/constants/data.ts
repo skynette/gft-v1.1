@@ -145,6 +145,12 @@ export const navItems: NavItem[] = [
     label: 'keys'
   },
   {
+    title: 'Box Allocations',
+    href: '/dashboard/box-allocations',
+    icon: 'box_allocation',
+    label: 'box_allocation'
+  },
+  {
     title: 'Company Profile',
     href: '/dashboard/profile',
     icon: 'profile',

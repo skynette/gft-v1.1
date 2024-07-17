@@ -31,7 +31,8 @@ import {
   UserX2Icon,
   X,
   Key,
-  Megaphone
+  Megaphone,
+  PackageOpen
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -67,6 +68,7 @@ export const Icons = {
   box: Box,
   key: Key,
   campaign: Megaphone,
+  box_allocation: PackageOpen,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
