@@ -156,6 +156,12 @@ export const navItems: NavItem[] = [
     icon: 'profile',
     label: 'profile'
   },
+  {
+    title: 'Settings',
+    href: '/dashboard/settings',
+    icon: 'settings',
+    label: 'settings'
+  },
 ];
 
 export const mockData: BoxColumn[] = [
