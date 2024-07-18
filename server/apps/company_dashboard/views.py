@@ -685,6 +685,46 @@ class CompanyApiKeyUsageByIDView(generics.GenericAPIView):
 company_api_key_usage_by_id_view = CompanyApiKeyUsageByIDView.as_view()
 
 
+class RegenerateApiKeyView(generics.GenericAPIView):
+    serializer_class = None
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ["view_company_dashboard"]
+
+    @extend_schema(
+        description="Regenerate an API key for the logged-in company's API key.",
+        responses=CompanyAPIKeySerializer,
+        tags=["Company Area"],
+    )
+    def post(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        if not company:
+            return Response(
+                {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        api_key_id = request.data.get('api_key')
+        if not api_key_id:
+            return Response(
+                {"message": "API key ID is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            api_key = CompanyApiKey.objects.get(company=company, id=api_key_id)
+        except CompanyApiKey.DoesNotExist:
+            return Response(
+                {"message": "API key not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        api_key.regenerate_key()
+
+        serializer = CompanyAPIKeySerializer(api_key)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+regenerate_api_key_view = RegenerateApiKeyView.as_view()
+
+
 class CompanyView(generics.GenericAPIView):
     serializer_class = CompanySerializer
     permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
@@ -733,7 +773,7 @@ class CompanyDetailsView(generics.GenericAPIView):
                 {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
             )
 
-        serializer = self.get_serializer(company)
+        serializer = UpdateCompanySerializer(company)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 

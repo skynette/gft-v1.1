@@ -2,10 +2,12 @@ import axiosInstance from "@/lib/axiosInstance";
 import { BoxAllocationResponse } from "@/lib/response-type/company_dashboard/BoxAllocationResponse";
 import { CompanyBoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose";
 import { CompanyAPIKeyResponse } from "@/lib/response-type/company_dashboard/CompanyAPIKeyResponse";
+import { CompanyProfileResponse } from "@/lib/response-type/company_dashboard/CompanyProfileResponse";
 import { CompanyUserResponse } from "@/lib/response-type/company_dashboard/CompanyUserResponse";
 import { CompanyCatboxResponse } from "@/lib/response-type/company_dashboard/CompanyboxResponse";
 import { CreateBoxRequest } from "@/lib/response-type/company_dashboard/CreateBoxRequest";
 import { CreateCampaignRequest, UpdateCampaignRequest } from "@/lib/response-type/company_dashboard/CreateCampaignRequest";
+import { RegenerateAPIKeyRequest } from "@/lib/response-type/company_dashboard/RegenerateAPIKeyRequest";
 import { DashboardResponse } from "@/lib/response-type/dashboard/DashboardResponse";
 import { GiftOverviewResponse } from "@/lib/response-type/dashboard/GiftOverResponse";
 import { NotificationResponse } from "@/lib/response-type/dashboard/NotificationResponse";
@@ -92,6 +94,30 @@ export const getBoxAllocation = async (token: string, apiKey: string): Promise<B
         headers: {
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
+export const getCompanyProfile = async (token: string, apiKey: string): Promise<CompanyProfileResponse> => {
+    const response = await axiosInstance.get('/dashboard/company/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
+export const regenerateAPIKey = async (token: string, apiKey: string, req: RegenerateAPIKeyRequest): Promise<any> => {
+    const formData = new FormData();
+    formData.append('api_key', req.api_key);
+
+    const response = await axiosInstance.post(`/dashboard/api-key/regenerate/`, formData, {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+            'Content-Type': 'multipart/form-data'
         }
     });
     return response.data;

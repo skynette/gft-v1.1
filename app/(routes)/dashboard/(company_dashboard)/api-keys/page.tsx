@@ -9,9 +9,43 @@ import { EyeIcon, RefreshCwIcon } from "lucide-react";
 import useGetCompanyAPIKey from "@/lib/hooks/useGetCompanyAPIKey";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
+import { useRegenerateAPIKey } from "@/lib/hooks/useGetCompanyProfile";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { getSession, useSession } from "next-auth/react";
+import { cn } from "@/lib/utils";
 
 export default function Page() {
     const { data, isPending } = useGetCompanyAPIKey();
+    const { update: updateSession } = useSession()
+
+    const client = useQueryClient()
+    const { mutate, isPending: regenerateLoading } = useRegenerateAPIKey({
+
+        onSuccess: async (data) => {
+            client.invalidateQueries({ queryKey: ['company-api-keys'] })
+            toast.success('Regenerated successfully.')
+
+            try {
+                // Fetch the updated session
+                const updatedSession = await getSession();
+
+                // Manually update the session data
+                const newSessionData = {
+                    ...updatedSession,
+                    companyAPIKey: data.key,
+                };
+
+                await updateSession(newSessionData);
+            } catch (error) {
+                console.error("Error updating session", error);
+            }
+
+        },
+        onError(error) {
+            toast.error("regenerate failed")
+        },
+    })
 
     const renderStatusBadge = (status: string) => {
         if (status === "active") {
@@ -103,7 +137,7 @@ export default function Page() {
                                             <TableRow key={api_key.id}>
                                                 <TableCell>
                                                     <div className="flex items-center gap-2">
-                                                    <div className="font-medium">
+                                                        <div className="font-medium">
                                                             {revealedKeys.includes(api_key.id.toLocaleString()) ? api_key.key : getHiddenKey(api_key.key)}
                                                         </div>
                                                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleReveal(api_key.id.toLocaleString())}>
@@ -120,8 +154,8 @@ export default function Page() {
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="">
-                                                        <Button variant="ghost" size="icon" className="h-6 w-6">
-                                                            <RefreshCwIcon className="h-4 w-4" />
+                                                        <Button variant="ghost" size="icon" className="h-6 w-6" disabled={isPending || regenerateLoading} onClick={() => mutate({ api_key: api_key.id.toString() })}>
+                                                            <RefreshCwIcon className={cn("h-4 w-4", { 'animate-spin': regenerateLoading })} />
                                                             <span className="sr-only">Regenerate key</span>
                                                         </Button>
                                                     </div>

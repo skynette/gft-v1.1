@@ -9,8 +9,11 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { PlusIcon } from "lucide-react";
+import useGetCompanyProfile from "@/lib/hooks/useGetCompanyProfile";
 
 export default function Page() {
+    const { data, isPending } = useGetCompanyProfile();
+
     return (
         <div className="flex flex-col">
             <main className="flex bg-muted/40 flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">

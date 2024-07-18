@@ -251,7 +251,7 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'name', 'logo', 'header_image', 'company_url',
                   'box_limit', 'socials', 'color_schema']
-
+        
 
 class CompanyBoxesSerializer(serializers.ModelSerializer):
     company_name = serializers.SerializerMethodField()
