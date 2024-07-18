@@ -4,9 +4,26 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/com
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { CartesianGrid, XAxis, Bar, BarChart } from "recharts"
 import { ChartTooltipContent, ChartTooltip, ChartContainer } from "@/components/ui/chart"
-import { BoxIcon, GiftIcon, GroupIcon,  PiIcon, UsersIcon } from "lucide-react"
+import { BoxIcon, GiftIcon, GroupIcon, UsersIcon } from "lucide-react"
+import useAdminDashboardMetrics, { useAdminDashboardChartData } from "@/lib/hooks/useAdminDashboardMetrics"
+import { Skeleton } from "@/components/ui/skeleton"
+import { AdminDashboardChartResponse } from "@/lib/response-type/dashboard/AdminDashboardResponse"
 
-export default function Component() {
+export default function AdminDashboard() {
+    const { data, isPending } = useAdminDashboardMetrics()
+    const { data: chartData, isPending: chartLoading } = useAdminDashboardChartData()
+
+    const transformData = (data: AdminDashboardChartResponse) => {
+        return data.users.map((item, index) => ({
+            month: item.month,
+            total_users: item.total_users,
+            total_boxes: data.boxes[index]?.total_boxes,
+            total_campaigns: data.campaigns[index]?.total_campaigns,
+        }))
+    }
+
+    const formattedChartData = chartData ? transformData(chartData) : []
+
     return (
         <div className="flex flex-col w-full min-h-screen bg-muted/40">
             <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
@@ -17,8 +34,14 @@ export default function Component() {
                             <UsersIcon className="w-4 h-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">12,345</div>
-                            <p className="text-xs text-muted-foreground">+5.2% from last month</p>
+                            {isPending ? (
+                                <Skeleton className="h-8 w-full" />
+                            ) : (
+                                <>
+                                    <div className="text-2xl font-bold">{data?.total_users}</div>
+                                    <p className="text-xs text-muted-foreground">+{data?.users_percentage_increase}% from last month</p>
+                                </>
+                            )}
                         </CardContent>
                     </Card>
                     <Card>
@@ -27,8 +50,14 @@ export default function Component() {
                             <BoxIcon className="w-4 h-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">3,456</div>
-                            <p className="text-xs text-muted-foreground">+12.1% from last month</p>
+                            {isPending ? (
+                                <Skeleton className="h-8 w-full" />
+                            ) : (
+                                <>
+                                    <div className="text-2xl font-bold">{data?.total_boxes}</div>
+                                    <p className="text-xs text-muted-foreground">+{data?.boxes_percentage_increase}% from last month</p>
+                                </>
+                            )}
                         </CardContent>
                     </Card>
                     <Card>
@@ -37,28 +66,30 @@ export default function Component() {
                             <GroupIcon className="w-4 h-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">124</div>
-                            <p className="text-xs text-muted-foreground">+8.3% from last month</p>
+                            {isPending ? (
+                                <Skeleton className="h-8 w-full" />
+                            ) : (
+                                <>
+                                    <div className="text-2xl font-bold">{data?.total_campaigns}</div>
+                                    <p className="text-xs text-muted-foreground">+{data?.campaigns_percentage_increase}% from last month</p>
+                                </>
+                            )}
                         </CardContent>
                     </Card>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">API Requests</CardTitle>
-                            <PiIcon className="w-4 h-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">2.3M</div>
-                            <p className="text-xs text-muted-foreground">+15% from last month</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium">Gift Visits</CardTitle>
+                            <CardTitle className="text-sm font-medium">Gifts</CardTitle>
                             <GiftIcon className="w-4 h-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">45,678</div>
-                            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+                            {isPending ? (
+                                <Skeleton className="h-8 w-full" />
+                            ) : (
+                                <>
+                                    <div className="text-2xl font-bold">{data?.total_gifts}</div>
+                                    <p className="text-xs text-muted-foreground">+{data?.gifts_percentage_increase}% from last month</p>
+                                </>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
@@ -69,7 +100,7 @@ export default function Component() {
                             <CardDescription>New users over time</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <BarchartChart />
+                            <BarchartChart data={formattedChartData} dataKey="total_users" isLoading={chartLoading} />
                         </CardContent>
                     </Card>
                     <Card>
@@ -78,7 +109,7 @@ export default function Component() {
                             <CardDescription>Active boxes by type</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <BarchartChart />
+                            <BarchartChart data={formattedChartData} dataKey="total_boxes" isLoading={chartLoading} />
                         </CardContent>
                     </Card>
                     <Card>
@@ -87,29 +118,11 @@ export default function Component() {
                             <CardDescription>Campaign performance metrics</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <BarchartChart />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>API Requests</CardTitle>
-                            <CardDescription>API request volume over time</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <BarchartChart />
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Gift Visits</CardTitle>
-                            <CardDescription>Gift visit trends</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <BarchartChart />
+                            <BarchartChart data={formattedChartData} dataKey="total_campaigns" isLoading={chartLoading} />
                         </CardContent>
                     </Card>
                 </div>
-                <Card>
+                {/* <Card>
                     <CardHeader>
                         <CardTitle>Recent Activity</CardTitle>
                         <CardDescription>Latest platform activity</CardDescription>
@@ -158,13 +171,13 @@ export default function Component() {
                             </TableBody>
                         </Table>
                     </CardContent>
-                </Card>
+                </Card> */}
             </main>
         </div>
     )
 }
 
-function BarchartChart() {
+function BarchartChart({ data, dataKey, isLoading }: { data: {}[], dataKey: string, isLoading: boolean }) {
     return (
         <ChartContainer
             config={{
@@ -175,34 +188,25 @@ function BarchartChart() {
             }}
             className="min-h-[300px] w-full"
         >
-            <BarChart
-                accessibilityLayer
-                data={[
-                    { month: "January", desktop: 186 },
-                    { month: "February", desktop: 305 },
-                    { month: "March", desktop: 237 },
-                    { month: "April", desktop: 73 },
-                    { month: "May", desktop: 209 },
-                    { month: "June", desktop: 214 },
-                    { month: "July", desktop: 214 },
-                    { month: "August", desktop: 214 },
-                    { month: "September", desktop: 214 },
-                    { month: "October", desktop: 214 },
-                    { month: "November", desktop: 214 },
-                    { month: "December", desktop: 214 },
-                ]}
-            >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                    dataKey="month"
-                    tickLine={false}
-                    tickMargin={10}
-                    axisLine={false}
-                    tickFormatter={(value) => value.slice(0, 3)}
-                />
-                <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8} />
-            </BarChart>
+            {isLoading ? (
+                <Skeleton className="h-full w-full" />
+            ) : (
+                <BarChart
+                    accessibilityLayer
+                    data={data}
+                >
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                        dataKey="month"
+                        tickLine={false}
+                        tickMargin={10}
+                        axisLine={false}
+                        tickFormatter={(value) => value.slice(0, 3)}
+                    />
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                    <Bar dataKey={dataKey} fill="var(--color-desktop)" radius={8} />
+                </BarChart>
+            )}
         </ChartContainer>
     )
 }

@@ -165,3 +165,15 @@ class PermissionGroupSerializer(serializers.ModelSerializer):
 class AssignUserGroupSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
     group_id = serializers.IntegerField()
+
+
+class MonthDataSerializer(serializers.Serializer):
+    month = serializers.CharField()
+    total_users = serializers.IntegerField()
+    total_boxes = serializers.IntegerField()
+    total_campaigns = serializers.IntegerField()
+
+class AdminDashboardChartSerializer(serializers.Serializer):
+    users = MonthDataSerializer(many=True)
+    boxes = MonthDataSerializer(many=True)
+    campaigns = MonthDataSerializer(many=True)

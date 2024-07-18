@@ -7,8 +7,9 @@ from django.db import transaction
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
+from django.utils.timezone import now
 
 from apps.company_dashboard.views import CampaignCreateView
 from apps.gft.models import (
@@ -33,6 +34,7 @@ from .serializers import (
     AdminCampaignSerializer,
     AdminCompanyBoxesSerializer,
     AdminCreateCampaignSerializer,
+    AdminDashboardChartSerializer,
     AdminGiftSerializer,
     AdminGiftVisitSerializer,
     AssignUserGroupSerializer,
@@ -1926,3 +1928,78 @@ class AdminMetricsView(generics.GenericAPIView):
     
     
 admin_metrics_api_view = AdminMetricsView.as_view()
+
+
+class AdminDashboardChartData(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    @extend_schema(
+        responses=AdminDashboardChartSerializer,
+        description="Get combined analytics for users, boxes, and campaigns related to the logged-in company for each month from January to December",
+        examples=[
+            OpenApiExample(
+                "Example response",
+                value={
+                    "users": [
+                        {"month": "January", "total_users": 150},
+                        {"month": "February", "total_users": 170},
+                    ],
+                    "boxes": [
+                        {"month": "January", "total_boxes": 100},
+                        {"month": "February", "total_boxes": 120},
+                    ],
+                    "campaigns": [
+                        {"month": "January", "total_campaigns": 20},
+                        {"month": "February", "total_campaigns": 25},
+                    ]
+                },
+            )
+        ],
+    )
+    def get(self, request):
+        current_year = now().year
+
+        users_data = []
+        boxes_data = []
+        campaigns_data = []
+
+        for month_index in range(1, 13):
+            month_name = datetime(current_year, month_index, 1).strftime("%B")
+
+            total_users = User.objects.filter(
+                created_at__year=current_year, created_at__month=month_index
+            ).count()
+
+            total_boxes = Box.objects.filter(
+                created_at__year=current_year, created_at__month=month_index
+            ).count()
+
+            total_campaigns = Campaign.objects.filter(
+                created_at__year=current_year, created_at__month=month_index
+            ).count()
+
+            users_data.append({
+                "month": month_name,
+                "total_users": total_users,
+            })
+
+            boxes_data.append({
+                "month": month_name,
+                "total_boxes": total_boxes,
+            })
+
+            campaigns_data.append({
+                "month": month_name,
+                "total_campaigns": total_campaigns,
+            })
+
+        data = {
+            "users": users_data,
+            "boxes": boxes_data,
+            "campaigns": campaigns_data,
+        }
+
+        return Response(data)
+
+
+admin_dashboard_chart_data = AdminDashboardChartData.as_view()

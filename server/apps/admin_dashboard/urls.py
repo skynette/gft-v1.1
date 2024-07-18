@@ -91,4 +91,6 @@ urlpatterns = [
     path('metrics/gifts/', metrics_views.gifts_metrics_api_view, name='gift_metrics'),
     path('metrics/giftvisits/', metrics_views.gifts_visits_metrics_view, name='gift_visit_metrics'),
     path('metrics/companies/', metrics_views.company_metrics_api_view, name='company_metrics'),
+    
+    path('metrics/charts/', views.admin_dashboard_chart_data, name='admin_chart_metrics'),
 ]

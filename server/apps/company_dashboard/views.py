@@ -1365,11 +1365,7 @@ class CompanyDashboardChartData(generics.GenericAPIView):
     def get(self, request):
         company = request.user.company
         current_year = now().year
-        months = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ]
-        
+
         boxes_data = []
         campaigns_data = []
 

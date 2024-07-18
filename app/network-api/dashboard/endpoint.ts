@@ -8,6 +8,7 @@ import { CompanyCatboxResponse } from "@/lib/response-type/company_dashboard/Com
 import { CreateBoxRequest } from "@/lib/response-type/company_dashboard/CreateBoxRequest";
 import { CreateCampaignRequest, UpdateCampaignRequest } from "@/lib/response-type/company_dashboard/CreateCampaignRequest";
 import { RegenerateAPIKeyRequest } from "@/lib/response-type/company_dashboard/RegenerateAPIKeyRequest";
+import { AdminDashBoardResponse, AdminDashboardChartResponse } from "@/lib/response-type/dashboard/AdminDashboardResponse";
 import { DashboardResponse } from "@/lib/response-type/dashboard/DashboardResponse";
 import { GiftOverviewResponse } from "@/lib/response-type/dashboard/GiftOverResponse";
 import { NotificationResponse } from "@/lib/response-type/dashboard/NotificationResponse";
@@ -226,6 +227,25 @@ export const updateCampaign = async (id: string, token: string, apiKey: string, 
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,
             'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
+}
+
+// ADMIN ENPOINTS
+export const getAdminDashboardMetrics = async (token: string): Promise<AdminDashBoardResponse> => {
+    const response = await axiosInstance.get('/dashboard/admin/metrics/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const getAdminDashboardChart = async (token: string): Promise<AdminDashboardChartResponse> => {
+    const response = await axiosInstance.get('/dashboard/admin/metrics/charts/', {
+        headers: {
+            Authorization: `Token ${token}`,
         }
     });
     return response.data;
