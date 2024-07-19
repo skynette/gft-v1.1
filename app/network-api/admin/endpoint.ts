@@ -66,7 +66,7 @@ export const getAdminCompanyBoxes = async (token: string): Promise<AdminCompanyB
 }
 
 export const getAdminCompanyAPIKeys = async (token: string): Promise<AdminCompanyAPIKeyResponse[]> => {
-    const response = await axiosInstance.get('/dashboard/admin/company-boxes-api-key/', {
+    const response = await axiosInstance.get('/dashboard/admin/company-api-key/', {
         headers: {
             Authorization: `Token ${token}`,
         }
