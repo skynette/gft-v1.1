@@ -48,7 +48,7 @@ export const getAdminCampaigns = async (token: string): Promise<AdminCampaignRes
 }
 
 export const getAdminCompanies = async (token: string): Promise<AdminCompanyResponse[]> => {
-    const response = await axiosInstance.get('/dashboard/admin/box-category/list/', {
+    const response = await axiosInstance.get('/dashboard/admin/companies/', {
         headers: {
             Authorization: `Token ${token}`,
         }
@@ -102,7 +102,7 @@ export const getAdminPermissions = async (token: string): Promise<AdminPermissio
 }
 
 export const getAdminPermissionGroups = async (token: string): Promise<AdminPermissionGroupResponse[]> => {
-    const response = await axiosInstance.get('/dashboard/admin/permission/', {
+    const response = await axiosInstance.get('/dashboard/admin/permission-groups/', {
         headers: {
             Authorization: `Token ${token}`,
         }
@@ -111,7 +111,7 @@ export const getAdminPermissionGroups = async (token: string): Promise<AdminPerm
 }
 
 export const getAdminTemplates = async (token: string): Promise<AdminTemplatesResponse[]> => {
-    const response = await axiosInstance.get('/dashboard/admin/permission/', {
+    const response = await axiosInstance.get('/dashboard/admin/template/', {
         headers: {
             Authorization: `Token ${token}`,
         }
@@ -120,7 +120,7 @@ export const getAdminTemplates = async (token: string): Promise<AdminTemplatesRe
 }
 
 export const getAdminConfig = async (token: string): Promise<AdminConfigResponse> => {
-    const response = await axiosInstance.get('/dashboard/admin/permission/', {
+    const response = await axiosInstance.get('/dashboard/admin/config-management/', {
         headers: {
             Authorization: `Token ${token}`,
         }

@@ -10,7 +10,7 @@ import LoadingSkeleton from '@/components/skeleton'
 import { useGetAdminCampaigns } from '@/lib/hooks/admin-hooks'
 import { columns } from './components/columns'
 
-export default function BoxPage() {
+export default function CampaignPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
     const { data, isPending, isSuccess } = useGetAdminCampaigns();
 

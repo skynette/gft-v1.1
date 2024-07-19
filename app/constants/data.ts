@@ -78,7 +78,7 @@ export const adminNavItems: NavItem[] = [
   },
   {
     title: 'Company',
-    href: '/admin/companies',
+    href: '/admin/company',
     icon: 'user',
     label: 'company'
   },
