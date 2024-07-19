@@ -10,10 +10,10 @@ import useDeleteBox from "@/lib/hooks/useDeleteBox"
 import { useQueryClient } from "@tanstack/react-query"
 import { createQueryString } from "@/lib/utils"
 import { usePathname, useRouter } from "next/navigation"
-import { BoxSheet } from "./box-sheet"
+import { BoxCategorySheet } from "./box-category-sheet"
 
 interface CellActionProps {
-    data: AdminBoxResponse
+    data: AdminBoxCategoryResponse
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -25,7 +25,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
     const { mutate, isPending } = useDeleteBox({
         onSuccess() {
-            client.invalidateQueries({ queryKey: ['admin-box'] })
+            client.invalidateQueries({ queryKey: ['admin-box-category'] })
             toast.success('deleted successfully.')
             setIsOpenSheet(false)
         },
@@ -44,10 +44,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             <AlertModal
                 isOpen={openAlert}
                 onClose={() => setIsOpenAlert(false)}
-                onConfirm={() => mutate(data.id)}
+                onConfirm={() => mutate(data.id.toString())}
                 loading={isPending}
             />
-            <BoxSheet
+            <BoxCategorySheet
                 isOpen={openSheet}
                 title="Update box"
                 initialValue={data}
@@ -73,7 +73,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                         <Edit className="mr-2 h-4 w-4" />
                         Update
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onCopy(data.id)}>
+                    <DropdownMenuItem onClick={() => onCopy(data.id.toString())}>
                         <Copy className="mr-2 h-4 w-4" />
                         Copy Id
                     </DropdownMenuItem>

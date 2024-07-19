@@ -91,3 +91,39 @@ export const getAdminGiftVisits = async (token: string): Promise<AdminGiftVisits
     });
     return response.data;
 }
+
+export const getAdminPermissions = async (token: string): Promise<AdminPermissionsResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/admin/permission/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const getAdminPermissionGroups = async (token: string): Promise<AdminPermissionGroupResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/admin/permission/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const getAdminTemplates = async (token: string): Promise<AdminTemplatesResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/admin/permission/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const getAdminConfig = async (token: string): Promise<AdminConfigResponse> => {
+    const response = await axiosInstance.get('/dashboard/admin/permission/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}

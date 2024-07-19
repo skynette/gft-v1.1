@@ -20,7 +20,7 @@ export default function BoxPage() {
             <div className="flex items-center justify-between">
                 <Heading
                     title={`Boxes`}
-                    description="Manage your categories here."
+                    description="Manage your boxes here."
                 />
                 <Button onClick={() => setIsOpenSheet(true)}>
                     <Plus className="w-4 h-4 mr-2" />

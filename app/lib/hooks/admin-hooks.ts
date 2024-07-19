@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminGiftVisits, getAdminGifts } from '@/network-api/admin/endpoint';
+import { getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminTemplates } from '@/network-api/admin/endpoint';
 
 export function useGetAdminCampaigns() {
     const session = useSession();
@@ -93,6 +93,42 @@ export function useGetAdminGiftVisits() {
     const { data, isPending, isSuccess, isError, error } = useQuery<AdminGiftVisitsResponse[], AxiosError>({
         queryKey: ['admin-giftvisits'],
         queryFn: () => getAdminGiftVisits(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
+    });
+
+    return { data, isPending, isSuccess, isError, error };
+}
+
+export function useGetAdminPermissionGroups() {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error } = useQuery<AdminPermissionGroupResponse[], AxiosError>({
+        queryKey: ['admin-giftvisits'],
+        queryFn: () => getAdminPermissionGroups(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
+    });
+
+    return { data, isPending, isSuccess, isError, error };
+}
+
+export function useGetAdminTemplates() {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error } = useQuery<AdminTemplatesResponse[], AxiosError>({
+        queryKey: ['admin-giftvisits'],
+        queryFn: () => getAdminTemplates(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
+    });
+
+    return { data, isPending, isSuccess, isError, error };
+}
+
+export function useGetAdminConfig() {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error } = useQuery<AdminConfigResponse, AxiosError>({
+        queryKey: ['admin-giftvisits'],
+        queryFn: () => getAdminConfig(session.data?.accessToken ?? ''),
         enabled: session.status === 'authenticated'
     });
 
