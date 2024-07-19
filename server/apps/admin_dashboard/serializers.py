@@ -84,11 +84,31 @@ class AdminCompanyBoxesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AdminBoxSerializer(serializers.ModelSerializer):
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username", "first_name", "last_name", "email", "mobile", "id"]
+
+
+class AdminBoxCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Box
         fields = '__all__'
 
+
+class AdminBoxSerializer(serializers.ModelSerializer):
+    user = UserDetailSerializer(read_only=True)
+
+    class Meta:
+        model = Box
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        user_detail = UserDetailSerializer(instance.user).data
+        representation['user'] = user_detail
+        return representation
+    
 
 class AdminGiftSerializer(serializers.ModelSerializer):
     class Meta:
@@ -123,7 +143,7 @@ class AdminCampaignSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Campaign
-        fields = ['id', 'company_name', 'name', 'box_type', 'duration', 'num_boxes', 'header_image', 'open_after_a_day']
+        fields = ['pkid', 'id', 'company_name', 'name', 'box_type', 'duration', 'num_boxes', 'header_image', 'open_after_a_day']
 
 
 class AdminCampaignDetailSerializer(serializers.ModelSerializer):

@@ -29,6 +29,7 @@ from apps.gft.models import (
 from helpers.utils import ImageUploader
 from .serializers import (
     AdminBoxCategorySerializer,
+    AdminBoxCreateSerializer,
     AdminBoxSerializer,
     AdminCampaignDetailSerializer,
     AdminCampaignSerializer,
@@ -104,10 +105,15 @@ class BoxCreateView(generics.GenericAPIView):
     queryset = Box.objects.all()
     serializer_class = AdminBoxSerializer
     permission_classes = [IsAdminUser]
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return AdminBoxCreateSerializer
+        return AdminBoxSerializer
 
     @extend_schema(
         description="Create a new box.",
-        request=AdminBoxSerializer,
+        request=AdminBoxCreateSerializer,
         responses={201: AdminBoxSerializer},
         tags=["Admin Area"],
     )
