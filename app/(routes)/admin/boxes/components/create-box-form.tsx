@@ -51,6 +51,10 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
             onClose();
             client.invalidateQueries({ queryKey: ['admin-box'] });
         },
+        onError(error) {
+            toast.error('Error updating box');
+            console.error(error);
+        },
     });
 
     // mutate function for updating the box
@@ -60,6 +64,10 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
             toast.success('Box updated successfully');
             onClose();
             client.invalidateQueries({ queryKey: ['admin-box'] });
+        },
+        onError(error) {
+            toast.error('Error updating box');
+            console.error(error);
         },
     });
 
@@ -93,6 +101,7 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
             box_campaign: values.box_campaign ?? 1,
         };
 
+        console.log({ payload });
         if (query === 'update') {
             mutateUpdate(payload);
         } else {
@@ -196,7 +205,7 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
                         type='submit'
                         disabled={isCreatePending || isUpdatePending}
                         isLoading={isCreatePending || isUpdatePending}
-                        className='inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50'
+                        className={`inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 ${isCreatePending && 'bg-blue-50'} ${isUpdatePending && 'bg-blue-50'}`}
                     >
                         Continue <ArrowRight size={18} className='text-white ml-2' />
                     </Button>

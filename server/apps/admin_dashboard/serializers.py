@@ -76,12 +76,21 @@ class ConfigSerializer(serializers.ModelSerializer):
     class Meta:
         model = Config
         fields = '__all__'
-
+        
 
 class AdminCompanyBoxesSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = CompanyBoxes
         fields = '__all__'
+        
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        company = AdminCompanySerializer(instance.company).data
+        box_type = AdminBoxCategorySerializer(instance.box_type).data
+        representation['company'] = company
+        representation['box_type'] = box_type
+        return representation
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -120,6 +129,14 @@ class AdminGiftVisitSerializer(serializers.ModelSerializer):
     class Meta:
         model = GiftVisit
         fields = '__all__'
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        visitor = UserDetailSerializer(instance.visitor).data
+        representation['visitor'] = visitor
+        gift = AdminGiftSerializer(instance.gift).data
+        representation['gift'] = gift
+        return representation
         
         
 class AdminCreateCampaignSerializer(serializers.ModelSerializer):
