@@ -99,11 +99,24 @@ export function useGetAdminGiftVisits() {
     return { data, isPending, isSuccess, isError, error };
 }
 
+
+export function useGetAdminPermissions() {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error } = useQuery<AdminPermissionsResponse[], AxiosError>({
+        queryKey: ['admin-permission'],
+        queryFn: () => getAdminPermissions(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
+    });
+
+    return { data, isPending, isSuccess, isError, error };
+}
+
 export function useGetAdminPermissionGroups() {
     const session = useSession();
 
     const { data, isPending, isSuccess, isError, error } = useQuery<AdminPermissionGroupResponse[], AxiosError>({
-        queryKey: ['admin-giftvisits'],
+        queryKey: ['admin-permission-group'],
         queryFn: () => getAdminPermissionGroups(session.data?.accessToken ?? ''),
         enabled: session.status === 'authenticated'
     });
@@ -115,7 +128,7 @@ export function useGetAdminTemplates() {
     const session = useSession();
 
     const { data, isPending, isSuccess, isError, error } = useQuery<AdminTemplatesResponse[], AxiosError>({
-        queryKey: ['admin-giftvisits'],
+        queryKey: ['admin-templates'],
         queryFn: () => getAdminTemplates(session.data?.accessToken ?? ''),
         enabled: session.status === 'authenticated'
     });
@@ -127,7 +140,7 @@ export function useGetAdminConfig() {
     const session = useSession();
 
     const { data, isPending, isSuccess, isError, error } = useQuery<AdminConfigResponse, AxiosError>({
-        queryKey: ['admin-giftvisits'],
+        queryKey: ['admin-config'],
         queryFn: () => getAdminConfig(session.data?.accessToken ?? ''),
         enabled: session.status === 'authenticated'
     });

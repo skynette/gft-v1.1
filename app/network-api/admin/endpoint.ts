@@ -93,7 +93,7 @@ export const getAdminGiftVisits = async (token: string): Promise<AdminGiftVisits
 }
 
 export const getAdminPermissions = async (token: string): Promise<AdminPermissionsResponse[]> => {
-    const response = await axiosInstance.get('/dashboard/admin/permission/', {
+    const response = await axiosInstance.get('/dashboard/admin/permissions/', {
         headers: {
             Authorization: `Token ${token}`,
         }
