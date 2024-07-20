@@ -227,3 +227,12 @@ export const getAdminConfig = async (token: string): Promise<AdminConfigResponse
     });
     return response.data;
 }
+
+export const getAdminRoles = async (token: string): Promise<AdminRolesResponse> => {
+    const response = await axiosInstance.get('/dashboard/admin/roles/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
