@@ -35,7 +35,9 @@ urlpatterns = [
     path('company-boxes/<int:box_type_id>/detail/', views.company_boxes_detail_api_view, name='api_company_boxes_detail'),
 
     # api key usage url
-    path('api-key-usage/<int:id>', views.company_api_key_usage_view, name='api_key_usage'),
+    path('api-key-usage/', views.company_api_key_usage_view, name='api_key_usage'),
+    path('api-key-usage/<int:id>', views.company_api_key_usage_by_id_view, name='api_key_usage_by_id'),
+    path("api-key/regenerate/", views.regenerate_api_key_view, name="api_company_api_key_regenerate"),
 
     # company url
     path("company/", views.company_api_view, name="api_company"),
@@ -43,7 +45,8 @@ urlpatterns = [
     path('settings/update/', views.update_settings_api_view, name='api_update_settings'),
     
     # company users url
-    path('company-users/<int:id>/', views.company_users_api_view, name='api_company_users_list'),
+    path('company-users/<int:id>/', views.company_users_by_id_api_view, name='api_company_users_by_id_list'),
+    path('company-users/', views.company_users_api_view, name='api_company_users_list'),
     
     # analytics urls
     path('analytics/boxes/', views.BoxAnalyticsView.as_view(), name='box-analytics'),

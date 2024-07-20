@@ -6,16 +6,17 @@ import { BoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose"
 
 interface BoxSheetProps {
     isOpen: boolean
+    title: string
     onClose: () => void
     initialValue?: BoxResponse
 }
-export const BoxSheet = ({ isOpen, initialValue, onClose }: BoxSheetProps) => {
+export const BoxSheet = ({ title, isOpen, initialValue, onClose }: BoxSheetProps) => {
     return (
         <Sheet open={isOpen} onOpenChange={onClose} >
             <SheetContent className="min-w-[50%] overflow-scroll">
                 <SheetHeader>
                     <SheetTitle>
-                        Create Box
+                        {title}
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>

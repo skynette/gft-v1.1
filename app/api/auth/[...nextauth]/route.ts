@@ -78,8 +78,9 @@ const handler = NextAuth({
     ],
     callbacks: {
         async jwt({ token, user, account, session, trigger, profile }) {
-            if (trigger === 'update')
-                return { ...token, ...session.user }
+            if (trigger === 'update') {
+                return { ...token, ...session }
+            }
 
             if (account && profile) {
                 // If the user logged in with an OAuth provider

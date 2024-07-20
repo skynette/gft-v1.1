@@ -213,6 +213,7 @@ class BoxCategorySerializer(serializers.ModelSerializer):
 
 class CompanyAPIKeySerializer(serializers.ModelSerializer):
     company = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
 
     class Meta:
         model = CompanyApiKey
@@ -221,12 +222,28 @@ class CompanyAPIKeySerializer(serializers.ModelSerializer):
     def get_company(self, obj) -> str:
         return obj.company.name
     
+    def get_status(self, obj):
+        return "active" if obj.num_of_requests_made < obj.max_requests else "inactive"
+
+
+class CompanyApiKeyUsageResponseSerializer(serializers.Serializer):
+    metrics = serializers.DictField(child=serializers.IntegerField())
+    results = CompanyAPIKeySerializer(many=True)
+    
 
 class CompanyUserSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    company = serializers.SerializerMethodField()
+    
     class Meta:
         model = CompanyUser
         fields = '__all__'
 
+    def get_user(self, obj):
+        return UserProfileSerializer(obj.user).data
+    
+    def get_company(self, obj):
+        return obj.company.name
 
 class CompanySerializer(serializers.ModelSerializer):
 
@@ -234,7 +251,7 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = ['id', 'name', 'logo', 'header_image', 'company_url',
                   'box_limit', 'socials', 'color_schema']
-
+        
 
 class CompanyBoxesSerializer(serializers.ModelSerializer):
     company_name = serializers.SerializerMethodField()

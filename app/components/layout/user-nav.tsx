@@ -50,7 +50,9 @@ function UserNav({ currUser }: UserNavProps) {
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                         <DropdownMenuItem>
-                            <Link href={'/dashboard/gifter/settings'}>Settings</Link>
+                            {currUser.role === "company" && <Link href={'/dashboard/settings'}>Company Settings</Link>}
+                            {currUser.role === "user" && <Link href={'/dashboard/gifter/settings'}>Settings</Link>}
+                            {currUser.role === "super_admin" && <Link href={'/admin/settings'}>Settings</Link>}
                         </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />

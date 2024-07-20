@@ -40,7 +40,7 @@ export default function BoxPage() {
                 />
             }
 
-            <BoxSheet isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
+            <BoxSheet title='Create box' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }

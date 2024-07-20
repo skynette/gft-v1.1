@@ -27,6 +27,7 @@ from .serializers import (
     CampaignSerializer,
     CombinedAnalyticsSerializer,
     CompanyAPIKeySerializer,
+    CompanyApiKeyUsageResponseSerializer,
     CompanyBoxesSerializer,
     CompanyDashboardChartSerializer,
     CompanySerializer,
@@ -612,6 +613,47 @@ box_category_retrieve_update_destroy_api_view = (
 
 
 class CompanyApiKeyUsageView(generics.GenericAPIView):
+    serializer_class = CompanyApiKeyUsageResponseSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ["view_company_dashboard"]
+
+    @extend_schema(
+        request=None,
+        description="Retrieve API keys info",
+        responses={
+            200: CompanyApiKeyUsageResponseSerializer,
+        },
+        tags=["Company API Key Usage"],
+    )
+    def get(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        if not company:
+            return Response(
+                {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        total_requests = CompanyApiKey.objects.filter(company=company).aggregate(
+            total_requests=Sum("num_of_requests_made")
+        )["total_requests"]
+
+        api_keys = CompanyApiKey.objects.filter(company=company)
+        results = CompanyAPIKeySerializer(api_keys, many=True).data
+
+        response_data = {
+            "metrics": {
+                "total_requests": total_requests
+            },
+            "results": results
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
+
+company_api_key_usage_view = CompanyApiKeyUsageView.as_view()
+
+
+class CompanyApiKeyUsageByIDView(generics.GenericAPIView):
     serializer_class = CompanyAPIKeySerializer
     permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
     authentication_classes = [APIKeyAuthentication]
@@ -640,7 +682,47 @@ class CompanyApiKeyUsageView(generics.GenericAPIView):
         return Response({"total_requests": total_requests}, status=status.HTTP_200_OK)
 
 
-company_api_key_usage_view = CompanyApiKeyUsageView.as_view()
+company_api_key_usage_by_id_view = CompanyApiKeyUsageByIDView.as_view()
+
+
+class RegenerateApiKeyView(generics.GenericAPIView):
+    serializer_class = None
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ["view_company_dashboard"]
+
+    @extend_schema(
+        description="Regenerate an API key for the logged-in company's API key.",
+        responses=CompanyAPIKeySerializer,
+        tags=["Company Area"],
+    )
+    def post(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        if not company:
+            return Response(
+                {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        api_key_id = request.data.get('api_key')
+        if not api_key_id:
+            return Response(
+                {"message": "API key ID is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            api_key = CompanyApiKey.objects.get(company=company, id=api_key_id)
+        except CompanyApiKey.DoesNotExist:
+            return Response(
+                {"message": "API key not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        api_key.regenerate_key()
+
+        serializer = CompanyAPIKeySerializer(api_key)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+regenerate_api_key_view = RegenerateApiKeyView.as_view()
 
 
 class CompanyView(generics.GenericAPIView):
@@ -691,7 +773,7 @@ class CompanyDetailsView(generics.GenericAPIView):
                 {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
             )
 
-        serializer = self.get_serializer(company)
+        serializer = UpdateCompanySerializer(company)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -726,7 +808,7 @@ class UpdateSettingsView(generics.GenericAPIView):
 update_settings_api_view = UpdateSettingsView.as_view()
 
 
-class CompanyUsersView(generics.GenericAPIView):
+class CompanyUsersByIDView(generics.GenericAPIView):
     serializer_class = CompanyUserSerializer
     permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
     authentication_classes = [APIKeyAuthentication]
@@ -743,6 +825,35 @@ class CompanyUsersView(generics.GenericAPIView):
     )
     def get(self, request, id, *args, **kwargs):
         company = Company.objects.filter(id=id).first()
+        if not company:
+            return Response(
+                {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        company_users = company.get_company_users()
+        serializer = CompanyUserSerializer(
+            company_users, many=True, context={"request": request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+company_users_by_id_api_view = CompanyUsersByIDView.as_view()
+
+
+class CompanyUsersView(generics.GenericAPIView):
+    serializer_class = CompanyUserSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    authentication_classes = [APIKeyAuthentication]
+    required_permissions = ["view_company_dashboard"]
+
+    @extend_schema(
+        request=None,
+        description="Retrieve list of users for authenticated company.",
+        responses=CompanyUserSerializer(many=True),
+        tags=["Company Users"],
+    )
+    def get(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
         if not company:
             return Response(
                 {"message": "Company not found."}, status=status.HTTP_404_NOT_FOUND
@@ -1254,11 +1365,7 @@ class CompanyDashboardChartData(generics.GenericAPIView):
     def get(self, request):
         company = request.user.company
         current_year = now().year
-        months = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ]
-        
+
         boxes_data = []
         campaigns_data = []
 
