@@ -61,7 +61,7 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
         receiverEmail: initialValue?.receiver_email ?? '',
         receiverPhone: initialValue?.receiver_phone ?? '',
         receiverName: initialValue?.receiver_name ?? '',
-        openDate: parse(initialValue?.open_date ?? '', 'dd-MM-yyyy', new Date()),
+        openDate: new Date(),
         open_after_a_day: initialValue?.open_after_a_day,
         boxCategory: initialValue?.box_campaign.toString() ?? '',
     }
