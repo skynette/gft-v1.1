@@ -1,7 +1,6 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
 import { format } from 'date-fns'
 import { Checkbox } from "@/components/ui/checkbox"
 import { CellAction } from "./cell-actions"

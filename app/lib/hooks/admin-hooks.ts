@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminTemplates } from '@/network-api/admin/endpoint';
+import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminTemplates } from '@/network-api/admin/endpoint';
 
 export function useGetAdminCampaigns() {
     const session = useSession();
@@ -15,6 +15,23 @@ export function useGetAdminCampaigns() {
     return { data, isPending, isSuccess, isError, error };
 }
 
+export function useAdminDeleteCampaign({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteCampaign(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
+}
+
+
 export function useGetAdminBoxes() {
     const session = useSession();
 
@@ -25,6 +42,22 @@ export function useGetAdminBoxes() {
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+export function useAdminDeleteBox({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteBox(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
 }
 
 export function useGetAdminBoxCategories() {
@@ -39,16 +72,48 @@ export function useGetAdminBoxCategories() {
     return { data, isPending, isSuccess, isError, error };
 }
 
+export function useAdminDeleteBoxCategories({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteBoxCategories(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
+}
+
 export function useGetAdminCompanies() {
     const session = useSession();
 
     const { data, isPending, isSuccess, isError, error } = useQuery<AdminCompanyResponse[], AxiosError>({
-        queryKey: ['admin-box-companies'],
+        queryKey: ['admin-companies'],
         queryFn: () => getAdminCompanies(session.data?.accessToken ?? ''),
         enabled: session.status === 'authenticated'
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+export function useAdminDeleteCompany({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteCompany(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
 }
 
 export function useGetAdminCompanyBoxes() {
@@ -63,6 +128,22 @@ export function useGetAdminCompanyBoxes() {
     return { data, isPending, isSuccess, isError, error };
 }
 
+export function useAdminDeleteCompanyBoxes({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteCompanyBoxes(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
+}
+
 export function useGetAdminCompanyAPIKeys() {
     const session = useSession();
 
@@ -75,6 +156,23 @@ export function useGetAdminCompanyAPIKeys() {
     return { data, isPending, isSuccess, isError, error };
 }
 
+export function useAdminDeleteCompanyAPIKey({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteCompanyAPIKey(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
+}
+
+
 export function useGetAdminGifts() {
     const session = useSession();
 
@@ -85,6 +183,22 @@ export function useGetAdminGifts() {
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+export function useAdminDeleteGift({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteGift(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
 }
 
 export function useGetAdminGiftVisits() {
@@ -99,6 +213,21 @@ export function useGetAdminGiftVisits() {
     return { data, isPending, isSuccess, isError, error };
 }
 
+export function useAdminDeleteGiftVisit({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteGiftVisit(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
+}
 
 export function useGetAdminPermissions() {
     const session = useSession();
@@ -110,6 +239,22 @@ export function useGetAdminPermissions() {
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+export function useAdminDeletePermission({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeletePermission(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
 }
 
 export function useGetAdminPermissionGroups() {
@@ -124,6 +269,22 @@ export function useGetAdminPermissionGroups() {
     return { data, isPending, isSuccess, isError, error };
 }
 
+export function useAdminDeletePermissionGroup({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeletePermissionGroup(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
+}
+
 export function useGetAdminTemplates() {
     const session = useSession();
 
@@ -134,6 +295,22 @@ export function useGetAdminTemplates() {
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+export function useAdminDeleteTemplate({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteTemplate(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
 }
 
 export function useGetAdminConfig() {

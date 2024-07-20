@@ -6,11 +6,11 @@ import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
 import { useState } from "react"
 import { AlertModal } from "@/components/modals/alert-modal"
 import { toast } from "sonner"
-import useDeleteBox from "@/lib/hooks/useDeleteBox"
 import { useQueryClient } from "@tanstack/react-query"
 import { createQueryString } from "@/lib/utils"
 import { usePathname, useRouter } from "next/navigation"
 import { BoxCategorySheet } from "./box-category-sheet"
+import { useAdminDeleteBoxCategories } from "@/lib/hooks/admin-hooks"
 
 interface CellActionProps {
     data: AdminBoxCategoryResponse
@@ -23,15 +23,15 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     const [openSheet, setIsOpenSheet] = useState(false)
     const [openAlert, setIsOpenAlert] = useState(false)
 
-    const { mutate, isPending } = useDeleteBox({
+    const { mutate, isPending } = useAdminDeleteBoxCategories({
         onSuccess() {
             client.invalidateQueries({ queryKey: ['admin-box-category'] })
             toast.success('deleted successfully.')
-            setIsOpenSheet(false)
+            setIsOpenAlert(false)
         },
         onError(error) {
             toast.error("deletion failed")
-            setIsOpenSheet(false)
+            setIsOpenAlert(false)
         },
     });
 

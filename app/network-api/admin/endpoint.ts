@@ -20,6 +20,106 @@ export const adminUpdateBox = async (id: string, token: string, req: AdminBoxReq
     return response.data;
 }
 
+export const adminDeleteBox = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/boxes/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteCampaign = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/campaigns/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteBoxCategories = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/box-category/delete/${id}/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteCompany = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/companies/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteCompanyBoxes = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/company-boxes/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteCompanyAPIKey = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/company-api-key/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteGift = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/gifts/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteGiftVisit = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/giftvisits/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeletePermission = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/permissions/${id}/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeletePermissionGroup = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/permission-groups/${id}/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteTemplate = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/template/delete/${id}/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
 export const getAdminBoxes = async (token: string): Promise<AdminBoxResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/boxes/', {
         headers: {
