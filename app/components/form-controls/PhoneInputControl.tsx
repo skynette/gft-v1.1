@@ -9,7 +9,7 @@ interface PhoneInputProps {
     name: string;
     label: string;
     type: string;
-    placeholder: string;
+    placeholder?: string;
 }
 
 const PhoneInputControl: FC<PhoneInputProps> = ({ name, label, type, placeholder }) => {

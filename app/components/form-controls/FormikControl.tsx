@@ -11,7 +11,7 @@ interface ControlProps {
     name: string;
     label: string;
     type: string;
-    placeholder: string;
+    placeholder?: string;
     control: string;
     disabled?: boolean;
     defaultValue?: string | number;

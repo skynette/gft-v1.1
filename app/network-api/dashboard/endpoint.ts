@@ -110,6 +110,87 @@ export const getCompanyProfile = async (token: string, apiKey: string): Promise<
     return response.data;
 }
 
+// export const updateCompanyProfile = async (token: string, apiKey: string, req: CompanyProfileResponse): Promise<any> => {
+//     const formData = new FormData();
+    
+//     formData.append('name', req.name);
+//     formData.append('logo', req.logo);
+//     formData.append('header_image', req.header_image);
+//     formData.append('company_url', req.company_url);
+
+//     // Append social media URLs
+//     for (const [key, value] of Object.entries(req.socials)) {
+//         formData.append(`socials[${key}]`, value as string);
+//     }
+
+//     // Append color schema
+//     for (const [schemaType, colors] of Object.entries(req.color_schema)) {
+//         for (const [colorType, colorValue] of Object.entries(colors as Record<string, string>)) {
+//             formData.append(`color_schema[${schemaType}][${colorType}]`, colorValue as string);
+//         }
+//     }
+
+//     const response = await axiosInstance.put(`/dashboard/settings/update/`, formData, {
+//         headers: {
+//             Authorization: `Token ${token}`,
+//             'gft-api-key': `${apiKey}`,
+//             'Content-Type': 'multipart/form-data'
+//         }
+//     });
+
+//     return response.data;
+// }
+
+export const updateCompanyProfile = async (token: string, apiKey: string, req: CompanyProfileResponse): Promise<any> => {
+    const data = {
+        name: req.name,
+        logo: req.logo,
+        header_image: req.header_image,
+        company_url: req.company_url,
+        socials: {
+            twitter_url: req.socials.twitter_url,
+            facebook_url: req.socials.facebook_url,
+            instagram_url: req.socials.instagram_url,
+            snapchat_url: req.socials.snapchat_url,
+            youtube_url: req.socials.youtube_url
+        },
+        color_schema: {
+            light: {
+                primary_color: req.color_schema.light.primary_color,
+                secondary_color: req.color_schema.light.secondary_color,
+                background_color: req.color_schema.light.background_color,
+                qr_code_text_color: req.color_schema.light.qr_code_text_color,
+                background_border_color: req.color_schema.light.background_border_color,
+                background_hover_color: req.color_schema.light.background_hover_color,
+                foreground_color: req.color_schema.light.foreground_color,
+                header_color: req.color_schema.light.header_color,
+                footer_color: req.color_schema.light.footer_color
+            },
+            dark: {
+                primary_color: req.color_schema.dark.primary_color,
+                secondary_color: req.color_schema.dark.secondary_color,
+                background_color: req.color_schema.dark.background_color,
+                qr_code_text_color: req.color_schema.dark.qr_code_text_color,
+                background_border_color: req.color_schema.dark.background_border_color,
+                background_hover_color: req.color_schema.dark.background_hover_color,
+                foreground_color: req.color_schema.dark.foreground_color,
+                header_color: req.color_schema.dark.header_color,
+                footer_color: req.color_schema.dark.footer_color
+            }
+        }
+    };
+
+    const response = await axiosInstance.put('/dashboard/settings/update/', data, {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+            'Content-Type': 'application/json'
+        }
+    });
+
+    return response.data;
+}
+
 export const regenerateAPIKey = async (token: string, apiKey: string, req: RegenerateAPIKeyRequest): Promise<any> => {
     const formData = new FormData();
     formData.append('api_key', req.api_key);
