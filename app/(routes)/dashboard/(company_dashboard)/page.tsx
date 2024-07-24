@@ -25,7 +25,7 @@ export default function page() {
 
     const { data: boxSalesData, isPending: boxSalesLoading, isSuccess } = useGetCompanyBox();
     const numSold = boxSalesData?.results.filter((item) => item.is_setup)
-    const salesData = numSold?.slice(0,5)
+    const salesData = numSold?.slice(0, 5)
     const months = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
@@ -183,7 +183,7 @@ export default function page() {
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <RecentSales data={salesData ?? []} loading={boxSalesLoading}/>
+                                    <RecentSales data={salesData ?? []} loading={boxSalesLoading} />
                                 </CardContent>
                             </Card>
                         </div>
