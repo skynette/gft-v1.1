@@ -1,8 +1,8 @@
 export interface CompanyProfileResponse {
-    id: number
+    id?: number
     name: string
-    logo: string
-    header_image: string
+    logo: any
+    header_image: any
     company_url: string
     box_limit: number
     socials: Socials
