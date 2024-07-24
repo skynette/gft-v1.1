@@ -82,6 +82,10 @@ urlpatterns = [
     
     path("config-management/", views.config_management_view, name="config_management"),
     
+    path('api-tokens/', views.ListAuthTokens.as_view(), name='api_tokens_list'),
+    path('api-token-update/<int:user_id>/', views.UpdateAuthToken.as_view(), name='api_token_update'),
+    path('api-tokens/<int:pk>/', views.DeleteAuthToken.as_view(), name='api_token_delete'),
+    
     # metrics api endpoint
     path('metrics/', views.admin_metrics_api_view, name='admin_metrics'),
     

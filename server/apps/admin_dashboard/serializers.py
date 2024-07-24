@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework.authtoken.models import Token
 
 from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, PermissionGroup, PermissionsModel, Template
 
@@ -214,3 +215,9 @@ class AdminDashboardChartSerializer(serializers.Serializer):
     users = MonthDataSerializer(many=True)
     boxes = MonthDataSerializer(many=True)
     campaigns = MonthDataSerializer(many=True)
+    
+
+class TokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Token
+        fields = ['key', 'user', 'created']

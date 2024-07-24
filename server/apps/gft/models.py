@@ -24,8 +24,8 @@ class Company(models.Model):
         blank=True
     )
     name = models.CharField(max_length=255, help_text="Name of the company", null=True, blank=True)
-    logo = models.ImageField(upload_to='company/logos/', help_text="Logo of the company", null=True, blank=True)
-    header_image = models.ImageField(upload_to='company/headers/', help_text="Header image for the company", null=True, blank=True)
+    logo = models.CharField(help_text="Logo of the company", null=True, blank=True)
+    header_image = models.CharField(help_text="Header image for the company", null=True, blank=True)
     company_url = models.CharField(max_length=255, help_text="URL of the company's website", null=True, blank=True)
     box_limit = models.IntegerField(help_text="Maximum number of gift boxes the company can manage", default=0)
     socials = models.JSONField(help_text="Social media information for the company", null=True, blank=True)
@@ -159,7 +159,7 @@ class Campaign(TimeStampedUUIDModel):
         company_boxes (ForeignKey to CompanyBoxes, optional): Company's gift boxes used in the campaign.
         duration (IntegerField): Duration of the campaign in days.
         num_boxes (IntegerField): Number of gift boxes in the campaign.
-        header_image (ImageField, optional): Header image for the campaign.
+        header_image (CharField, optional): Header image for the campaign.
         open_after_a_day (BooleanField): Whether to allow opening mini boxes only once a day.
         is_deleted (BooleanField): Indicates if the campaign is deleted.
     """
@@ -169,7 +169,7 @@ class Campaign(TimeStampedUUIDModel):
     company_boxes = models.ForeignKey(CompanyBoxes, on_delete=models.CASCADE, blank=True, null=True, help_text="Company's gift boxes used in the campaign")
     duration = models.IntegerField(help_text="Duration of the campaign in days")
     num_boxes = models.IntegerField(help_text="Number of gift boxes in the campaign")
-    header_image = models.ImageField(upload_to='campaigns/headers', blank=True, null=True, help_text="Header image for the campaign")
+    header_image = models.CharField(blank=True, null=True, help_text="Header image for the campaign")
     open_after_a_day = models.BooleanField(default=True, help_text="Whether to allow opening mini boxes only once a day")
     is_deleted = models.BooleanField(default=False, help_text="Indicates if the campaign is deleted")
 
@@ -208,7 +208,6 @@ class Box(TimeStampedUUIDModel):
     is_setup = models.BooleanField(default=False, help_text="Indicates if the gift box setup is complete")
     is_company_setup = models.BooleanField(default=False, help_text="Indicates if the gift box is set up by the company")
     box_campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE, blank=True, null=True, help_text="Campaign associated with this gift box")
-    qr_code_v = models.ImageField(upload_to='gift_qr_codes/', blank=True, null=True, help_text="QR code image for the gift box")
     open_after_a_day = models.BooleanField(default=False, help_text="Allow opening mini boxes only once a day")
 
     @property
@@ -269,7 +268,6 @@ class Gift(TimeStampedUUIDModel):
     reaction = models.CharField(max_length=255, blank=True, null=True, help_text="Reaction associated with opening the mini box")
     opened = models.BooleanField(default=False, help_text="Indicates if the mini box has been opened")
     open_date = models.DateTimeField(help_text="Date when the mini box can be opened")
-    qr_code_v = models.ImageField(upload_to='gift_qr_codes/', blank=True, null=True, help_text="QR code image for the mini box")
 
 
     @property

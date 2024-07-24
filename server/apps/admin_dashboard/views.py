@@ -10,6 +10,8 @@ from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiResponse, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 from django.utils.timezone import now
+from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import NotFound
 
 from apps.company_dashboard.views import CampaignCreateView
 from apps.gft.models import (
@@ -47,6 +49,7 @@ from .serializers import (
     PermissionSerializer,
     TemplateSelectionSerializer,
     TemplateSerializer,
+    TokenSerializer,
     UserSerializer,
 )
 from .filters import BoxFilter, CampaignFilter, CompanyFilter, GiftFilter, GiftVisitFilter, UserFilter
@@ -2009,3 +2012,74 @@ class AdminDashboardChartData(generics.GenericAPIView):
 
 
 admin_dashboard_chart_data = AdminDashboardChartData.as_view()
+
+@extend_schema(
+    description="List all auth tokens. Accessible only to admin users.",
+    responses={200: TokenSerializer(many=True)},
+    tags=["Auth Tokens"]
+)
+class ListAuthTokens(generics.ListAPIView):
+    queryset = Token.objects.all()
+    serializer_class = TokenSerializer
+    permission_classes = [IsAdminUser]
+
+@extend_schema(
+    description="Update (recreate) the auth token for a specified user. Accessible only to admin users.",
+    responses={200: TokenSerializer},
+    tags=["Auth Tokens"],
+    parameters=[
+        {
+            'name': 'user_id',
+            'required': True,
+            'in': 'path',
+            'description': 'ID of the user for whom to update the token',
+            'schema': {'type': 'integer'}
+        }
+    ]
+)
+class UpdateAuthToken(generics.GenericAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = TokenSerializer
+
+    def put(self, request, *args, **kwargs):
+        user_id = kwargs.get('user_id')
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            raise NotFound(detail="User not found.")
+
+        Token.objects.filter(user=user).delete()
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
+
+@extend_schema(
+    description="Delete the auth token for a specified user. Accessible only to admin users.",
+    responses={204: None},
+    tags=["Auth Tokens"],
+    parameters=[
+        {
+            'name': 'user_id',
+            'required': True,
+            'in': 'path',
+            'description': 'ID of the user for whom to delete the token',
+            'schema': {'type': 'integer'}
+        }
+    ]
+)
+class DeleteAuthToken(generics.GenericAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = TokenSerializer
+
+    def delete(self, request, *args, **kwargs):
+        user_id = kwargs.get('user_id')
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            raise NotFound(detail="User not found.")
+        
+        try:
+            token = Token.objects.get(user=user)
+            token.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Token.DoesNotExist:
+            raise NotFound(detail="Token not found.")
