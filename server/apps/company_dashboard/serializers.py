@@ -90,7 +90,7 @@ class BoxSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Box
-        exclude = ["qr_code_v", 'pkid']
+        exclude = ['pkid']
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_owner(self, obj):
@@ -126,7 +126,7 @@ class BoxSerializer(serializers.ModelSerializer):
 class BoxSetupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Box
-        exclude = ["qr_code_v", 'pkid', "user", "box_campaign", "days_of_gifting", "last_opened", "is_company_setup", ]
+        exclude = ['pkid', "user", "box_campaign", "days_of_gifting", "last_opened", "is_company_setup", ]
 
 
 class BoxEditSerializer(serializers.ModelSerializer):
@@ -134,7 +134,7 @@ class BoxEditSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Box
-        exclude = ["pkid", "qr_code_v", "user", "open_after_a_day"]
+        exclude = ["pkid", "user", "open_after_a_day"]
         read_only_fields = [
             "days_of_gifting",
             "id",
@@ -162,7 +162,7 @@ class GiftSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Gift
-        exclude = ["qr_code_v", "created_at", "updated_at"]
+        exclude = ["created_at", "updated_at"]
 
     @extend_schema_field(OpenApiTypes.STR)
     def get_gifter(self, obj):
@@ -182,7 +182,7 @@ class GiftSetupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Gift
-        exclude = ["qr_code_v", "created_at", "updated_at", "pkid"]
+        exclude = ["created_at", "updated_at", "pkid"]
 
 
 class AddBoxesToCampaignSerializer(serializers.Serializer):

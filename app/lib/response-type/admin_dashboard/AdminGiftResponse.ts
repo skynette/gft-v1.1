@@ -9,7 +9,6 @@ interface AdminGiftResponse {
   reaction: any
   opened: boolean
   open_date: string
-  qr_code_v: any
   user: any
   box_model: number
   gift_campaign: number
