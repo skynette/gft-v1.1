@@ -314,13 +314,14 @@ export const updateCampaign = async (id: string, token: string, apiKey: string, 
 }
 
 export const addBoxToCampaign = async (id: string, token: string, apiKey: string, boxIds: string[]): Promise<any> => {
-    const response = await axiosInstance.put(`/dashboard/campaigns/${id}/add-box-to-campaign/`, {
-        box_ids: boxIds
+    console.log(boxIds)
+    const response = await axiosInstance.post(`/dashboard/campaigns/${id}/add-box-to-campaign/`, {
+       'box_ids': boxIds
     }, {
         headers: {
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': 'application/json'
         }
     });
     return response.data;

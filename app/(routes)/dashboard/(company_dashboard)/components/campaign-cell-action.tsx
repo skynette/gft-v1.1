@@ -16,12 +16,14 @@ import useGetCompanyBox from "@/lib/hooks/useGetCompanyBox"
 import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/multi-select"
 import { MultiSelect, Option } from "react-multi-select-component"
 import useAddBoxToCampaign from "@/lib/hooks/useAddBoxToCampaign"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface CellActionProps {
     data: CampaignColumns
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
+    const queryClient = useQueryClient();
     const [openSheet, setIsOpenSheet] = useState(false);
     const [addToBox, showAddToBox] = useState(false);
     const pathname = usePathname();
@@ -40,6 +42,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         id: data.id,
         onSuccess() {
             toast.success('Box added to campaign');
+            queryClient.invalidateQueries({
+                queryKey: ['company-box']
+            })
+            setSelected([])
         },
         onError(error) {
             toast.error('Unable to add box to campaign')
