@@ -2,7 +2,7 @@
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
+import { Copy, Edit, MoreHorizontal, PlusSquare, Trash } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
 import { AlertModal } from "@/components/modals/alert-modal"
@@ -10,6 +10,12 @@ import { toast } from "sonner"
 import { CampaignColumns } from "./campaign-columns"
 import { CampaignSheet } from "./campaign-sheet"
 import { createQueryString } from "@/lib/utils"
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { AlertDialogAction } from "@radix-ui/react-alert-dialog"
+import useGetCompanyBox from "@/lib/hooks/useGetCompanyBox"
+import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/multi-select"
+import { MultiSelect, Option } from "react-multi-select-component"
+import useAddBoxToCampaign from "@/lib/hooks/useAddBoxToCampaign"
 
 interface CellActionProps {
     data: CampaignColumns
@@ -17,11 +23,28 @@ interface CellActionProps {
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     const [openSheet, setIsOpenSheet] = useState(false);
+    const [addToBox, showAddToBox] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
 
     const [loading, setLoading] = useState(false)
     const [open, setOpen] = useState(false)
+
+    const { data: box } = useGetCompanyBox();
+    const [selected, setSelected] = useState<Option[]>([]);
+    const options = box?.results.filter(item => item.box_campaign === null).map(item => (
+        { value: item.id, label: item.title }
+    )) ?? [];
+
+    const { mutate, isPending } = useAddBoxToCampaign({
+        id: data.id,
+        onSuccess() {
+            toast.success('Box added to campaign');
+        },
+        onError(error) {
+            toast.error('Unable to add box to campaign')
+        },
+    });
 
     const onCopy = (id: string) => {
         navigator.clipboard.writeText(id)
@@ -48,6 +71,29 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                 onConfirm={onDelete}
                 loading={loading}
             />
+            <AlertDialog open={addToBox} onOpenChange={showAddToBox}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Add existing box to campaign</AlertDialogTitle>
+                        <div className="flex">
+                            <MultiSelect
+                                options={options}
+                                value={selected}
+                                onChange={setSelected}
+                                labelledBy="Add box to campaign"
+                                className="w-full"
+                            />
+                        </div>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction disabled={isPending} onClick={() => mutate(
+                            selected.map(i => i.value)
+                        )}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog >
+
             <CampaignSheet title='Update Campaign' initialValue={data} isOpen={openSheet} onClose={() => {
                 setIsOpenSheet(false);
                 createQueryString(pathname, router, 'query', '');
@@ -69,6 +115,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                     }}>
                         <Edit className="mr-2 h-4 w-4" />
                         Update
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => showAddToBox(true)}>
+                        <PlusSquare className="mr-2 h-4 w-4" />
+                        Add box to campaign
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onCopy(data.id)}>
                         <Copy className="mr-2 h-4 w-4" />

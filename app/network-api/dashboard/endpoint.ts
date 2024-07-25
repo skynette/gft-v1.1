@@ -112,7 +112,7 @@ export const getCompanyProfile = async (token: string, apiKey: string): Promise<
 
 // export const updateCompanyProfile = async (token: string, apiKey: string, req: CompanyProfileResponse): Promise<any> => {
 //     const formData = new FormData();
-    
+
 //     formData.append('name', req.name);
 //     formData.append('logo', req.logo);
 //     formData.append('header_image', req.header_image);
@@ -304,6 +304,19 @@ export const updateCampaign = async (id: string, token: string, apiKey: string, 
         formData.append('header_image', req.header_image);
 
     const response = await axiosInstance.put(`/dashboard/campaigns/${id}/update/`, formData, {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
+}
+
+export const addBoxToCampaign = async (id: string, token: string, apiKey: string, boxIds: string[]): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/campaigns/${id}/add-box-to-campaign/`, {
+        box_ids: boxIds
+    }, {
         headers: {
             Authorization: `Token ${token}`,
             'gft-api-key': `${apiKey}`,
