@@ -450,10 +450,7 @@ class AddBoxesToCampaignView(generics.GenericAPIView):
             Campaign, id=campaign_id, company__owner=request.user
         )
 
-        print("campaign", campaign, campaign.pkid, campaign.id, campaign.num_boxes)
-
         box_ids = request.data.get("box_ids", [])
-
         boxes = Box.objects.filter(
             id__in=box_ids, user=request.user, box_campaign__isnull=True
         )
