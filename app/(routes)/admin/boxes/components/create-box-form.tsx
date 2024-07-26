@@ -27,7 +27,7 @@ const validationSchema = Yup.object().shape({
     is_setup: Yup.boolean().optional(),
     is_company_setup: Yup.boolean().optional(),
     open_after_a_day: Yup.boolean().optional(),
-    user: Yup.number().required("User cannot be blank"),
+    user: Yup.string().required("User cannot be blank"),
     box_campaign: Yup.number().required('Select box campaign'),
 });
 
@@ -81,12 +81,11 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
         is_setup: initialValue?.is_setup ?? false,
         is_company_setup: initialValue?.is_company_setup ?? false,
         open_after_a_day: initialValue?.open_after_a_day ?? false,
-        user: initialValue?.user?.id ?? 1,
+        user: initialValue?.user?.id ?? '',
         box_campaign: initialValue?.box_campaign ?? 1,
     };
 
     const handleSubmit = (values: AdminCreateFormSchema) => {
-        console.log({ values })
         const payload: AdminBoxRequest = {
             title: values.title ?? '',
             receiver_name: values.receiverName ?? '',
@@ -97,11 +96,10 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
             is_setup: values.is_setup ?? false,
             is_company_setup: values.is_company_setup ?? false,
             open_after_a_day: values.open_after_a_day ?? false,
-            user: values.user ?? 1,
+            user: values.user ?? '',
             box_campaign: values.box_campaign ?? 1,
         };
 
-        console.log({ payload });
         if (query === 'update') {
             mutateUpdate(payload);
         } else {
@@ -109,7 +107,6 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
         }
     };
 
-    console.log({ isCreatePending, isUpdatePending })
     return (
         <Formik
             initialValues={initialValues}
@@ -124,6 +121,14 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
                         name='title'
                         label='Title'
                         placeholder='Title of the gift box'
+                        control='input'
+                    />
+
+                    <FormikControl
+                        type='text'
+                        name='user'
+                        label='User Id'
+                        placeholder='id'
                         control='input'
                     />
 
@@ -205,7 +210,7 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
                         type='submit'
                         disabled={isCreatePending || isUpdatePending}
                         isLoading={isCreatePending || isUpdatePending}
-                        className={`inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50 ${isCreatePending && 'bg-blue-50'} ${isUpdatePending && 'bg-blue-50'}`}
+                        className={`inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50`}
                     >
                         Continue <ArrowRight size={18} className='text-white ml-2' />
                     </Button>

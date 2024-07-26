@@ -24,7 +24,7 @@ interface User {
     last_name: any
     email: string
     mobile: string
-    id: number
+    id: string
 }
 
 
@@ -39,7 +39,6 @@ interface AdminBoxRequest {
     is_setup: boolean
     is_company_setup: boolean
     open_after_a_day: boolean
-    user: number
+    user: string
     box_campaign: number
-  }
-  
+}

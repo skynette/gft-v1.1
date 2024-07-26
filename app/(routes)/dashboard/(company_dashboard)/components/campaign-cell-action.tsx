@@ -13,7 +13,6 @@ import { createQueryString } from "@/lib/utils"
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { AlertDialogAction } from "@radix-ui/react-alert-dialog"
 import useGetCompanyBox from "@/lib/hooks/useGetCompanyBox"
-import { MultiSelector, MultiSelectorContent, MultiSelectorInput, MultiSelectorItem, MultiSelectorList, MultiSelectorTrigger } from "@/components/ui/multi-select"
 import { MultiSelect, Option } from "react-multi-select-component"
 import useAddBoxToCampaign from "@/lib/hooks/useAddBoxToCampaign"
 

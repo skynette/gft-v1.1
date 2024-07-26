@@ -12,7 +12,7 @@ export const adminCreateBox = async (token: string, req: AdminBoxRequest): Promi
 
 export const adminUpdateBox = async (id: string, token: string, req: AdminBoxRequest): Promise<any> => {
     console.log("admin update box called with id:", id)
-    const response = await axiosInstance.put(`/dashboard/boxes/${id}/update/`, req, {
+    const response = await axiosInstance.put(`/dashboard/admin/boxes/${id}/update/`, req, {
         headers: {
             Authorization: `Token ${token}`,
         }
