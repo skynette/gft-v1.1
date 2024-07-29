@@ -14,6 +14,7 @@ import FormikControl from '@/components/form-controls/FormikControl';
 import { Button } from '@/components/ui/button';
 import { adminCreateBox, adminUpdateBox } from '@/network-api/admin/endpoint';
 import { useGetAdminCampaigns } from '@/lib/hooks/admin-hooks';
+import { get, set } from 'lodash';
 
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Must have a title'),
@@ -58,7 +59,7 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
     });
 
     // mutate function for updating the box
-    const { mutate: mutateUpdate, isPending: isUpdatePending } = useMutation<any, AxiosError, AdminBoxRequest>({
+    const { mutate: mutateUpdate, isPending: isUpdatePending } = useMutation<any, AxiosError, any>({
         mutationFn: (req: AdminBoxRequest) => adminUpdateBox(initialValue?.id ?? '', session?.accessToken ?? '', req),
         onSuccess(data, variables, context) {
             toast.success('Box updated successfully');
@@ -86,26 +87,36 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
     };
 
     const handleSubmit = (values: AdminCreateFormSchema) => {
-        const payload: AdminBoxRequest = {
-            title: values.title ?? '',
-            receiver_name: values.receiverName ?? '',
-            receiver_email: values.receiverEmail ?? '',
-            receiver_phone: values.receiverPhone ?? '',
-            days_of_gifting: values.days_of_gifting ?? 0,
-            open_date: values.openDate?.toISOString() ?? new Date().toISOString(),
-            is_setup: values.is_setup ?? false,
-            is_company_setup: values.is_company_setup ?? false,
-            open_after_a_day: values.open_after_a_day ?? false,
-            user: values.user ?? '',
-            box_campaign: values.box_campaign ?? 1,
-        };
-
+        console.log("handle submit called")
+        const data = {};
+        Object.entries(initialValues).forEach(([key, oldVal]) => {
+            const newVal = get(values, key);
+            if (newVal !== oldVal) {
+                set(data, key, newVal);
+            }
+        });
+    
         if (query === 'update') {
-            mutateUpdate(payload);
+            console.log("updated data", data)
+            mutateUpdate(data);
         } else {
+            const payload: AdminBoxRequest = {
+                title: values.title ?? '',
+                receiver_name: values.receiverName ?? '',
+                receiver_email: values.receiverEmail ?? '',
+                receiver_phone: values.receiverPhone ?? '',
+                days_of_gifting: values.days_of_gifting ?? 0,
+                open_date: values.openDate?.toISOString() ?? new Date().toISOString(),
+                is_setup: values.is_setup ?? false,
+                is_company_setup: values.is_company_setup ?? false,
+                open_after_a_day: values.open_after_a_day ?? false,
+                user: values.user ?? '',
+                box_campaign: values.box_campaign ?? 1,
+            };
             mutateCreate(payload);
         }
     };
+    
 
     return (
         <Formik
@@ -203,7 +214,7 @@ const AdminCreateBoxForm = ({ initialValue, onClose }: { initialValue?: AdminBox
                         placeholder='Select box campaign'
                         control='select'
                         options={boxCampaigns ?? []}
-                        handleChange={(value) => setFieldValue('box_campaign', value)}
+                        handleChange={(value) => setFieldValue('box_campaign', Number(value))}
                     />
 
                     <Button
