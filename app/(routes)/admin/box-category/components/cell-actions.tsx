@@ -25,7 +25,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
     const { mutate, isPending } = useAdminDeleteBoxCategories({
         onSuccess() {
-            client.invalidateQueries({ queryKey: ['admin-box-category'] })
+            client.invalidateQueries({ queryKey: ['admin-box-categories'] })
             toast.success('deleted successfully.')
             setIsOpenAlert(false)
         },

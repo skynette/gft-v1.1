@@ -38,6 +38,25 @@ export const adminDeleteCampaign = async (token: string, id: string): Promise<an
     return response.data;
 }
 
+export const adminCreateBoxCategory = async (token: string, req: AdminBoxCategoryRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/box-category/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminUpdateBoxCategory = async (id: string, token: string, req: AdminBoxCategoryRequest): Promise<any> => {
+    console.log("admin update box called with id:", id)
+    const response = await axiosInstance.put(`/dashboard/admin/box-category/update/${id}/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const adminDeleteBoxCategories = async (token: string, id: string): Promise<any> => {
     const response = await axiosInstance.delete(`/dashboard/admin/box-category/delete/${id}/`, {
         headers: {

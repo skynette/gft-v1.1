@@ -1,7 +1,7 @@
 'use client'
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
-// import AdminCreateBoxForm from "./create-box-category-form"
+import AdminCreateBoxCategoryForm from "./create-box-category-form"
 
 interface BoxCategoryProps {
     isOpen: boolean
@@ -19,7 +19,7 @@ export const BoxCategorySheet = ({ title, isOpen, initialValue, onClose }: BoxCa
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    {/* <AdminCreateBoxForm initialValue={initialValue} onClose={onClose} /> */}
+                    <AdminCreateBoxCategoryForm initialValue={initialValue} onClose={onClose} />
                 </SheetHeader>
             </SheetContent>
         </Sheet >

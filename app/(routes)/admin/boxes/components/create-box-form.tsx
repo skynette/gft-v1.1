@@ -4,7 +4,6 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { ArrowRight } from 'lucide-react';
-import useGetCompanyCategorybox from '@/lib/hooks/useGetCompanyCategorybox';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { AxiosError } from 'axios';

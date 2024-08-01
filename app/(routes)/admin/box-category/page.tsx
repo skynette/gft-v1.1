@@ -14,6 +14,7 @@ import { BoxCategorySheet } from './components/box-category-sheet'
 export default function BoxPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
     const { data, isPending, isSuccess } = useGetAdminBoxCategories();
+    console.log({ data })
 
     return (
         <div className='p-10'>
@@ -39,7 +40,7 @@ export default function BoxPage() {
                 />
             }
 
-            {/* <BoxCategorySheet title='Create Box Category' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} /> */}
+            <BoxCategorySheet title='Create Box Category' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }

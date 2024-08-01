@@ -9,6 +9,7 @@ import React, { useState } from 'react'
 import LoadingSkeleton from '@/components/skeleton'
 import { useGetAdminCampaigns } from '@/lib/hooks/admin-hooks'
 import { columns } from './components/columns'
+import { CampaignSheet } from './components/campaign-sheet'
 
 export default function CampaignPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
@@ -38,7 +39,7 @@ export default function CampaignPage() {
                 />
             }
 
-            {/* <CampaignSheet title='Create Box Category' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} /> */}
+            <CampaignSheet title='Create Campaign' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }
