@@ -166,6 +166,25 @@ export const getAdminCampaigns = async (token: string): Promise<AdminCampaignRes
     return response.data;
 }
 
+export const adminCreateCampaign = async (token: string, req: AdminCampaignRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/campaigns/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const adminUpdateCampaign = async (id: string, token: string, req: AdminCampaignRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/campaigns/${id}/update/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const getAdminCompanies = async (token: string): Promise<AdminCompanyResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/companies/', {
         headers: {
@@ -192,6 +211,26 @@ export const getAdminCompanyAPIKeys = async (token: string): Promise<AdminCompan
     });
     return response.data;
 }
+
+export const adminCreateAPIKey = async (token: string, req: AdminCompanyAPIKeyRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/company-api-key/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const adminUpdateAPIkey = async (id: string, token: string, req: AdminCompanyAPIKeyRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/company-api-key/${id}/update/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 
 export const getAdminGifts = async (token: string): Promise<AdminGiftResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/gifts/', {

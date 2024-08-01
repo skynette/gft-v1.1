@@ -53,7 +53,7 @@ class AdminCompanySerializer(serializers.ModelSerializer):
 
 class CompanyApiKeyReadSerializer(serializers.ModelSerializer):
     company_name = serializers.SerializerMethodField()
-    groups = serializers.StringRelatedField(many=True)
+    groups = serializers.StringRelatedField(many=True, required=False)
 
     def get_company_name(self, obj) -> str:
         return obj.company.name

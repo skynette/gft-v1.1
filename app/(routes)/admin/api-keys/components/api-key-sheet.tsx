@@ -1,6 +1,7 @@
 'use client'
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import AdminCreateAPIKeyForm from "./create-api-key-form"
 
 interface APIKeyPageProps {
     isOpen: boolean
@@ -18,7 +19,7 @@ export const APIKeySheet = ({ title, isOpen, initialValue, onClose }: APIKeyPage
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    {/* <AdminCreateCampaignForm initialValue={initialValue} onClose={onClose} /> */}
+                    <AdminCreateAPIKeyForm initialValue={initialValue} onClose={onClose} />
                 </SheetHeader>
             </SheetContent>
         </Sheet >

@@ -9,6 +9,7 @@ import React, { useState } from 'react'
 import LoadingSkeleton from '@/components/skeleton'
 import { columns } from './components/columns'
 import { useGetAdminCompanyAPIKeys } from '@/lib/hooks/admin-hooks'
+import { APIKeySheet } from './components/api-key-sheet'
 
 export default function CompanyBoxesPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
@@ -38,7 +39,7 @@ export default function CompanyBoxesPage() {
                 />
             }
 
-            {/* <CompanySheet title='Create Box Category' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} /> */}
+            <APIKeySheet title='Create API Key' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }
