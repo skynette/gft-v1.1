@@ -9,6 +9,7 @@ import React, { useState } from 'react'
 import LoadingSkeleton from '@/components/skeleton'
 import { columns } from './components/columns'
 import { useGetAdminTemplates } from '@/lib/hooks/admin-hooks'
+import { TemplatesSheet } from './components/templates-sheet'
 
 export default function PrmissionsPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
@@ -38,7 +39,7 @@ export default function PrmissionsPage() {
                 />
             }
 
-            {/* <TemplateSheet title='Create Template' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} /> */}
+            <TemplatesSheet title='Create Template' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }

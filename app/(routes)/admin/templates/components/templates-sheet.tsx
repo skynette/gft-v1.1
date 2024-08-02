@@ -1,6 +1,7 @@
 'use client'
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import AdminCreateTemplateForm from "./create-template-form"
 
 interface TemplatesPageProps {
     isOpen: boolean
@@ -18,7 +19,7 @@ export const TemplatesSheet = ({ title, isOpen, initialValue, onClose }: Templat
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    {/* <TemplatesCreateForm initialValue={initialValue} onClose={onClose} /> */}
+                    <AdminCreateTemplateForm initialValue={initialValue} onClose={onClose} />
                 </SheetHeader>
             </SheetContent>
         </Sheet >

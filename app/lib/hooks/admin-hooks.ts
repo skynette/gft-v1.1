@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates } from '@/network-api/admin/endpoint';
+import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminSetActiveTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates } from '@/network-api/admin/endpoint';
 
 export function useGetAdminCampaigns() {
     const session = useSession();
@@ -302,6 +302,24 @@ export function useAdminDeleteTemplate({ onSuccess, onError }: { onSuccess?: () 
 
     const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
         mutationFn: (id: string) => adminDeleteTemplate(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
+}
+
+
+export function useAdminSetActiveTemplate({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+    console.log({ session })
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminSetActiveTemplate(session.data?.accessToken ?? '', id),
         onSuccess(data, variables, context) {
             onSuccess?.();
         },

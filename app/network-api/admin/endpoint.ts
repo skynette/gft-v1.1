@@ -277,6 +277,35 @@ export const getAdminTemplates = async (token: string): Promise<AdminTemplatesRe
     return response.data;
 }
 
+export const adminCreateTemplate = async (token: string, req: AdminTemplatesRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/template/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const adminUpdateTemplate = async (id: string, token: string, req: AdminTemplatesRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/template/update/${id}/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminSetActiveTemplate = async (token: string, id: string): Promise<any> => {
+    console.log("token is")
+    const response = await axiosInstance.put(`/dashboard/admin/template/setactive/${id}/`, {}, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const getAdminConfig = async (token: string): Promise<AdminConfigResponse> => {
     const response = await axiosInstance.get('/dashboard/admin/config-management/', {
         headers: {

@@ -1388,22 +1388,6 @@ class TemplateUpdateView(generics.GenericAPIView):
         template = self.get_object()
         serializer = self.get_serializer(template, data=request.data, partial=True)
         if serializer.is_valid():
-            active = serializer.validated_data.get("active", False)
-            notification_type = serializer.validated_data["notification_type"]
-
-            # Check if there's an active template with the same notification type, excluding the current one being updated
-            if active:
-                active_templates_same_type = Template.objects.filter(
-                    notification_type=notification_type, active=True
-                ).exclude(id=id)
-                if active_templates_same_type.exists():
-                    return Response(
-                        {
-                            "detail": "An active template with this notification type already exists. Deactivate the existing template before updating this one."
-                        },
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -1455,45 +1439,45 @@ class TemplateSelectionView(generics.GenericAPIView):
         responses={200: TemplateSerializer},
         tags=["Admin Area"],
     )
-    def post(self, request, *args, **kwargs):
+    def put(self, request, id, *args, **kwargs):
         """
         Select a template to set as active for a category.
         """
-        template_id = request.data.get("template_id")
-        category = request.data.get("category")
-
-        if template_id and category:
-            try:
-                new_template = Template.objects.get(pk=template_id)
-                existing_active_template = (
-                    Template.objects.filter(notification_type=category, active=True)
-                    .exclude(pk=new_template.pk)
-                    .first()
-                )
-
-                if existing_active_template:
-                    existing_active_template.active = False
-                    existing_active_template.save(update_fields=["active"])
-
-                new_template.active = True
-                new_template.save(update_fields=["active"])
-                return Response(
-                    {
-                        "detail": f"{new_template.name} set as active for {category} category."
-                    },
-                    status=status.HTTP_200_OK,
-                )
-            except Template.DoesNotExist:
-                return Response(
-                    {"detail": f"Template not found for {category} category."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-        else:
+        template_id = id
+        new_template = Template.objects.filter(pk=template_id).first()
+        if not new_template:
             return Response(
-                {"detail": "Invalid template ID or category provided."},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"detail": f"Template not found for {category} category."},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
+        category = new_template.notification_type
+
+        try:
+            existing_active_template = (
+                Template.objects.filter(notification_type=category, active=True)
+                .exclude(pk=new_template.pk)
+                .first()
+            )
+
+            if existing_active_template:
+                existing_active_template.active = False
+                existing_active_template.save(update_fields=["active"])
+
+            new_template.active = True
+            new_template.save(update_fields=["active"])
+            return Response(
+                {
+                    "detail": f"{new_template.name} set as active for {category} category."
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Template.DoesNotExist:
+            return Response(
+                {"detail": f"Template not found for {category} category."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+            
 
 template_selection_view = TemplateSelectionView.as_view()
 

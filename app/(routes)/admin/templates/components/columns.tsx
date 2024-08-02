@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { CellAction } from "./cell-actions"
 import { format } from 'date-fns'
+import { Check, X } from "lucide-react"
 
 export const columns: ColumnDef<AdminTemplatesResponse>[] = [
     {
@@ -43,6 +44,11 @@ export const columns: ColumnDef<AdminTemplatesResponse>[] = [
     {
         accessorKey: "active",
         header: "Is Active",
+        cell: ({ row }) => (
+            row.original.active ? 
+                <Check style={{ color: 'green' }} className="h-5 w-5"/> : 
+                <X style={{ color: 'red' }} className="h-5 w-5"/>
+        ),
     },
     {
         accessorKey: "created_at",

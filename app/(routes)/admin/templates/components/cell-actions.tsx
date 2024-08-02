@@ -2,7 +2,7 @@
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
+import { Check, Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
 import { useState } from "react"
 import { AlertModal } from "@/components/modals/alert-modal"
 import { toast } from "sonner"
@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { createQueryString } from "@/lib/utils"
 import { usePathname, useRouter } from "next/navigation"
 import { TemplatesSheet } from "./templates-sheet"
-import { useAdminDeleteTemplate } from "@/lib/hooks/admin-hooks"
+import { useAdminDeleteTemplate, useAdminSetActiveTemplate } from "@/lib/hooks/admin-hooks"
 
 interface CellActionProps {
     data: AdminTemplatesResponse
@@ -35,9 +35,23 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         },
     });
 
+    const { mutate: mutateActive, isPending: setPending } = useAdminSetActiveTemplate({
+        onSuccess() {
+            client.invalidateQueries({ queryKey: ['admin-templates'] })
+            toast.success('set success.')
+        },
+        onError(error) {
+            toast.error("set failed")
+        },
+    });
+
     const onCopy = (id: string) => {
         navigator.clipboard.writeText(id)
         toast.success('copied.')
+    }
+
+    const setActive = (id: string) => {
+        mutateActive(id);
     }
     return (
         <>
@@ -81,6 +95,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                         <Trash className="mr-2 h-4 w-4" />
                         Delete
                     </DropdownMenuItem>
+                    {data.active === false && (
+                        <DropdownMenuItem onClick={() => setActive(data.id.toString()!)}>
+                            <Check className="mr-2 h-4 w-4" />
+                            Set Active
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
         </>

@@ -67,7 +67,7 @@ urlpatterns = [
     path('templates/<str:id>/', views.template_detail, name='template_detail'),
     path('template/update/<int:id>/', views.template_update_view, name='template_update'),
     path('template/delete/<int:id>/', views.template_delete_view, name='template_delete'),
-    path('template/select/', views.template_selection_view, name='template_select'),
+    path('template/setactive/<int:id>/', views.template_selection_view, name='template_select'),
     
     # roles and permission urls
     path('roles/', views.ViewRolesView.as_view(), name='view_roles'),
