@@ -11,7 +11,7 @@ import { columns } from './components/columns'
 import { useGetAdminCompanyAPIKeys } from '@/lib/hooks/admin-hooks'
 import { APIKeySheet } from './components/api-key-sheet'
 
-export default function CompanyBoxesPage() {
+export default function APIKeysPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
     const { data, isPending, isSuccess } = useGetAdminCompanyAPIKeys();
 

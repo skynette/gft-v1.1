@@ -2054,16 +2054,10 @@ class DeleteAuthToken(generics.GenericAPIView):
     permission_classes = [IsAdminUser]
     serializer_class = TokenSerializer
 
-    def delete(self, request, *args, **kwargs):
-        user_id = kwargs.get('user_id')
+    def delete(self, request, id, *args, **kwargs):
         try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            raise NotFound(detail="User not found.")
-        
-        try:
-            token = Token.objects.get(user=user)
+            token = Token.objects.get(key=id)
             token.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Token.DoesNotExist:
-            raise NotFound(detail="Token not found.")
+            return Response({"Token not found."}, status=status.HTTP_400_BAD_REQUEST)

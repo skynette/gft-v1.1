@@ -220,4 +220,10 @@ class AdminDashboardChartSerializer(serializers.Serializer):
 class TokenSerializer(serializers.ModelSerializer):
     class Meta:
         model = Token
-        fields = ['key', 'user', 'created']
+        fields = ['pk', 'key', 'user', 'created']
+        
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        user = UserDetailSerializer(instance.user).data
+        representation['user'] = user
+        return representation

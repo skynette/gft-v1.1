@@ -10,7 +10,7 @@ import LoadingSkeleton from '@/components/skeleton'
 import { columns } from './components/columns'
 import { useGetAdminGifts } from '@/lib/hooks/admin-hooks'
 
-export default function CompanyBoxesPage() {
+export default function GiftsPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
     const { data, isPending, isSuccess } = useGetAdminGifts();
 

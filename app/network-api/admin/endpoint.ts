@@ -323,3 +323,21 @@ export const getAdminRoles = async (token: string): Promise<AdminRolesResponse> 
     });
     return response.data;
 }
+
+export const getAdminTokens = async (token: string): Promise<AdminTokensResponse> => {
+    const response = await axiosInstance.get('/dashboard/admin/api-tokens/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteToken = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/api-tokens/${id}/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}

@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminSetActiveTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates } from '@/network-api/admin/endpoint';
+import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminSetActiveTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens } from '@/network-api/admin/endpoint';
 
 export function useGetAdminCampaigns() {
     const session = useSession();
@@ -353,4 +353,33 @@ export function useGetAdminRoles() {
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+
+export function useGetAdminTokens() {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error } = useQuery<AdminTokensResponse, AxiosError>({
+        queryKey: ['admin-tokens'],
+        queryFn: () => getAdminTokens(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
+    });
+
+    return { data, isPending, isSuccess, isError, error };
+}
+
+export function useAdminDeleteToken({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteToken(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
 }

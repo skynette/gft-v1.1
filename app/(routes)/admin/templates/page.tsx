@@ -11,7 +11,7 @@ import { columns } from './components/columns'
 import { useGetAdminTemplates } from '@/lib/hooks/admin-hooks'
 import { TemplatesSheet } from './components/templates-sheet'
 
-export default function PrmissionsPage() {
+export default function TemplatesPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
     const { data, isPending, isSuccess } = useGetAdminTemplates();
 
