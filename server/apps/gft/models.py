@@ -48,9 +48,9 @@ class Company(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             if not self.logo:
-                self.logo.name = 'image/logo.png'
+                self.logo = 'logo.png'
             if not self.header_image:
-                self.header_image.name = 'image/header.png'
+                self.header_image = 'header.png'
         super().save(*args, **kwargs)
 
     class Meta:

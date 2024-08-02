@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminSetActiveTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens } from '@/network-api/admin/endpoint';
+import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminSetActiveTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminCompanyUsers, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens, getAdminUsers } from '@/network-api/admin/endpoint';
 
 export function useGetAdminCampaigns() {
     const session = useSession();
@@ -99,6 +99,31 @@ export function useGetAdminCompanies() {
 
     return { data, isPending, isSuccess, isError, error };
 }
+
+export function useGetAdminUsers() {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error } = useQuery<AdminUserResponse[], AxiosError>({
+        queryKey: ['admin-users'],
+        queryFn: () => getAdminUsers(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
+    });
+
+    return { data, isPending, isSuccess, isError, error };
+}
+
+export function useGetAdminCompanyUsers() {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error } = useQuery<AdminUserResponse[], AxiosError>({
+        queryKey: ['admin-users'],
+        queryFn: () => getAdminCompanyUsers(session.data?.accessToken ?? ''),
+        enabled: session.status === 'authenticated'
+    });
+
+    return { data, isPending, isSuccess, isError, error };
+}
+
 
 export function useAdminDeleteCompany({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
     const session = useSession();

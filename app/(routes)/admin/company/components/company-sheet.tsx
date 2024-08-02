@@ -1,6 +1,7 @@
 'use client'
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import AdminCompanyCreateForm from "./admin-company-creation-form"
 
 interface CompanyPageProps {
     isOpen: boolean
@@ -18,7 +19,7 @@ export const CompanySheet = ({ title, isOpen, initialValue, onClose }: CompanyPa
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    {/* <AdminCompanyCreateForm initialValue={initialValue} onClose={onClose} /> */}
+                    <AdminCompanyCreateForm initialValue={initialValue} onClose={onClose} />
                 </SheetHeader>
             </SheetContent>
         </Sheet >

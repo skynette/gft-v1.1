@@ -185,6 +185,24 @@ export const adminUpdateCampaign = async (id: string, token: string, req: AdminC
     return response.data;
 }
 
+export const getAdminUsers = async (token: string): Promise<AdminUserResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/admin/users/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const getAdminCompanyUsers = async (token: string): Promise<AdminUserResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/admin/users/?user_type=company', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const getAdminCompanies = async (token: string): Promise<AdminCompanyResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/companies/', {
         headers: {
@@ -193,6 +211,26 @@ export const getAdminCompanies = async (token: string): Promise<AdminCompanyResp
     });
     return response.data;
 }
+
+export const adminCreateCompany = async (token: string, req: AdminCompanyRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/companies/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const adminUpdateCompany = async (id: string, token: string, req: AdminCompanyRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/companies/${id}/update/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 
 export const getAdminCompanyBoxes = async (token: string): Promise<AdminCompanyBoxResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/company-boxes/', {

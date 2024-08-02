@@ -49,3 +49,18 @@ interface Light {
   background_hover_color: string
   background_border_color: string
 }
+
+type AdminCompanyRequest = {
+  id?: number
+  owner?: number
+  owner_username?: string
+  name?: string
+  logo?: string
+  header_image?: string
+  company_url?: string
+  box_limit?: number
+  socials?: Socials
+  color_schema?: ColorSchema
+  created_at?: string
+  updated_at?: string
+}
