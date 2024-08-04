@@ -9,6 +9,7 @@ import React, { useState } from 'react'
 import LoadingSkeleton from '@/components/skeleton'
 import { columns } from './components/columns'
 import { useGetAdminGifts } from '@/lib/hooks/admin-hooks'
+import { GiftSheet } from './components/gift-sheet'
 
 export default function GiftsPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
@@ -33,12 +34,12 @@ export default function GiftsPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="name"
+                    searchKey="gift_title"
                     disabled={false}
                 />
             }
 
-            {/* <CompanySheet title='Create Box Category' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} /> */}
+            <GiftSheet title='Create Gift' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }

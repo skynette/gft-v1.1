@@ -279,6 +279,25 @@ export const getAdminGifts = async (token: string): Promise<AdminGiftResponse[]>
     return response.data;
 }
 
+export const adminCreateGifts = async (token: string, req: AdminGiftRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/gifts/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const adminUpdateGifts = async (id: string, token: string, req: AdminGiftRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/gifts/${id}/update/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const getAdminGiftVisits = async (token: string): Promise<AdminGiftVisitsResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/giftvisits/', {
         headers: {
@@ -288,6 +307,24 @@ export const getAdminGiftVisits = async (token: string): Promise<AdminGiftVisits
     return response.data;
 }
 
+export const adminCreateGiftVisits = async (token: string, req: AdminGiftVisitsRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/giftvisits/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const adminUpdateGiftVisits = async (id: string, token: string, req: AdminGiftVisitsRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/giftsvisits/${id}/update/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
 export const getAdminPermissions = async (token: string): Promise<AdminPermissionsResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/permissions/', {
         headers: {

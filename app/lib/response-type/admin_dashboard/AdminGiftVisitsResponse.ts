@@ -32,3 +32,9 @@ interface Visitor {
     mobile: string
     id: string
 }
+
+interface AdminGiftVisitsRequest {
+    metadata?: {}
+    gift?: number
+    visitor?: number
+}

@@ -1,12 +1,13 @@
 'use client'
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import AdminCreateGiftForm from "./create-gift-form"
 
 interface GiftPageProps {
     isOpen: boolean
     title: string
     onClose: () => void
-    initialValue?: AdminGiftResponse
+    initialValue?: AdminGiftRequest
 }
 export const GiftSheet = ({ title, isOpen, initialValue, onClose }: GiftPageProps) => {
     return (
@@ -18,7 +19,7 @@ export const GiftSheet = ({ title, isOpen, initialValue, onClose }: GiftPageProp
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    {/* <AdminCompanyCreateForm initialValue={initialValue} onClose={onClose} /> */}
+                    <AdminCreateGiftForm initialValue={initialValue} onClose={onClose} />
                 </SheetHeader>
             </SheetContent>
         </Sheet >
