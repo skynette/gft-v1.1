@@ -9,6 +9,7 @@ import React, { useState } from 'react'
 import LoadingSkeleton from '@/components/skeleton'
 import { useGetAdminCompanyBoxes } from '@/lib/hooks/admin-hooks'
 import { columns } from './components/columns'
+import { CompanyBoxSheet } from './components/company-sheet'
 
 export default function CompanyBoxesPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
@@ -33,12 +34,12 @@ export default function CompanyBoxesPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="name"
+                    searchKey="company"
                     disabled={false}
                 />
             }
 
-            {/* <CompanySheet title='Create Box Category' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} /> */}
+            <CompanyBoxSheet title='Create Company Box' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }

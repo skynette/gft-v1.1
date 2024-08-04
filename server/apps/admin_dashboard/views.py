@@ -35,6 +35,7 @@ from .serializers import (
     AdminBoxSerializer,
     AdminCampaignDetailSerializer,
     AdminCampaignSerializer,
+    AdminCompanyBoxesCreateSerializer,
     AdminCompanyBoxesSerializer,
     AdminCreateCampaignSerializer,
     AdminDashboardChartSerializer,
@@ -1116,7 +1117,7 @@ company_api_key_delete_view = CompanyApiKeyDeleteView.as_view()
 
 
 class CreateCompanyBoxesView(generics.GenericAPIView):
-    serializer_class = AdminCompanyBoxesSerializer
+    serializer_class = AdminCompanyBoxesCreateSerializer
     permission_classes = [IsAdminUser]
 
     @extend_schema(
@@ -1127,15 +1128,11 @@ class CreateCompanyBoxesView(generics.GenericAPIView):
     )
     @transaction.atomic
     def post(self, request, *args, **kwargs):
-        """
-        Create a new company box.
-        """
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             company_id = serializer.validated_data["company"].id
             box_type_id = serializer.validated_data["box_type"].id
             requested_qty = serializer.validated_data["qty"]
-
             company = get_object_or_404(Company, id=company_id)
             box_category = get_object_or_404(BoxCategory, id=box_type_id)
 
@@ -1218,7 +1215,7 @@ company_box_detail_view = CompanyBoxesDetailView.as_view()
 
 class UpdateCompanyBoxesView(generics.GenericAPIView):
     queryset = CompanyBoxes.objects.all()
-    serializer_class = AdminCompanyBoxesSerializer
+    serializer_class = AdminCompanyBoxesCreateSerializer
     permission_classes = [IsAdminUser]
 
     @extend_schema(

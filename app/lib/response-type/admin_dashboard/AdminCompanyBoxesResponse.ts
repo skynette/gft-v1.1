@@ -29,3 +29,11 @@ interface BoxType {
     created_at: string
     updated_at: string
 }
+
+type AdminCompanyBoxRequest = {
+    qty?: number
+    company?: number
+    box_type?: number
+}
+
+

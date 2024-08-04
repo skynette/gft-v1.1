@@ -241,6 +241,26 @@ export const getAdminCompanyBoxes = async (token: string): Promise<AdminCompanyB
     return response.data;
 }
 
+export const adminCreateCompanyBox = async (token: string, req: AdminCompanyBoxRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/company-boxes/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const adminUpdateCompanyBox = async (id: string, token: string, req: AdminCompanyBoxRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/company-boxes/${id}/update/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
 export const getAdminCompanyAPIKeys = async (token: string): Promise<AdminCompanyAPIKeyResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/company-api-key/', {
         headers: {
