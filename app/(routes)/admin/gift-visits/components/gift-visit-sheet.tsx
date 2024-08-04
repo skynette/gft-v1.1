@@ -1,6 +1,7 @@
 'use client'
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import AdminCreateGiftVisitForm from "./gift-visit-create-form"
 
 interface GiftPageProps {
     isOpen: boolean
@@ -18,7 +19,7 @@ export const GiftVisitSheet = ({ title, isOpen, initialValue, onClose }: GiftPag
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    {/* <GiftVisitCreateForm initialValue={initialValue} onClose={onClose} /> */}
+                    <AdminCreateGiftVisitForm initialValue={initialValue} onClose={onClose} />
                 </SheetHeader>
             </SheetContent>
         </Sheet >

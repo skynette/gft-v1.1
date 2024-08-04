@@ -34,6 +34,7 @@ interface Visitor {
 }
 
 interface AdminGiftVisitsRequest {
+    id?: number
     metadata?: {}
     gift?: number
     visitor?: number

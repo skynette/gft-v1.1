@@ -9,6 +9,7 @@ import React, { useState } from 'react'
 import LoadingSkeleton from '@/components/skeleton'
 import { columns } from './components/columns'
 import { useGetAdminGiftVisits } from '@/lib/hooks/admin-hooks'
+import { GiftVisitSheet } from './components/gift-visit-sheet'
 
 export default function GiftVisitPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
@@ -33,12 +34,12 @@ export default function GiftVisitPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="visitor"
+                    searchKey="username"
                     disabled={false}
                 />
             }
 
-            {/* <CompanySheet title='Create Box Category' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} /> */}
+            <GiftVisitSheet title='Create Visit' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />
         </div>
     )
 }
