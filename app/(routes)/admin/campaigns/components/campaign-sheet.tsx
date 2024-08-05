@@ -1,6 +1,7 @@
 'use client'
 
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import AdminCreateCampaignForm from "./create-campaign-form"
 
 interface CampaignProps {
     isOpen: boolean
@@ -18,7 +19,7 @@ export const CampaignSheet = ({ title, isOpen, initialValue, onClose }: Campaign
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    {/* <AdminCreateCampaignForm initialValue={initialValue} onClose={onClose} /> */}
+                    <AdminCreateCampaignForm initialValue={initialValue} onClose={onClose} />
                 </SheetHeader>
             </SheetContent>
         </Sheet >
