@@ -61,7 +61,7 @@ class SendOTPView(generics.GenericAPIView):
         # Save OTP to the database
         OTP.objects.create(mobile=mobile, otp=otp)
 
-        return Response({"detail": "OTP sent successfully"}, status=status.HTTP_200_OK)
+        return Response({"token": otp}, status=status.HTTP_200_OK)
 
 
 send_otp_view = SendOTPView.as_view()

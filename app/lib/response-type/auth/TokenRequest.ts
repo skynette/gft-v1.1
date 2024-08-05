@@ -1,4 +1,4 @@
 export interface TokenRequest {
-    email: string
+    email?: string
     mobile?: string
 }

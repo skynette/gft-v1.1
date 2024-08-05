@@ -13,12 +13,13 @@ import { OTPInput, REGEXP_ONLY_DIGITS } from 'input-otp';
 import * as Yup from 'yup';
 import { ErrorMessage, Field, FieldProps, Form, Formik } from 'formik';
 import FormikControl from '@/components/form-controls/FormikControl';
-import useToken from '@/lib/hooks/useToken';
+import useToken, { usePhoneToken } from '@/lib/hooks/useToken';
 import { toast } from 'sonner';
 import useVerifyToken from '@/lib/hooks/useVerifyToken';
 
 interface UserInput {
-    email: string
+    email?: string
+    mobile?: string
 }
 
 interface OTPInput {
@@ -26,7 +27,8 @@ interface OTPInput {
 }
 
 const validationSchema = Yup.object().shape({
-    email: Yup.string().email('This email is invalid').required('Enter your email address'),
+    email: Yup.string().email('This email is invalid').optional(),
+    mobile: Yup.string().optional(),
 });
 
 const otpTokenValidationSchema = Yup.object().shape({
@@ -35,8 +37,14 @@ const otpTokenValidationSchema = Yup.object().shape({
 
 export default function Login() {
     const [emailInitialValue, setEmailInitialValue] = useState<UserInput>({ email: '' });
+    const [mobileInitialValue, setMobileInitialValue] = useState<UserInput>({ mobile: '' });
+
+    const [method, setMethod] = useState<'email' | 'mobile'>('email');
+
     const otpInitialValue: OTPInput = { otp: '' };
+
     const [stage, setStage] = useState<'request' | 'verify'>('request');
+
     const router = useRouter();
 
     const { mutate: mutateToken, isPending, isSuccess } = useToken({
@@ -46,39 +54,45 @@ export default function Login() {
         }
     });
 
-    const { mutate: mutateVerifyToken, isPending: isVerifyPending } = useVerifyToken({
+    const { mutate: mutatePhoneToken, isPending: phoneLoading, isSuccess: phoneSuccess } = usePhoneToken({
         onSuccess() {
-            toast.success('Email has been verified successfully!');
-        },
-        onError() {
-            toast.error('Unable to verify email');
-        },
-    })
+            setStage('verify');
+            toast.success('A new token has been sent to your phone.');
+        }
+    });
 
-    const handleRequestToken = async (email: string) => {
-        mutateToken({ email });
-        setEmailInitialValue({ email })
+    const handleRequestToken = async (input: UserInput) => {
+        if (method === "email") {
+            mutateToken(input);
+            setEmailInitialValue(input);
+        } else {
+            mutatePhoneToken(input)
+            setMobileInitialValue(input);
+        }
     };
 
     const handleSignIn = async (token: string) => {
-
         const result = await signIn('credentials', {
             redirect: false,
             email: emailInitialValue.email,
+            mobile: mobileInitialValue.mobile,
             token,
         });
         if (result?.error) {
             console.error('Error signing in:', result.error);
             if (result.error.includes("token")) {
-                toast.error("Invalid or expired token. A new token has been sent to your email.");
-                await handleRequestToken(emailInitialValue.email); // Resend token
+                toast.error("Invalid or expired token. A new token has been sent to your email or phone.");
+                if (method === "mobile") {
+                    await handleRequestToken(mobileInitialValue);
+                } else {
+                    await handleRequestToken(emailInitialValue); // Resend token
+                }
             } else {
                 toast.error('Failed to sign in. Please try again.');
             }
         } else {
             // Handle successful login
             toast.success('Successfully signed in');
-            console.log('Successfully signed in, now pusing to dashboard');
             router.push('/dashboard');
         }
     };
@@ -89,6 +103,10 @@ export default function Login() {
 
     const handleAppleSignIn = async () => {
         signIn('apple', { callbackUrl: '/dashboard/gifter' });
+    };
+
+    const toggleMethod = () => {
+        setMethod(prev => prev === 'email' ? 'mobile' : 'email');
     };
 
     return (
@@ -110,28 +128,40 @@ export default function Login() {
                     <Formik
                         initialValues={emailInitialValue}
                         onSubmit={(field) => {
-                            handleRequestToken(field.email);
+                            handleRequestToken(field);
                         }}
                         validationSchema={validationSchema}>
                         {
                             () => (
                                 <Form className='w-full flex flex-col mt-10 space-y-1'>
-                                    <FormikControl
-                                        type='email'
-                                        name='email'
-                                        label='Email address'
-                                        placeholder='user@test.com'
-                                        control='input' />
+                                    {method === 'email' ? (
+                                        <FormikControl
+                                            type='email'
+                                            name='email'
+                                            label='Email address'
+                                            placeholder='user@test.com'
+                                            control='input' />
+                                    ) : (
+                                        <FormikControl
+                                            type='text'
+                                            name='mobile'
+                                            label='Phone Number'
+                                            placeholder='+123xxxxxxxxxx'
+                                            control='phone-input' />
+                                    )}
 
                                     <Button type='submit' disabled={isPending} className='flex items-center w-full !mt-8 text-white'>
-                                        {isPending && <Loader className='h-5 w-5 mr-2 animate-spin'/>}
+                                        {isPending && <Loader className='h-5 w-5 mr-2 animate-spin' />}
                                         <p>Continue</p>
                                     </Button>
                                 </Form>
                             )
                         }
-
                     </Formik>
+
+                    <Button variant='link' onClick={toggleMethod} className='mt-4'>
+                        {method === 'email' ? 'Sign in with mobile number' : 'Sign in with email'}
+                    </Button>
 
                     <p className='uppercase text-gray-600 text-sm font-semibold my-8'>or</p>
 
@@ -151,7 +181,7 @@ export default function Login() {
                 (
                     <div className='w-full bg-gray-100 flex flex-col justify-center items-center py-10 px-16'>
                         <h1 className='font-bold text-4xl tracking-wider mt-10'>GFT</h1>
-                        <p className='text-gray-700 text-center font-medium text-lg tracking-wide mt-5'>Please check <span className='text-blue-500'>{emailInitialValue.email}</span> for the token sent!</p>
+                        <p className='text-gray-700 text-center font-medium text-lg tracking-wide mt-5'>Please check <span className='text-blue-500'>{emailInitialValue.email || emailInitialValue.mobile}</span> for the token sent!</p>
                         <Formik
                             initialValues={otpInitialValue}
                             validationSchema={otpTokenValidationSchema}

@@ -25,15 +25,26 @@ const handler = NextAuth({
             name: 'Credentials',
             credentials: {
                 email: { label: 'Email', type: 'email' },
+                mobile: { label: 'Mobile', type: 'number' },
                 token: { label: 'Token', type: 'text' },
             },
             async authorize(credentials) {
                 try {
-                    const url = `${BASE_URL}/auth/token/`;
-                    const tokenResponse = await axios.post(url, {
-                        email: credentials?.email,
-                        token: credentials?.token,
-                    });
+                    let url;
+                    let tokenResponse;
+                    if (credentials?.mobile) {
+                        url = `${BASE_URL}/auth/token/phone/verify/`;
+                        tokenResponse = await axios.post(url, {
+                            mobile: credentials?.mobile,
+                            token: credentials?.token,
+                        });
+                    } else {
+                        url = `${BASE_URL}/auth/token/`;
+                        tokenResponse = await axios.post(url, {
+                            email: credentials?.email,
+                            token: credentials?.token,
+                        });
+                    }
 
                     const user = tokenResponse.data;
 

@@ -10,6 +10,14 @@ export const getToken = async (req: TokenRequest): Promise<TokenResponse> => {
     return response.data;
 }
 
+
+export const getPhoneToken = async (req: TokenRequest): Promise<TokenResponse> => {
+    console.log("calling phone token api with ", req)
+    const response = await axiosInstance.post('/auth/token/phone/', { ...req });
+    return response.data;
+}
+
+
 export const verifyToken = async (req: VerifyTokenRequest): Promise<any> => {
     const response = await axiosInstance.post('/auth/email/', { ...req });
     return response.data;
