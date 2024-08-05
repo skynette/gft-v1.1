@@ -11,4 +11,8 @@ urlpatterns = [
 	# admin login urls
 	path('login/admin/', views.admin_login_api_view, name='admin_login'),
 	path('logout/admin/', views.admin_logout_api_view, name='admin_logout'),
+ 
+	# otp
+	path('token/phone/', views.send_otp_view, name='phone_otp'),
+	path('token/phone/verify/', views.verify_otp_view, name='verify_phone_otp'),
 ]

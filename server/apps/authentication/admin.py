@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User, OTP
 
 class UserAdmin(UserAdmin):
     list_display = ('email', 'username', 'first_name', 'last_name', 'mobile', 'user_type', 'is_staff', 'is_active')
@@ -23,3 +23,4 @@ class UserAdmin(UserAdmin):
     filter_horizontal = ()
 
 admin.site.register(User, UserAdmin)
+admin.site.register(OTP)

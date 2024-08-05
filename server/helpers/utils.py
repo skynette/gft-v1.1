@@ -12,6 +12,7 @@ from django.conf import settings
 from django.utils import timezone
 from urllib.parse import urlparse
 
+import requests
 from sendgrid.helpers.mail import Mail
 from sendgrid import SendGridAPIClient
 from twilio.rest import Client
@@ -724,6 +725,45 @@ def get_receiver_contact_info(user):
             preferred_contact = 'mobile'
 
     return contact_info, preferred_contact
+
+
+def send_otp_to_mobile(mobile):
+    """
+    Sends a One-Time Password (OTP) to the specified mobile number via the Termii API.
+
+    Args:
+        mobile (str): The mobile phone number including country code (e.g., +2349025459343).
+
+    Returns:
+        int: The generated OTP.
+        None: If sending OTP fails.
+
+    Raises:
+        Exception: If the Termii API request fails.
+    """
+    otp = random.randint(100000, 999999)
+    url = 'https://v3.api.termii.com/api/sms/send'
+    payload = {
+        "to": mobile,
+        "from": "GFT",
+        "sms": f"OTP {otp}",
+        "type": "plain",
+        "channel": "generic",
+        "api_key": settings.TERMII_API_KEY,
+        "time_in_minutes": "5 mins"
+    }
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+    except Exception as e:
+        print(f"Error sending OTP: {e}")
+        return None
+
+    return otp
 
 
 # def create_boxes_in_background(campaign, num_boxes_to_create):

@@ -9,9 +9,12 @@ from apps.admin_dashboard.serializers import UserSerializer
 from apps.authentication.serializers import (
     CredentialSerializer,
     RegisterSerializer,
+    SendOTPSerializer,
     SocialAuthSerializer,
     UserUpdateSerializer,
+    VerifyOTPSerializer,
 )
+from .models import OTP
 from apps.gft.permissions import APIPermissionValidator
 from knox.models import AuthToken
 from knox.views import LogoutView as KnoxLogoutView
@@ -19,11 +22,88 @@ from knox.views import LogoutView as KnoxLogoutView
 from drf_spectacular.utils import extend_schema, OpenApiExample, extend_schema_view
 from drf_spectacular.utils import OpenApiResponse
 
-from helpers.utils import validate_phone
+from helpers.utils import send_otp_to_mobile, validate_phone
 from apps.gft.models import CompanyApiKey
 
 
 User = get_user_model()
+
+class SendOTPView(generics.GenericAPIView):
+    serializer_class = SendOTPSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @extend_schema(
+        request=SendOTPSerializer,
+        responses={200: "OTP sent successfully"},
+        description="Send OTP to user's mobile phone",
+        tags=["Authentication"],
+    )
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        mobile = serializer.validated_data['mobile']
+        if not validate_phone(mobile):
+            return Response(
+                {"detail": "Invalid mobile number format."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Generate and send OTP
+        try:
+            otp = send_otp_to_mobile(mobile)
+        except Exception as e:
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        # Save OTP to the database
+        OTP.objects.create(mobile=mobile, otp=otp)
+
+        return Response({"detail": "OTP sent successfully"}, status=status.HTTP_200_OK)
+
+
+send_otp_view = SendOTPView.as_view()
+
+
+class VerifyOTPView(generics.GenericAPIView):
+    serializer_class = VerifyOTPSerializer
+    permission_classes = [permissions.AllowAny]
+
+    @extend_schema(
+        request=VerifyOTPSerializer,
+        responses={200: {"token": "string"}},
+        description="Verify OTP and return authentication token",
+        tags=["Authentication"],
+    )
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        mobile = serializer.validated_data['mobile']
+        token = serializer.validated_data['token']
+
+        # Validate OTP
+        try:
+            otp_record = OTP.objects.get(mobile=mobile, otp=token)
+        except OTP.DoesNotExist:
+            return Response(
+                {"detail": "Invalid OTP."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # OTP is valid, create or retrieve user token
+        user, created = User.objects.get_or_create(mobile=mobile)
+        auth_token, _ = Token.objects.get_or_create(user=user)
+
+        # Delete OTP record after successful verification
+        otp_record.delete()
+
+        return Response({"token": auth_token.key}, status=status.HTTP_200_OK)
+
+
+verify_otp_view = VerifyOTPView.as_view()
 
 
 class RegisterView(generics.GenericAPIView):

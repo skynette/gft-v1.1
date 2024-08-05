@@ -7,6 +7,12 @@ from django.core.validators import validate_email
 
 User = get_user_model()
 
+class SendOTPSerializer(serializers.Serializer):
+    mobile = serializers.CharField(max_length=15)
+
+class VerifyOTPSerializer(serializers.Serializer):
+    mobile = serializers.CharField(max_length=15)
+    token = serializers.CharField(max_length=6)
 
 class RegisterSerializer(serializers.Serializer):
     id = serializers.UUIDField(read_only=True)

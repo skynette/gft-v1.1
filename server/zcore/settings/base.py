@@ -146,6 +146,7 @@ AUTH_USER_MODEL = "authentication.User"
 COMPANY_API_KEY = os.environ.get('COMPANY_API_KEY', "default")
 SUPER_ADMIN_USERNAME = os.environ.get("SUPER_ADMIN_USERNAME", "default")
 API_URL = os.environ.get('API_URL')
+TERMII_API_KEY = os.environ.get('TERMII_API_KEY')
 
 LOG_LEVEL = "INFO"
 LOG_DIR = os.path.join(BASE_DIR, 'logs')

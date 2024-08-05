@@ -62,8 +62,14 @@ class User(TimeStampedUUIDModel, AbstractUser):
                 self.user_type = "admin"
 
             if not self.image:
-                self.image.name = 'image/avatar.png'
+                self.image = 'image/avatar.png'
 
         if not self.username:
             self.username = f"user_{shortuuid.uuid()[:8]}"
         super().save(*args, **kwargs)
+
+
+class OTP(models.Model):
+    mobile = models.CharField(max_length=15)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
