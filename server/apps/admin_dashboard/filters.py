@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
 from django.contrib.auth import get_user_model
 
-from apps.gft.models import Box, Campaign, Company, Gift, GiftVisit
+from apps.gft.models import Box, Campaign, Company, Gift, GiftVisit, Notification
 
 User = get_user_model()
 
@@ -66,3 +66,14 @@ class CompanyFilter(filters.FilterSet):
     class Meta:
         model = Company
         fields = ["name", "owner", "created_at"]
+
+class NotificationFilter(filters.FilterSet):
+    class Meta:
+        model = Notification
+        fields = {
+            'user': ['exact'],
+            'box': ['exact'],
+            'gift': ['exact'],
+            'read': ['exact'],
+            'timestamp': ['gte', 'lte'],
+        }

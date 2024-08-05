@@ -106,12 +106,12 @@ export const adminNavItems: NavItem[] = [
     icon: 'gift',
     label: 'gift'
   },
-  // {
-  //   title: 'Notifications',
-  //   href: '/admin/notifications',
-  //   icon: 'bell',
-  //   label: 'notifications'
-  // },
+  {
+    title: 'Notifications',
+    href: '/admin/notifications',
+    icon: 'bell',
+    label: 'notifications'
+  },
   {
     title: 'Permissions',
     href: '/admin/permissions',

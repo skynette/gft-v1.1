@@ -102,6 +102,43 @@ export const adminDeleteGift = async (token: string, id: string): Promise<any> =
     return response.data;
 }
 
+export const getAdminNotifications = async (token: string): Promise<AdminNotificationsResponse[]> => {
+    const response = await axiosInstance.get('/dashboard/admin/notifications/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminCreateNotiication = async (token: string, req: AdminNotificationsRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/notifications/create/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminUpdateNotification = async (id: string, token: string, req: AdminNotificationsRequest): Promise<any> => {
+    console.log("admin update box called with id:", id)
+    const response = await axiosInstance.put(`/dashboard/admin/notifications/${id}/update/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteNotification = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/notifications/${id}/delete/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const adminDeleteGiftVisit = async (token: string, id: string): Promise<any> => {
     const response = await axiosInstance.delete(`/dashboard/admin/giftvisits/${id}/delete/`, {
         headers: {

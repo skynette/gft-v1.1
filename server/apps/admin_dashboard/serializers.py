@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
 
-from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, PermissionGroup, PermissionsModel, Template
+from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, Notification, PermissionGroup, PermissionsModel, Template
 
 
 User = get_user_model()
@@ -234,3 +234,9 @@ class TokenSerializer(serializers.ModelSerializer):
         user = UserDetailSerializer(instance.user).data
         representation['user'] = user
         return representation
+
+
+class AdminNotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'

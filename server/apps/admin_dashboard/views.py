@@ -24,6 +24,7 @@ from apps.gft.models import (
     Config,
     Gift,
     GiftVisit,
+    Notification,
     PermissionGroup,
     PermissionsModel,
     Template,
@@ -41,6 +42,7 @@ from .serializers import (
     AdminDashboardChartSerializer,
     AdminGiftSerializer,
     AdminGiftVisitSerializer,
+    AdminNotificationSerializer,
     AssignUserGroupSerializer,
     CompanyApiKeyReadSerializer,
     AdminCompanySerializer,
@@ -53,7 +55,7 @@ from .serializers import (
     TokenSerializer,
     UserSerializer,
 )
-from .filters import BoxFilter, CampaignFilter, CompanyFilter, GiftFilter, GiftVisitFilter, UserFilter
+from .filters import BoxFilter, CampaignFilter, CompanyFilter, GiftFilter, GiftVisitFilter, NotificationFilter, UserFilter
 
 User = get_user_model()
 
@@ -210,6 +212,156 @@ class BoxDeleteView(generics.GenericAPIView):
 
 
 box_delete_view = BoxDeleteView.as_view()
+
+
+class NotificationListView(generics.GenericAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = AdminNotificationSerializer
+    permission_classes = [IsAdminUser]
+    filterset_class = NotificationFilter
+    filter_backends = [
+        django_filters.DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+        drf_filters.SearchFilter,
+    ]
+    search_fields = ['message']
+    ordering_fields = ['timestamp', 'message']
+
+    @extend_schema(
+        description="List all notifications with filtering, searching, and sorting options.",
+        responses={200: AdminNotificationSerializer(many=True)},
+        tags=["Admin Area"],
+        parameters=[
+            {
+                'name': 'search',
+                'required': False,
+                'in': 'query',
+                'description': 'Search query',
+                'schema': {'type': 'string'}
+            },
+            {
+                'name': 'ordering',
+                'required': False,
+                'in': 'query',
+                'description': 'Ordering field',
+                'schema': {'type': 'string', 'enum': ['timestamp', 'message']}
+            },
+        ]
+    )
+    def get(self, request, *args, **kwargs):
+        """
+        List all notifications.
+        """
+        notifications = self.get_queryset()
+        serializer = self.get_serializer(notifications, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+notification_list_view = NotificationListView.as_view()
+
+
+class NotificationCreateView(generics.GenericAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = AdminNotificationSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Create a new notification.",
+        request=AdminNotificationSerializer,
+        responses={201: AdminNotificationSerializer},
+        tags=["Admin Area"],
+    )
+    def post(self, request, *args, **kwargs):
+        """
+        Create a new notification.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+notification_create_view = NotificationCreateView.as_view()
+
+
+class NotificationDetailView(generics.GenericAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = AdminNotificationSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Retrieve a notification by ID.",
+        responses={200: AdminNotificationSerializer},
+        tags=["Admin Area"],
+    )
+    def get(self, request, notification_id, *args, **kwargs):
+        """
+        Retrieve a notification by ID.
+        """
+        notification = self.get_object()
+        serializer = self.get_serializer(notification)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_object(self):
+        return generics.get_object_or_404(Notification, id=self.kwargs["notification_id"])
+
+
+notification_detail_view = NotificationDetailView.as_view()
+
+
+class NotificationUpdateView(generics.GenericAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = AdminNotificationSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Update a notification by ID.",
+        request=AdminNotificationSerializer,
+        responses={200: AdminNotificationSerializer},
+        tags=["Admin Area"],
+    )
+    def put(self, request, notification_id, *args, **kwargs):
+        """
+        Update a notification by ID.
+        """
+        notification = self.get_object()
+        serializer = self.get_serializer(notification, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get_object(self):
+        return generics.get_object_or_404(Notification, id=self.kwargs["notification_id"])
+
+
+notification_update_view = NotificationUpdateView.as_view()
+
+
+class NotificationDeleteView(generics.GenericAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = AdminNotificationSerializer
+    permission_classes = [IsAdminUser]
+
+    @extend_schema(
+        description="Delete a notification by ID.",
+        responses={204: None},
+        tags=["Admin Area"]
+    )
+    def delete(self, request, notification_id, *args, **kwargs):
+        """
+        Delete a notification by ID.
+        """
+        notification = self.get_object()
+        notification.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def get_object(self):
+        return generics.get_object_or_404(Notification, id=self.kwargs["notification_id"])
+
+
+notification_delete_view = NotificationDeleteView.as_view()
 
 
 class GiftListView(generics.GenericAPIView):
