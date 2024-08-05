@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import useUpdateUser from '@/lib/hooks/useUpdateUser';
-import { useSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 import useGetProfile from '@/lib/hooks/useGetProfile';
 import { useQueryClient } from '@tanstack/react-query';
 import { SyncLoader } from 'react-spinners';
@@ -35,24 +35,27 @@ export default function ProfileForm() {
     const { data: profile, isPending: profileLoading } = useGetProfile();
 
     const { mutate, isPending } = useUpdateUser({
-        onSuccess(variables) {
+        onSuccess: async (variables) => {
             toast.success('Profile updated');
-            update({
-                ...data,
+            const updatedSession = await getSession();
+            await update({
+                ...updatedSession,
                 user: {
                     ...data?.user,
                     firstName: variables?.first_name,
                     lastName: variables?.last_name,
                     name: variables.first_name + ' ' + variables.last_name,
+                    email: variables.email,
                     mobile: variables.mobile,
                     contactPreference: variables.contact_preference,
                 }
-            }).then(() => queryClient.invalidateQueries({ queryKey: ['profile'] }));
+            });
+            queryClient.invalidateQueries({ queryKey: ['profile'] });
         },
     });
 
     if (profileLoading) {
-        return <SyncLoader size={15} color='#3b82f6'/>;
+        return <SyncLoader size={15} color='#3b82f6' />;
     }
 
     const defaultValues: ProfileFormValues = {
@@ -67,6 +70,7 @@ export default function ProfileForm() {
         mutate({
             first_name: values.fullname.split(' ')[0],
             last_name: values.fullname.split(' ')[1],
+            email: values.email,
             mobile: values.phone,
             contact_preference: values.contactPreference,
             username: values.username,
@@ -104,7 +108,7 @@ export default function ProfileForm() {
                             type='email'
                             name='email'
                             label='Email'
-                            disabled={true}
+                            disabled={data?.user.email ? true : false}
                             placeholder='user@mail.com'
                             control='input'
                         />

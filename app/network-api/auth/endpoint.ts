@@ -34,10 +34,10 @@ export const getProfile = async (token: string): Promise<ProfileResponse> => {
 
 export const updateProfile = async (token: string, req: AccountRequest): Promise<AccountRequest> => {
     const formData = new FormData();
-    formData.append('first_name', req.first_name);
-    formData.append('last_name', req.last_name);
-    formData.append('username', req.username);
-    formData.append('mobile', req.mobile);
+    formData.append('first_name', req.first_name!);
+    formData.append('last_name', req.last_name!);
+    formData.append('username', req.username!);
+    formData.append('mobile', req.mobile!);
     formData.append('contact_preference', req.contact_preference ?? '');
     formData.append('image', req.image ?? '');
 
