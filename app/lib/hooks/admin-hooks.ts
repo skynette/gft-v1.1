@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminSetActiveTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminCompanyUsers, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens, getAdminUsers } from '@/network-api/admin/endpoint';
+import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminDeleteUsers, adminSetActiveTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminCompanyUsers, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens, getAdminUsers } from '@/network-api/admin/endpoint';
 
 export function useGetAdminCampaigns() {
     const session = useSession();
@@ -110,6 +110,22 @@ export function useGetAdminUsers() {
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+export function useAdminDeleteUsers({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {
+    const session = useSession();
+
+    const { mutate, data, isPending, isSuccess, isError, error } = useMutation<any, AxiosError, string>({
+        mutationFn: (id: string) => adminDeleteUsers(session.data?.accessToken ?? '', id),
+        onSuccess(data, variables, context) {
+            onSuccess?.();
+        },
+        onError(error, variables, context) {
+            onError?.(error);
+        },
+    });
+
+    return { mutate, data, isPending, isSuccess, isError, error };
 }
 
 export function useGetAdminCompanyUsers() {

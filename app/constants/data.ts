@@ -137,6 +137,12 @@ export const adminNavItems: NavItem[] = [
     label: 'auth tokens'
   },
   {
+    title: 'Users',
+    href: '/admin/users/',
+    icon: 'user',
+    label: 'users'
+  },
+  {
     title: 'Config',
     href: '/admin/settings',
     icon: 'settings',

@@ -194,6 +194,35 @@ export const getAdminUsers = async (token: string): Promise<AdminUserResponse[]>
     return response.data;
 }
 
+export const adminCreateUsers = async (token: string, req: AdminUserRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/admin/users/', req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const adminUpdateUsers = async (id: string, token: string, req: AdminUserRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/users/${id}/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminDeleteUsers = async (token: string, id: string): Promise<any> => {
+    const response = await axiosInstance.delete(`/dashboard/admin/users/${id}/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
 export const getAdminCompanyUsers = async (token: string): Promise<AdminUserResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/users/?user_type=company', {
         headers: {
