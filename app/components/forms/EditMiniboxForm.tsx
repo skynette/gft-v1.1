@@ -30,7 +30,7 @@ const EditMiniboxForm = ({ onPrev, onNext, data, setData, isPending }: {
 
     const handleSubmit = (data: GiftBoxValues) => { onNext(data, true) }
 
-    const boxId = useParams().box_id;
+    const boxId = useParams().box_id as string;
     const { data: giftBox } = useGetGiftbox(boxId);
     const { data: miniBox } = useGetMinibox(boxId);
 

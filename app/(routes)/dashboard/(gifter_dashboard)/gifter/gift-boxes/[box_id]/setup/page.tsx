@@ -27,7 +27,7 @@ export interface GiftBoxValues {
 }
 
 const SetupBox = () => {
-    const boxId = useParams().box_id;
+    const boxId = useParams().box_id as string;
     const router = useRouter();
 
     const steps = 2;

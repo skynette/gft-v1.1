@@ -30,7 +30,7 @@ const NotificationDetail = () => {
     const router = useRouter();
     const queryClient = useQueryClient();
     const { data } = useNotifications();
-    const notificationId = useParams().id;
+    const notificationId = useParams().id as string;
     const notification = data?.find(item => item.id.toString() === notificationId);
 
     const { mutate, isPending } = useMarkNotificationAsRead({

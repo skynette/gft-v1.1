@@ -30,7 +30,7 @@ const EditGiftboxForm = ({ onNext, data }: {
     const queryClient = useQueryClient();
     const router = useRouter();
     const isEdit = useSearchParams().get('edit') ?? null;
-    const boxId = useParams().box_id;
+    const boxId = useParams().box_id as string;
 
     const { mutate: mutateSetupGift, isPending: isPendingStep } = useSetGifterBox({
         boxId, onSuccess() {

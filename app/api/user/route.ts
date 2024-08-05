@@ -7,7 +7,7 @@ async function handler(req: any, res: NextResponse) {
         const session = await getServerSession(authOptions)
         return NextResponse.json(session)
     } catch (error) {
-        NextResponse.json({ message: "You must be logged in." }, { status: 401 })
+        return NextResponse.json({ message: "You must be logged in." }, { status: 401 })
     }
 }
 
