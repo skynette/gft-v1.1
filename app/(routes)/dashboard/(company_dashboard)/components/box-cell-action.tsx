@@ -35,9 +35,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     });
 
     const onCopy = (id: string) => {
-        navigator.clipboard.writeText(id)
-        toast.success('copied.')
-    }
+        const baseUrl = window.location.origin;
+        const fullUrl = `${baseUrl}/dashboard/gifter/gift-boxes/${id}/setup`;
+        navigator.clipboard.writeText(fullUrl);
+        toast.success('Copied.');
+    };
     return (
         <>
             {/* <AlertModal
@@ -74,7 +76,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onCopy(data.id)}>
                         <Copy className="mr-2 h-4 w-4" />
-                        Copy Id
+                        Copy qr code link
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setIsOpenSheet(true)}>
                         <Trash className="mr-2 h-4 w-4" />

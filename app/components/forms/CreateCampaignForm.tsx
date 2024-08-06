@@ -28,16 +28,16 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
     const createValidationSchema = Yup.object().shape({
         name: Yup.string().required('Provide campaign name'),
         company_boxes: Yup.string().required('Select company'),
-        duration: Yup.number().required('Provide campaign duration').min(1, 'Duration too low'),
+        // duration: Yup.number().required('Provide campaign duration').min(1, 'Duration too low'),
         num_boxes: Yup.number().required('Provide number of boxes').min(1, 'Number of boxes too low'),
-        header_image: Yup.mixed().required('Provide campaign image'),
+        header_image: Yup.mixed().optional(),
         open_after_a_day: Yup.boolean().optional(),
     });
 
     const updateValidationSchema = Yup.object().shape({
         name: Yup.string().required('Provide campaign name'),
         num_boxes: Yup.number().required('Provide number of boxes').min(initialValue?.num_boxes ?? 1, 'Number of boxes can\'t be less than previously set value'),
-        header_image: Yup.mixed().required('Provide campaign image'),
+        header_image: Yup.mixed().optional(),
         open_after_a_day: Yup.boolean().optional(),
     });
 
@@ -65,7 +65,7 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
     const initialValues: CreateCampaignFormSchema = {
         name: initialValue?.name ?? '',
         company_boxes: initialValue?.company_boxes.toString() ?? '',
-        duration: initialValue?.duration ?? 0,
+        // duration: initialValue?.duration ?? 0,
         num_boxes: initialValue?.num_boxes ?? 0,
         header_image: initialValue?.header_image ?? '',
         open_after_a_day: initialValue?.open_after_a_day ?? false
@@ -82,7 +82,7 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
         else createMutate({
             name: values.name,
             company_boxes: values.company_boxes,
-            duration: values.duration,
+            // duration: values.duration,
             num_boxes: values.num_boxes,
             header_image: values.header_image,
             open_after_a_day: values.open_after_a_day ?? false,
@@ -118,14 +118,14 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
                         disabled={query === 'update' ? true : false}
                     />
 
-                    <FormikControl
+                    {/* <FormikControl
                         type='text'
                         name='duration'
                         label='Campaign duration (days)'
                         placeholder='3'
                         control='input'
                         disabled={query === 'update' ? true : false}
-                    />
+                    /> */}
 
                     <FormikControl
                         type='text'
