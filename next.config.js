@@ -4,6 +4,7 @@ const nextConfig = {
         BASE_URL: process.env.NEXT_PUBLIC_SERVER_URL
     },
     images: {
+        unoptimized: true,
         remotePatterns: [
             {
                 protocol: 'https',

@@ -15,7 +15,7 @@ export default function GifterHeader({ currUser }: GifterHeaderProps) {
             <nav className="container w-full flex h-14 items-center justify-between">
                 <div className="hidden lg:block">
                     <Link href={"/dashboard/gifter"}>
-                        <Image alt="logo" src={"/images/logo.webp"} width={30} height={30} />
+                        <Image unoptimized alt="logo" src={"/images/logo.webp"} width={30} height={30} />
                     </Link>
                 </div>
 

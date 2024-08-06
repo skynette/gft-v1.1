@@ -112,7 +112,7 @@ export default function Login() {
     return (
         <div className='6xl:container h-screen grid grid-cols-[2fr_1.5fr]'>
             <div className='flex flex-col justify-center items-center bg-blue-500 py-10'>
-                <Image src='/asset-1.png' width={200} height={200} alt='' />
+                <Image unoptimized src='/asset-1.png' width={200} height={200} alt='' />
                 <p className='mt-4 text-white font-bold text-4xl tracking-wider'>GFT</p>
                 <p className='text-white tracking-wide font-semibold text-2xl'>Redefining the <span className='underline underline-offset-1 italic'>gifting experience!</span></p>
                 <p className='inline-flex items-center text-white mt-5'>

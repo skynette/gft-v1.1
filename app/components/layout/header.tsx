@@ -17,7 +17,7 @@ export default function Header({ currUser }: HeaderProps) {
             <nav className="flex h-14 items-center justify-between px-4">
                 <div className="hidden lg:block">
                     <Link href={"/dashboard"}>
-                        <Image alt="logo" src={"/images/logo.webp"} width={30} height={30} />
+                        <Image unoptimized alt="logo" src={"/images/logo.webp"} width={30} height={30} />
                     </Link>
                 </div>
 
