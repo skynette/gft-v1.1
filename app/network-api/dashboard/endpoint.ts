@@ -279,7 +279,6 @@ export const createCampaign = async (token: string, apiKey: string, req: CreateC
     const formData = new FormData();
     formData.append('name', req.name);
     formData.append('company_boxes', req.company_boxes);
-    formData.append('duration', req.duration.toString());
     formData.append('num_boxes', req.num_boxes.toString());
     formData.append('header_image', req.header_image);
     formData.append('open_after_a_day', req.open_after_a_day.toString());
