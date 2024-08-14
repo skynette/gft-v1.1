@@ -11,8 +11,9 @@ import { useSearchParams } from 'next/navigation';
 import FormikControl from '@/components/form-controls/FormikControl';
 import { Button } from '@/components/ui/button';
 import { adminCreateUsers, adminUpdateUsers } from '@/network-api/admin/endpoint';
-import { useGetAdminUsers } from '@/lib/hooks/admin-hooks';
 import { get, set } from 'lodash';
+import { useState } from 'react';
+import ImageUpload from '@/components/form-controls/ImageUpload';
 
 const validationSchema = Yup.object().shape({
     last_login: Yup.string().optional(),
@@ -177,7 +178,7 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
             onSubmit={handleSubmit}
             enableReinitialize={true}
         >
-            {({ dirty, isValid, setFieldValue }) => (
+            {({ dirty, isValid, values, setFieldValue }) => (
                 <Form className='w-full flex flex-col space-y-5 mt-[5%]'>
                     <FormikControl
                         type='text'
@@ -238,6 +239,16 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
                         placeholder='Image URL'
                         control='input'
                     />
+
+                    {/* <div className='flex flex-col'>
+                        <p className='text-sm'>Upload image</p>
+                        <ImageUpload
+                            value={values.image ? [values.image] : []}
+                            disabled={isCreatePending || isUpdatePending}
+                            onChange={(url) => setFieldValue('image', url)}
+                            onRemove={() => setFieldValue('image', '')}
+                        />
+                    </div> */}
 
                     <FormikControl
                         type='text'

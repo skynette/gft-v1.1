@@ -245,6 +245,25 @@ export const getCompanyAPIKey = async (token: string, apiKey: string): Promise<C
     return response.data;
 }
 
+export const getConfigManagement = async (token: string): Promise<ConfigManagementResponse> => {
+    const response = await axiosInstance.get('/dashboard/admin/config-management/', {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+
+export const updateConfigManagement = async (token: string, req: UpdateConfigManagementRequest): Promise<any> => {
+    const response = await axiosInstance.put(`/dashboard/admin/config-management/`, req, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const getCompanyCategoryBox = async (token: string, apiKey: string): Promise<CompanyCatboxResponse[]> => {
     const response = await axiosInstance.get('/dashboard/company-boxes/', {
         headers: {

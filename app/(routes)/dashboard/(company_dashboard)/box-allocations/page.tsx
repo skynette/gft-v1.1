@@ -23,10 +23,10 @@ export default function BoxAllocations() {
                     title={`Box Allocations`}
                     description="Manage your allocations here."
                 />
-                <Button onClick={() => setIsOpenSheet(true)}>
+                {/* <Button onClick={() => setIsOpenSheet(true)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Add Box Allocation
-                </Button>
+                </Button> */}
             </div>
             <Separator className='my-4'/>
             {isPending && <LoadingSkeleton />}

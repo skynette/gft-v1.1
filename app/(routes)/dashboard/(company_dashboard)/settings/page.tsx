@@ -1,16 +1,6 @@
 'use client';
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardContent,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { PlusIcon } from "lucide-react";
 import useGetCompanyProfile from "@/lib/hooks/useGetCompanyProfile";
 import SettingsForm from "@/components/forms/SettingsForm";
 

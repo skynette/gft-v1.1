@@ -69,8 +69,8 @@ const SettingsForm = () => {
 
     const initialValues: FormSchema = {
         name: data?.name ?? '',
-        logo: '',
-        header: '',
+        logo: data?.logo ?? '',
+        header: data?.header_image ?? '',
         url: data?.company_url,
         limit: data?.box_limit,
         social: {
@@ -107,8 +107,8 @@ const SettingsForm = () => {
     const handleSubmit = (values: FormSchema) => {
         mutate({
             name: values.name,
-            logo: values.logo ?? '',
-            header_image: values.header ?? '',
+            logo: values.logo ?? initialValues.logo,
+            header_image: values.header ?? initialValues.header,
             box_limit: values.limit ?? 0,
             company_url: values.url ?? '',
             socials: {
@@ -170,15 +170,6 @@ const SettingsForm = () => {
                                     control='input'
                                     placeholder='Company name'
                                 />
-
-                                {/* <FormikControl
-                                    type='file'
-                                    name='logo1'
-                                    label='Upload logo'
-                                    control='input'
-                                    placeholder='Company logo'
-                                /> */}
-                                {/* <Image src={data?.logo ?? ''} width={200} height={200} alt='' /> */}
                                 <div className='flex flex-col'>
                                     <p className='text-sm'>Upload logo</p>
                                     <ImageUpload
