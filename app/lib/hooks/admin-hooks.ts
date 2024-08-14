@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeleteNotification, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminDeleteUsers, adminSetActiveTemplate, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminCompanyUsers, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminNotifications, getAdminPermissionGroups, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens, getAdminUsers } from '@/network-api/admin/endpoint';
+import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeleteNotification, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminDeleteUsers, adminSetActiveTemplate, adminUpdatePermissionGroups, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminCompanyUsers, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminNotifications, getAdminPermissionGroups, getAdminPermissionGroupsItems, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens, getAdminUsers } from '@/network-api/admin/endpoint';
 
 export function useGetAdminCampaigns() {
     const session = useSession();
@@ -335,6 +335,32 @@ export function useGetAdminPermissionGroups() {
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+export function useGetAdminPermissionGroupsItems(id: string) {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error } = useQuery<AdminPermissionGroupResponse, AxiosError>({
+        queryKey: ['admin-permission-group', id],
+        queryFn: () => getAdminPermissionGroupsItems(session.data?.accessToken ?? '', id),
+        enabled: session.status === 'authenticated'
+    });
+
+    return { data, isPending, isSuccess, isError, error };
+}
+
+export function useAdminUpdatePermissionGroups(id: string) {
+    const queryClient = useQueryClient();
+    const session = useSession();
+
+    return useMutation<any, AxiosError, string[]>({
+        mutationFn: (ids: string[]) => adminUpdatePermissionGroups(session.data?.accessToken ?? '', id, ids),
+        onSuccess() {
+            queryClient.invalidateQueries({
+                queryKey: ['admin-permission-group', id]
+            })
+        },
+    });
 }
 
 export function useAdminDeletePermissionGroup({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {

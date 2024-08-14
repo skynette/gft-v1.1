@@ -429,6 +429,25 @@ export const getAdminPermissionGroups = async (token: string): Promise<AdminPerm
     return response.data;
 }
 
+export const getAdminPermissionGroupsItems = async (token: string, id: string): Promise<AdminPermissionGroupResponse> => {
+    const response = await axiosInstance.get(`/dashboard/admin/permission-groups/${id}/`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminUpdatePermissionGroups = async (token: string, id: string, ids: string[]): Promise<AdminPermissionGroupResponse> => {
+    console.log(ids);
+    const response = await axiosInstance.post(`/dashboard/admin/roles/${id}/`, ids, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const getAdminTemplates = async (token: string): Promise<AdminTemplatesResponse[]> => {
     const response = await axiosInstance.get('/dashboard/admin/template/', {
         headers: {
