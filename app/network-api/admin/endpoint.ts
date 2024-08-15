@@ -440,7 +440,9 @@ export const getAdminPermissionGroupsItems = async (token: string, id: string): 
 
 export const adminUpdatePermissionGroups = async (token: string, id: string, ids: string[]): Promise<AdminPermissionGroupResponse> => {
     console.log(ids);
-    const response = await axiosInstance.post(`/dashboard/admin/roles/${id}/`, ids, {
+    const response = await axiosInstance.post(`/dashboard/admin/roles/${id}/`, {
+        "selected_permissions": ids
+    }, {
         headers: {
             Authorization: `Token ${token}`,
         }
