@@ -358,7 +358,10 @@ export function useAdminUpdatePermissionGroups(id: string) {
         onSuccess() {
             queryClient.invalidateQueries({
                 queryKey: ['admin-permission-group', id]
-            })
+            });
+            queryClient.invalidateQueries({
+                queryKey: ['admin-permission-group'],
+            });
         },
     });
 }

@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Heading } from "@/components/ui/heading";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useAdminUpdatePermissionGroups, useGetAdminPermissionGroups, useGetAdminPermissionGroupsItems } from "@/lib/hooks/admin-hooks";
+import { useAdminUpdatePermissionGroups, useGetAdminPermissionGroups, useGetAdminPermissionGroupsItems, useGetAdminPermissions } from "@/lib/hooks/admin-hooks";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -20,7 +20,7 @@ const Page = () => {
 
     const params = useParams();
     const id = params.id.toString();
-    const { data: allPermissions } = useGetAdminPermissionGroups();
+    const { data: allPermissions } = useGetAdminPermissions();
     const { data } = useGetAdminPermissionGroupsItems(id);
     const [availablePermission, setAvailablePermission] = useState<PermissionItem[]>();
     const [selectedPermission, setSelectedPermission] = useState<PermissionItem[]>();
@@ -28,11 +28,10 @@ const Page = () => {
     const { mutate, isPending } = useAdminUpdatePermissionGroups(id);
 
     useEffect(() => {
-        const permissionGroup = allPermissions?.find(item => item.id === +id);
-        setAvailablePermission(permissionGroup?.permissions.map(item => ({
+        setAvailablePermission(allPermissions?.map(item => ({
             id: item.id,
             label: item.label,
-            selected: false
+            selected: !!data?.permissions.find(e => item.id === e.id)
         })));
 
         setSelectedPermission(data?.permissions.filter(item => {
@@ -91,14 +90,13 @@ const Page = () => {
                 </div>
                 <div className="flex flex-col space-y-2 justify-center px-1">
                     <Button variant='outline' onClick={() => {
-                        let selected = availablePermission?.filter(item => item.selected) ?? [];
-                        let newSelected = [...selected || []];
-                        selected?.forEach(item => {
-                            selectedPermission?.forEach(e => {
-                                if (e.id === item.id) newSelected = selected.filter(i => i.id === item.id)
-                            })
-                        })
-                        setSelectedPermission(prev => ([...newSelected, ...prev || []]));
+                        const permissions = availablePermission?.filter(e => e.selected).map(item =>
+                        ({
+                            id: item.id,
+                            label: item.label,
+                            selected: true
+                        }));
+                        setSelectedPermission(permissions);
                     }}>
                         <ChevronRight className="w-4 h-4" />
                     </Button>
