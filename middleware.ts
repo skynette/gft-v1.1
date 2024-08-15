@@ -40,22 +40,17 @@ const getDefaultRedirect = (role: Token['role']): string => {
     return defaultRedirects[role] || '/dashboard/gifter';
 };
 
-export const config = {
-    matcher: [
-        '/((?!api|.\..|_next/static|_next/image|assets|favicon.ico|sw.js).)',
-    ],
-}
-
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
-    // if (
-    //     pathname.startsWith('/_next') ||
-    //     pathname.startsWith('/api') ||
-    //     // pathname.startsWith('/static') ||
-    //     pathname.startsWith('/public')
-    // ) {
-    //     return NextResponse.next();
-    // }
+    console.log(pathname);
+    if (
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/api') ||
+        pathname.startsWith('/static') ||
+        pathname.startsWith('/public') || pathname.startsWith('/images')
+    ) {
+        return NextResponse.next();
+    }
 
 
     const token = await getToken({ req }) as Token | null;
@@ -98,6 +93,6 @@ export async function middleware(req: NextRequest) {
 }
 
 
-// export const config = {
-//     matcher: ['/:path*'],
-// };
+export const config = {
+    matcher: ['/:path*'],
+};

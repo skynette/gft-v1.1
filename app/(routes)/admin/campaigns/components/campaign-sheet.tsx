@@ -12,15 +12,15 @@ interface CampaignProps {
 export const CampaignSheet = ({ title, isOpen, initialValue, onClose }: CampaignProps) => {
     return (
         <Sheet open={isOpen} onOpenChange={onClose} >
-            <SheetContent className="min-w-[50%] overflow-scroll">
+            <SheetContent className="min-w-[50%] z-50 overflow-scroll">
                 <SheetHeader>
                     <SheetTitle>
                         {title}
                     </SheetTitle>
-                    <SheetDescription>
-                    </SheetDescription>
-                    <AdminCreateCampaignForm initialValue={initialValue} onClose={onClose} />
                 </SheetHeader>
+                <SheetDescription>
+                </SheetDescription>
+                <AdminCreateCampaignForm initialValue={initialValue} onClose={onClose} />
             </SheetContent>
         </Sheet >
     )

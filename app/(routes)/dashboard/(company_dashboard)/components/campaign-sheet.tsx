@@ -16,7 +16,7 @@ export const CampaignSheet = ({ title, isOpen, onClose, initialValue }: Campaign
     const router = useRouter();
     const pathname = usePathname();
     return (
-        <Sheet open={isOpen} onOpenChange={onClose} >
+        <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent className="min-w-[50%] overflow-y-scroll">
                 <SheetHeader>
                     <SheetTitle>
