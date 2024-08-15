@@ -40,19 +40,28 @@ const getDefaultRedirect = (role: Token['role']): string => {
     return defaultRedirects[role] || '/dashboard/gifter';
 };
 
+export const config = {
+    matcher: [
+        '/((?!api|.\..|_next/static|_next/image|assets|favicon.ico|sw.js).)',
+    ],
+}
+
 export async function middleware(req: NextRequest) {
-    const token = await getToken({ req }) as Token | null;
     const { pathname } = req.nextUrl;
+    // if (
+    //     pathname.startsWith('/_next') ||
+    //     pathname.startsWith('/api') ||
+    //     // pathname.startsWith('/static') ||
+    //     pathname.startsWith('/public')
+    // ) {
+    //     return NextResponse.next();
+    // }
+
+
+    const token = await getToken({ req }) as Token | null;
 
     // Allow requests to static files, API routes, and Next.js internal files
-    if (
-        pathname.startsWith('/_next') ||
-        pathname.startsWith('/api') ||
-        pathname.startsWith('/static') ||
-        pathname.startsWith('/public')
-    ) {
-        return NextResponse.next();
-    }
+
 
     // If the user is logged in and tries to access the login page, redirect to the home page
     if (pathname === '/login' && token) {
@@ -89,6 +98,6 @@ export async function middleware(req: NextRequest) {
 }
 
 
-export const config = {
-    matcher: ['/:path*'],
-};
+// export const config = {
+//     matcher: ['/:path*'],
+// };
