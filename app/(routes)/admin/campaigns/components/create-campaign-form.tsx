@@ -7,14 +7,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { AxiosError } from 'axios';
 import { toast } from 'sonner';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import FormikControl from '@/components/form-controls/FormikControl';
 import { Button } from '@/components/ui/button';
 import { get, set } from 'lodash';
 import { adminCreateCampaign, adminUpdateCampaign } from '@/network-api/admin/endpoint';
-import { useGetAdminCompanyBoxes } from '@/lib/hooks/admin-hooks';
+import { useGetAdminCampaignById, useGetAdminCompanyBoxes } from '@/lib/hooks/admin-hooks';
 import ImageUpload from '@/components/form-controls/ImageUpload';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const validationSchema = Yup.object().shape({
     company_boxes: Yup.string()
@@ -49,19 +49,27 @@ const validationSchema = Yup.object().shape({
 
 type AdminCreateCampaignFormSchema = Yup.InferType<typeof validationSchema>;
 
-const AdminCreateCampaignForm = ({ initialValue, onClose }: { initialValue?: AdminCampaignResponse, onClose: () => void }) => {
+const AdminCreateCampaignForm = () => {
     const { data: session } = useSession();
     const query = useSearchParams()?.get('query') ?? null;
+    const id = useSearchParams()?.get('id') ?? null;
     const client = useQueryClient();
+    const router = useRouter()
+
+    const { data: initialValue, isPending: campaignPending, isSuccess, refetch } = useGetAdminCampaignById(id!);
+
+    useEffect(() => {
+        refetch();
+    }, [id, query, refetch]);
 
     // mutate function for creating the campaign
     const { mutate: mutateCreate, isPending: isCreatePending } = useMutation<any, AxiosError, AdminCampaignRequest>({
-        mutationFn: (req: AdminCampaignRequest) => adminCreateCampaign(session?.accessToken ?? '', req),
+        mutationFn: (req: AdminCampaignRequest) => adminCreateCampaign(session?.accessToken ?? '', session?.companyAPIKey ?? '', req),
         onSuccess(data, variables, context) {
             toast.success('Campaign created successfully');
             console.log({ data, variables, context });
-            onClose();
             client.invalidateQueries({ queryKey: ['admin-campaigns'] });
+            router.push("/admin/campaigns")
         },
         onError(error) {
             toast.error('Error Creating Campaign');
@@ -74,8 +82,8 @@ const AdminCreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Adm
         mutationFn: (req: AdminCampaignRequest) => adminUpdateCampaign(initialValue?.id!, session?.accessToken ?? '', req),
         onSuccess(data, variables, context) {
             toast.success('Campaign updated successfully');
-            onClose();
             client.invalidateQueries({ queryKey: ['admin-campaigns'] });
+            router.push("/admin/campaigns")
         },
         onError(error) {
             toast.error('Error updating campaign');
@@ -116,7 +124,6 @@ const AdminCreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Adm
                 open_after_a_day: values.open_after_a_day,
                 company_boxes: values.company_boxes,
             };
-            console.log({ payload })
             mutateCreate(payload);
         }
     };
@@ -196,8 +203,8 @@ const AdminCreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Adm
 
                     <Button
                         type='submit'
-                        disabled={isCreatePending || isUpdatePending || isSubmitting}
-                        isLoading={isCreatePending || isUpdatePending || isSubmitting}
+                        disabled={isCreatePending || isUpdatePending}
+                        isLoading={isCreatePending || isUpdatePending}
                         className={`inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50`}
                     >
                         Continue <ArrowRight size={18} className='text-white ml-2' />

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useSession } from 'next-auth/react';
-import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeleteNotification, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminDeleteUsers, adminSetActiveTemplate, adminUpdatePermissionGroups, getAdminBoxCategories, getAdminBoxes, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminCompanyUsers, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminNotifications, getAdminPermissionGroups, getAdminPermissionGroupsItems, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens, getAdminUsers } from '@/network-api/admin/endpoint';
+import { adminDeleteBox, adminDeleteBoxCategories, adminDeleteCampaign, adminDeleteCompany, adminDeleteCompanyAPIKey, adminDeleteCompanyBoxes, adminDeleteGift, adminDeleteGiftVisit, adminDeleteNotification, adminDeletePermission, adminDeletePermissionGroup, adminDeleteTemplate, adminDeleteToken, adminDeleteUsers, adminSetActiveTemplate, adminUpdatePermissionGroups, getAdminBoxCategories, getAdminBoxes, getAdminCampaignById, getAdminCampaigns, getAdminCompanies, getAdminCompanyAPIKeys, getAdminCompanyBoxes, getAdminCompanyUsers, getAdminConfig, getAdminGiftVisits, getAdminGifts, getAdminNotifications, getAdminPermissionGroups, getAdminPermissionGroupsItems, getAdminPermissions, getAdminRoles, getAdminTemplates, getAdminTokens, getAdminUsers } from '@/network-api/admin/endpoint';
 
 export function useGetAdminCampaigns() {
     const session = useSession();
@@ -13,6 +13,18 @@ export function useGetAdminCampaigns() {
     });
 
     return { data, isPending, isSuccess, isError, error };
+}
+
+export function useGetAdminCampaignById(id?: string) {
+    const session = useSession();
+
+    const { data, isPending, isSuccess, isError, error, refetch } = useQuery<AdminCampaignResponse, AxiosError>({
+        queryKey: ['admin-campaigns'],
+        queryFn: () => getAdminCampaignById(session.data?.accessToken ?? '', id),
+        enabled: !!id
+    });
+
+    return { data, isPending, isSuccess, isError, error, refetch };
 }
 
 export function useAdminDeleteCampaign({ onSuccess, onError }: { onSuccess?: () => void, onError?: (error: AxiosError) => void }) {

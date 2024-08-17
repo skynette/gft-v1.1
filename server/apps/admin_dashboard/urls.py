@@ -42,7 +42,7 @@ urlpatterns = [
     
     # campaign urls
     path('campaigns/', views.campaign_list_api_view, name='admin_campaign_list'),
-    path('campaigns/create', views.campaign_create_api_view, name='admin_campaign_create'),
+    path('campaigns/create/', views.campaign_create_api_view, name='admin_campaign_create'),
     path('campaigns/<str:id>/', views.campaign_detail_api_view, name='admin_campaign_detail'),
     path('campaigns/<str:id>/update/', views.campaign_update_api_view, name='admin_campaign_update'),
     path('campaigns/<str:id>/delete/', views.campaign_delete_api_view, name='admin_campaign_delete'),

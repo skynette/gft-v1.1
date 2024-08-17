@@ -10,10 +10,12 @@ import LoadingSkeleton from '@/components/skeleton'
 import { useGetAdminCampaigns } from '@/lib/hooks/admin-hooks'
 import { columns } from './components/columns'
 import { CampaignSheet } from './components/campaign-sheet'
+import { useRouter } from 'next/navigation'
 
 export default function CampaignPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
     const { data, isPending, isSuccess } = useGetAdminCampaigns();
+    const router = useRouter()
 
     return (
         <div className='p-10'>
@@ -22,7 +24,7 @@ export default function CampaignPage() {
                     title={`Campaigns`}
                     description="Manage your campaigns here."
                 />
-                <Button onClick={() => setIsOpenSheet(true)}>
+                <Button onClick={() => router.push(`/admin/campaigns/create`)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Campaign
                 </Button>

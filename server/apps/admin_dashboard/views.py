@@ -879,15 +879,15 @@ class CreateCampaignView(generics.GenericAPIView):
             company_box.save()
 
             # validate image
-            image_validator = ImageUploader()
-            valid_image = (
-                image_validator.is_valid_image(header_image) if header_image else True
-            )
-            if not valid_image:
-                return Response(
-                    {"detail": "Invalid image uploaded"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            # image_validator = ImageUploader()
+            # valid_image = (
+            #     image_validator.is_valid_image(header_image) if header_image else True
+            # )
+            # if not valid_image:
+            #     return Response(
+            #         {"detail": "Invalid image uploaded"},
+            #         status=status.HTTP_400_BAD_REQUEST,
+            #     )
 
             campaign = Campaign.objects.create(
                 company_id=company_id,
@@ -996,18 +996,17 @@ class UpdateCampaignView(generics.GenericAPIView):
         campaign = self.get_object()
         serializer = self.get_serializer(campaign, data=request.data, partial=True)
         if serializer.is_valid():
-            header_image = serializer.validated_data.get("header_image")
+            # header_image = serializer.validated_data.get("header_image")
 
-            image_validator = ImageUploader()
-            valid_image = (
-                image_validator.is_valid_image(header_image) if header_image else True
-            )
-            if not valid_image:
-                return Response(
-                    {"detail": "Invalid image uploaded"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
+            # image_validator = ImageUploader()
+            # valid_image = (
+            #     image_validator.is_valid_image(header_image) if header_image else True
+            # )
+            # if not valid_image:
+            #     return Response(
+            #         {"detail": "Invalid image uploaded"},
+            #         status=status.HTTP_400_BAD_REQUEST,
+            #     )
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -51,14 +51,22 @@ export default function Login() {
         onSuccess() {
             setStage('verify');
             toast.success('A new token has been sent to your email.');
-        }
+        },
+        onError() {
+            setStage('request');
+            toast.error("Failed to send OTP, retry")
+        },
     });
 
     const { mutate: mutatePhoneToken, isPending: phoneLoading, isSuccess: phoneSuccess } = usePhoneToken({
         onSuccess() {
             setStage('verify');
             toast.success('A new token has been sent to your phone.');
-        }
+        },
+        onError() {
+            setStage('request');
+            toast.error("Failed to send OTP, retry")
+        },
     });
 
     const handleRequestToken = async (input: UserInput) => {

@@ -203,10 +203,22 @@ export const getAdminCampaigns = async (token: string): Promise<AdminCampaignRes
     return response.data;
 }
 
-export const adminCreateCampaign = async (token: string, req: AdminCampaignRequest): Promise<any> => {
+export const getAdminCampaignById = async (token: string, id?: string): Promise<AdminCampaignResponse> => {
+    const response = await axiosInstance.get(`/dashboard/admin/campaigns/${id}`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
+export const adminCreateCampaign = async (token: string, apiKey: string, req: AdminCampaignRequest): Promise<any> => {
+    const gft_api_key = process.env.NEXT_PUBLIC_COMPANY_API_KEY as string;
+    console.log({ gft_api_key, token })
     const response = await axiosInstance.post('/dashboard/admin/campaigns/create/', req, {
         headers: {
             Authorization: `Token ${token}`,
+            'gft-api-key': gft_api_key,
         }
     });
     return response.data;

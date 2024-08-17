@@ -20,7 +20,7 @@ export const CampaignSheet = ({ title, isOpen, initialValue, onClose }: Campaign
                 </SheetHeader>
                 <SheetDescription>
                 </SheetDescription>
-                <AdminCreateCampaignForm initialValue={initialValue} onClose={onClose} />
+                <AdminCreateCampaignForm/>
             </SheetContent>
         </Sheet >
     )
