@@ -68,7 +68,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                     </DropdownMenuLabel>
                     <DropdownMenuItem onClick={() => {
                         createQueryString(pathname, router, 'query', 'update');
-                        setIsOpenSheet(true);
+                        router.push(`/admin/users/create?query=update&id=${data.pkid}`)
+                        router.refresh()
                     }}>
                         <Edit className="mr-2 h-4 w-4" />
                         Update

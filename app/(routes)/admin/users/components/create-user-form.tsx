@@ -7,13 +7,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSession } from 'next-auth/react';
 import { AxiosError } from 'axios';
 import { toast } from 'sonner';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import FormikControl from '@/components/form-controls/FormikControl';
 import { Button } from '@/components/ui/button';
 import { adminCreateUsers, adminUpdateUsers } from '@/network-api/admin/endpoint';
 import { get, set } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ImageUpload from '@/components/form-controls/ImageUpload';
+import { useGetAdminUserById } from '@/lib/hooks/admin-hooks';
 
 const validationSchema = Yup.object().shape({
     last_login: Yup.string().optional(),
@@ -38,10 +39,20 @@ const validationSchema = Yup.object().shape({
 
 type AdminCreateUserFormSchema = Yup.InferType<typeof validationSchema>;
 
-const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUserRequest, onClose: () => void }) => {
+const AdminCreateUserForm = () => {
     const { data: session } = useSession();
     const query = useSearchParams()?.get('query') ?? null;
+    const id = useSearchParams()?.get('id') ?? null;
     const client = useQueryClient();
+
+    const router = useRouter()
+
+    const { data: initialValue, isPending: userPending, isSuccess, refetch } = useGetAdminUserById(id!);
+    console.log({ initialValue })
+
+    useEffect(() => {
+        refetch();
+    }, [id, query, refetch]);
 
     // options
     const contactPreferenceOptions = [
@@ -91,7 +102,7 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
         onSuccess(data, variables, context) {
             toast.success('User created successfully');
             console.log({ data, variables, context });
-            onClose();
+            router.push("/admin/users")
             client.invalidateQueries({ queryKey: ['admin-users'] });
         },
         onError(error) {
@@ -105,7 +116,7 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
         mutationFn: (req: AdminUserRequest) => adminUpdateUsers(initialValue?.pkid?.toString() ?? '', session?.accessToken ?? '', req),
         onSuccess(data, variables, context) {
             toast.success('User updated successfully');
-            onClose();
+            router.push("/admin/users")
             client.invalidateQueries({ queryKey: ['admin-users'] });
         },
         onError(error) {
@@ -167,6 +178,8 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
                 provider: values.provider,
                 user_type: values.user_type
             };
+            console.log({ values })
+            console.log({ payload })
             mutateCreate(payload);
         }
     };
@@ -227,20 +240,20 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
                         placeholder='Contact Preference'
                         control='select'
                         disabled={false}
-                        defaultValue={initialValue?.contact_preference ?? "email"}
+                        defaultValue={"Select an option"}
                         options={contactPreferenceOptions ?? []}
                         handleChange={(value) => setFieldValue('contact_preference', value)}
                     />
 
-                    <FormikControl
+                    {/* <FormikControl
                         type='url'
                         name='image'
                         label='Image URL'
                         placeholder='Image URL'
                         control='input'
-                    />
+                    /> */}
 
-                    {/* <div className='flex flex-col'>
+                    <div className='flex flex-col'>
                         <p className='text-sm'>Upload image</p>
                         <ImageUpload
                             value={values.image ? [values.image] : []}
@@ -248,7 +261,7 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
                             onChange={(url) => setFieldValue('image', url)}
                             onRemove={() => setFieldValue('image', '')}
                         />
-                    </div> */}
+                    </div>
 
                     <FormikControl
                         type='text'
@@ -257,7 +270,7 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
                         placeholder='Provider'
                         control='select'
                         disabled={false}
-                        defaultValue={initialValue?.provider ?? "credentials"}
+                        defaultValue={"Select an option"}
                         options={providerOptions ?? []}
                         handleChange={(value) => setFieldValue('provider', value)}
                     />
@@ -269,7 +282,7 @@ const AdminCreateUserForm = ({ initialValue, onClose }: { initialValue?: AdminUs
                         placeholder='User Type'
                         control='select'
                         disabled={false}
-                        defaultValue={initialValue?.user_type ?? "user"}
+                        defaultValue={"Select an option"}
                         options={userTypeOptions ?? []}
                         handleChange={(value) => setFieldValue('user_type', value)}
                     />

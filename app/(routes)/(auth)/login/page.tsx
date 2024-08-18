@@ -118,8 +118,8 @@ export default function Login() {
     };
 
     return (
-        <div className='6xl:container h-screen grid grid-cols-[2fr_1.5fr]'>
-            <div className='flex flex-col justify-center items-center bg-blue-500 py-10'>
+        <div className='md:6xl:container h-screen md:grid grid-cols-[2fr_1.5fr]'>
+            <div className='hidden md:flex flex-col justify-center items-center bg-blue-500 py-10'>
                 <Image unoptimized src='/images/asset-1.png' width={200} height={200} alt='' />
                 <p className='mt-4 text-white font-bold text-4xl tracking-wider'>GFT</p>
                 <p className='text-white tracking-wide font-semibold text-2xl'>Redefining the <span className='underline underline-offset-1 italic'>gifting experience!</span></p>
@@ -130,7 +130,7 @@ export default function Login() {
             </div>
 
             {stage === 'request' ?
-                <div className='w-full bg-gray-100 flex flex-col justify-center items-center py-10 px-16'>
+                <div className='w-full bg-gray-100 h-screen flex flex-col justify-center items-center py-10 px-16'>
                     <h1 className='font-bold text-4xl tracking-wider mt-10'>GFT</h1>
                     <p className='text-gray-700 font-medium text-lg tracking-wide mt-5'>Sign in to continue!</p>
                     <Formik

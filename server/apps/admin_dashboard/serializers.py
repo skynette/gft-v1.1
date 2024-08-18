@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
+from django.utils import timezone
 
 from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, CompanyBoxes, Config, Gift, GiftVisit, Notification, PermissionGroup, PermissionsModel, Template
 
@@ -8,6 +9,9 @@ from apps.gft.models import Box, BoxCategory, Campaign, Company, CompanyApiKey, 
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
+    last_login = serializers.DateTimeField(default=timezone.now, read_only=True)
+    date_joined = serializers.DateTimeField(default=timezone.now, read_only=True)
+    
     class Meta:
         model = User
         exclude = ["password"]

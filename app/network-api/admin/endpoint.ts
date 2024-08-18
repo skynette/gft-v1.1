@@ -243,6 +243,15 @@ export const getAdminUsers = async (token: string): Promise<AdminUserResponse[]>
     return response.data;
 }
 
+export const getAdminUserById = async (token: string, id?: string): Promise<AdminUserResponse> => {
+    const response = await axiosInstance.get(`/dashboard/admin/users/${id}`, {
+        headers: {
+            Authorization: `Token ${token}`,
+        }
+    });
+    return response.data;
+}
+
 export const adminCreateUsers = async (token: string, req: AdminUserRequest): Promise<any> => {
     const response = await axiosInstance.post('/dashboard/admin/users/', req, {
         headers: {

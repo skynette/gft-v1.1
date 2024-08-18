@@ -185,15 +185,7 @@ const AdminCreateCampaignForm = () => {
                             onRemove={() => setFieldValue('header_image', '')}
                         />
                     </div>
-
-                    {/* <FormikControl
-                        type='text'
-                        name='header_image'
-                        label='Header Image URL'
-                        placeholder='URL of the header image (optional)'
-                        control='input'
-                    /> */}
-
+                    
                     <FormikControl
                         type='checkbox'
                         name='open_after_a_day'
