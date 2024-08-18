@@ -19,7 +19,7 @@ export const UserSheet = ({ title, isOpen, initialValue, onClose }: GiftPageProp
                     </SheetTitle>
                     <SheetDescription>
                     </SheetDescription>
-                    <AdminCreateUserForm initialValue={initialValue} onClose={onClose} />
+                    <AdminCreateUserForm/>
                 </SheetHeader>
             </SheetContent>
         </Sheet >
