@@ -6,10 +6,6 @@ import { ArrowUpDown, CheckIcon, X } from "lucide-react"
 
 export const columns: ColumnDef<CompanyUserResponse>[] = [
     {
-        accessorKey: "id",
-        header: "ID",
-    },
-    {
         accessorKey: "username",
         header: ({ column }) => {
             return (

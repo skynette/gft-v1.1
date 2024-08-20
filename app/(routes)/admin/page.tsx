@@ -1,7 +1,6 @@
 'use client'
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 import { CartesianGrid, XAxis, Bar, BarChart } from "recharts"
 import { ChartTooltipContent, ChartTooltip, ChartContainer } from "@/components/ui/chart"
 import { BoxIcon, GiftIcon, GroupIcon, UsersIcon } from "lucide-react"
@@ -122,56 +121,6 @@ export default function AdminDashboard() {
                         </CardContent>
                     </Card>
                 </div>
-                {/* <Card>
-                    <CardHeader>
-                        <CardTitle>Recent Activity</CardTitle>
-                        <CardDescription>Latest platform activity</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Event</TableHead>
-                                    <TableHead>User</TableHead>
-                                    <TableHead>Time</TableHead>
-                                    <TableHead>Details</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell>New User Signup</TableCell>
-                                    <TableCell>John Doe</TableCell>
-                                    <TableCell>2 hours ago</TableCell>
-                                    <TableCell>Signed up for Pro plan</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Box Created</TableCell>
-                                    <TableCell>Jane Smith</TableCell>
-                                    <TableCell>4 hours ago</TableCell>
-                                    <TableCell>Created a new Box for Campaign A</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Campaign Launched</TableCell>
-                                    <TableCell>Bob Johnson</TableCell>
-                                    <TableCell>1 day ago</TableCell>
-                                    <TableCell>Launched a new marketing campaign</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>API Request</TableCell>
-                                    <TableCell>Alice Lee</TableCell>
-                                    <TableCell>2 days ago</TableCell>
-                                    <TableCell>Fetched user data</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Gift Redeemed</TableCell>
-                                    <TableCell>Tom Wilson</TableCell>
-                                    <TableCell>3 days ago</TableCell>
-                                    <TableCell>Redeemed a gift card</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card> */}
             </main>
         </div>
     )

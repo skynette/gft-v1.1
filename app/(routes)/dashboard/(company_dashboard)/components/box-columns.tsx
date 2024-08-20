@@ -52,10 +52,6 @@ export const columns: ColumnDef<BoxResponse>[] = [
         enableHiding: false,
     },
     {
-        accessorKey: "id",
-        header: "id",
-    },
-    {
         accessorKey: "owner",
         header: ({ column }) => {
             return (

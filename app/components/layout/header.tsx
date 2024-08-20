@@ -8,7 +8,7 @@ import { Session } from "../../../types";
 import { AdminMobileSidebar } from "./admin-mobile-sidebar";
 
 interface HeaderProps {
-    currUser: Session['user'] | null;
+    currUser: Session['user'] | null | undefined;
 }
 
 export default function Header({ currUser }: HeaderProps) {

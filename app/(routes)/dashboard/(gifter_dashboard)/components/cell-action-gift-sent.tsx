@@ -65,11 +65,6 @@ export const CellActionGiftSent: React.FC<CellActionProps> = ({ data }) => {
                             Update
                         </Link>
                     </DropdownMenuItem>
-
-                    <DropdownMenuItem onClick={() => onCopy(data.id)}>
-                        <Copy className="mr-2 h-4 w-4" />
-                        Copy Id
-                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </>

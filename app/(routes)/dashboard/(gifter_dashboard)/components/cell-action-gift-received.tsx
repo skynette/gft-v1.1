@@ -2,13 +2,12 @@
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Copy, Edit, Eye, MoreHorizontal, Trash } from "lucide-react"
+import { Copy, Eye, MoreHorizontal} from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { AlertModal } from "@/components/modals/alert-modal"
 import { GiftBoxColumn } from "./columns-gift-received"
 import { toast } from "sonner"
-import { useSession } from "next-auth/react"
 import Link from "next/link"
 
 interface CellActionProps {
@@ -16,7 +15,6 @@ interface CellActionProps {
 }
 
 export const CellActionGiftReceived: React.FC<CellActionProps> = ({ data }) => {
-    const session = useSession();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
@@ -64,10 +62,6 @@ export const CellActionGiftReceived: React.FC<CellActionProps> = ({ data }) => {
                             <Eye className="mr-2 h-4 w-4" />
                             View gifts
                         </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onCopy(data.id)}>
-                        <Copy className="mr-2 h-4 w-4" />
-                        Copy Id
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

@@ -5,6 +5,7 @@ import GifterHeader from '@/components/layout/header-gifter';
 import { getCurrentUser } from "./lib/actions";
 import { ReactNode } from "react";
 import { User } from "../types";
+import Header from '@/components/layout/header';
 
 const epilogue = Epilogue({
     subsets: ["latin"],
@@ -26,7 +27,11 @@ export default async function RootLayout({ children }: RootLayoutProps) {
         <html lang="en">
             <body className={epilogue.className}>
                 <Providers>
-                    {currUser && <GifterHeader currUser={currUser} />}
+                    {currUser && (
+                        currUser?.role === "user" ?
+                            <GifterHeader currUser={currUser} /> :
+                            <Header currUser={currUser} />
+                    )}
                     <main className="">
                         {children}
                     </main>

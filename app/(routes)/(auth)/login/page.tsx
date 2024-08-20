@@ -15,7 +15,6 @@ import { ErrorMessage, Field, FieldProps, Form, Formik } from 'formik';
 import FormikControl from '@/components/form-controls/FormikControl';
 import useToken, { usePhoneToken } from '@/lib/hooks/useToken';
 import { toast } from 'sonner';
-import useVerifyToken from '@/lib/hooks/useVerifyToken';
 
 interface UserInput {
     email?: string

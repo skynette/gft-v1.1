@@ -4,7 +4,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from "@/components/ui/button"
 import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
 import { useState } from "react"
-import { AlertModal } from "@/components/modals/alert-modal"
 import { toast } from "sonner"
 import useDeleteBox from "@/lib/hooks/useDeleteBox"
 import { useQueryClient } from "@tanstack/react-query"
@@ -42,12 +41,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     };
     return (
         <>
-            {/* <AlertModal
-                isOpen={openSheet}
-                onClose={() => setIsOpenSheet(false)}
-                onConfirm={() => mutate(data.id)}
-                loading={isPending}
-            /> */}
             <BoxSheet
                 isOpen={openSheet}
                 title="Update box"
@@ -76,7 +69,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => onCopy(data.id)}>
                         <Copy className="mr-2 h-4 w-4" />
-                        Copy qr code link
+                        Copy QR code
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setIsOpenSheet(true)}>
                         <Trash className="mr-2 h-4 w-4" />

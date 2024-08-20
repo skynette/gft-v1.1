@@ -17,10 +17,6 @@ export interface CampaignColumns {
 
 export const columns: ColumnDef<CampaignColumns>[] = [
     {
-        accessorKey: "id",
-        header: "ID",
-    },
-    {
         accessorKey: "company",
         header: ({ column }) => {
             return (

@@ -8,10 +8,6 @@ import { CellAction } from "./box-allocations-cell-action"
 
 export const columns: ColumnDef<BoxAllocation>[] = [
     {
-        accessorKey: "id",
-        header: "id",
-    },
-    {
         accessorKey: "box_type",
         header: ({ column }) => {
             return (

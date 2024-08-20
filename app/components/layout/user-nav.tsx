@@ -14,7 +14,7 @@ import { Session } from '../../../types';
 import { SignOutButton } from '../sign-out-button';
 
 interface UserNavProps {
-    currUser: Session['user'] | null;
+    currUser: Session['user'] | null | undefined;
 }
 
 function UserNav({ currUser }: UserNavProps) {

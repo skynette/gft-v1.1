@@ -6,12 +6,12 @@ import { Session } from "../../../types";
 import Notifications from "./notifications";
 
 interface GifterHeaderProps {
-    currUser: Session['user'] | null;
+    currUser: Session['user'] | null | undefined;
 }
 
 export default function GifterHeader({ currUser }: GifterHeaderProps) {
     return (
-        <div className="sticky left-0 right-0 top-0 z-20 border bg-background/95 backdrop-blur">
+        <div className="supports-backdrop-blur:bg-background/60 fixed left-0 right-0 top-0 z-20 border-b bg-background/95 backdrop-blur">
             <nav className="container w-full flex h-14 items-center justify-between">
                 <div className="hidden lg:block">
                     <Link href={"/dashboard/gifter"}>

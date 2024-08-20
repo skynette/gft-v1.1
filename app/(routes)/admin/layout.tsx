@@ -1,5 +1,4 @@
 import Header from '@/components/layout/header';
-import Sidebar from '@/components/layout/sidebar';
 import { getCurrentUser } from '@/lib/actions';
 import type { Metadata } from 'next';
 import { User } from '../../../types';
@@ -19,9 +18,9 @@ export default async function DashboardLayout({
     return (
         <>
             <div className="flex">
-                {currUser && <Header currUser={currUser} />}
+                {/* {currUser && <Header currUser={currUser} />} */}
                 <AdminSidebar />
-                <main className="flex-1">{children}</main>
+                <main className="flex-1 mt-10">{children}</main>
             </div>
         </>
     );

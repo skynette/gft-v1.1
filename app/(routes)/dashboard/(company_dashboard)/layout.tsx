@@ -20,7 +20,7 @@ export default async function DashboardLayout({
       <div className="flex">
         {currUser && <Header currUser={currUser} />}
         <Sidebar />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 mt-10">{children}</main>
       </div>
     </>
   );
