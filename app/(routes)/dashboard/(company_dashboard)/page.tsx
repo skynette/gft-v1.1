@@ -3,6 +3,7 @@
 import { DashboardOverview } from "@/components/dashboard-overview";
 import { CalendarDateRangePicker } from "@/components/date-range-picker";
 import { RecentSales } from "@/components/recent-sales";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -21,6 +22,7 @@ import { useSession } from "next-auth/react";
 export default function page() {
     const session = useSession();
     const { data, isPending } = useCompanyDashboardMetrics();
+    console.log("stats", data)
     const { data: chartData, isPending: chartDataLoading } = useCompanyChartData();
 
     const { data: boxSalesData, isPending: boxSalesLoading, isSuccess } = useGetCompanyBox();
@@ -41,6 +43,37 @@ export default function page() {
             totalCampaigns: campaignData ? campaignData.total_campaigns : 0
         };
     });
+
+    const formatPercentage = (percentage: any) => {
+        if (percentage > 0) {
+            return (
+                <div className="flex items-center gap-2">
+                    <Badge variant="default" className="">
+                        +{percentage.toFixed(2)}%
+                    </Badge>
+                    increase from last month
+                </div>
+            );
+        } else if (percentage < 0) {
+            return (
+                <div className="flex items-center gap-2">
+                    <Badge variant="destructive" className="">
+                        {percentage.toFixed(2)}%
+                    </Badge>
+                    increase from last month
+                </div>
+            );
+        } else {
+            return (
+                <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="">
+                        0.00%
+                    </Badge>
+                    increase from last month
+                </div>
+            );
+        }
+    };
 
     return (
         <ScrollArea className="h-full">
@@ -81,7 +114,7 @@ export default function page() {
                                         {isPending ? <Skeleton className="w-full h-8" /> : data?.boxes.total_boxes}
                                     </div>
                                     <p className="text-xs text-muted-foreground mt-3">
-                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.boxes.boxes_percentage_increase}% increase from last month`}
+                                        {isPending ? <Skeleton className="w-full h-8" /> : formatPercentage(data?.boxes.boxes_percentage_increase)}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -108,7 +141,7 @@ export default function page() {
                                         {isPending ? <Skeleton className="w-full h-8" /> : data?.gifts.total_gifts}
                                     </div>
                                     <p className="text-xs text-muted-foreground mt-3">
-                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.gifts.gifts_percentage_increase}% increase from last month`}
+                                        {isPending ? <Skeleton className="w-full h-8" /> : formatPercentage(data?.gifts.gifts_percentage_increase)}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -134,7 +167,7 @@ export default function page() {
                                         {isPending ? <Skeleton className="w-full h-8" /> : data?.campaigns.total_campaigns}
                                     </div>
                                     <p className="text-xs text-muted-foreground mt-3">
-                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.campaigns.campaigns_percentage_increase}% increase from last month`}
+                                        {isPending ? <Skeleton className="w-full h-8" /> : formatPercentage(data?.campaigns.campaigns_percentage_increase)}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -159,7 +192,7 @@ export default function page() {
                                         {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.gift_visits.total_gift_visits}`}
                                     </div>
                                     <p className="text-xs text-muted-foreground mt-3">
-                                        {isPending ? <Skeleton className="w-full h-8" /> : `+${data?.gift_visits.gift_visits_percentage_increase} increase from last month`}
+                                        {isPending ? <Skeleton className="w-full h-8" /> : formatPercentage(data?.gift_visits.gift_visits_percentage_increase)}
                                     </p>
                                 </CardContent>
                             </Card>

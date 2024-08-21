@@ -48,9 +48,9 @@ class Company(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             if not self.logo:
-                self.logo = 'logo.png'
+                self.logo = 'https://res.cloudinary.com/do3tlu1ph/image/upload/v1724244265/hkcyjcjfbv55wkwzcyuy.webp'
             if not self.header_image:
-                self.header_image = 'header.png'
+                self.header_image = 'https://res.cloudinary.com/do3tlu1ph/image/upload/v1724244265/hkcyjcjfbv55wkwzcyuy.webp'
         super().save(*args, **kwargs)
 
     class Meta:
@@ -186,7 +186,7 @@ class Campaign(TimeStampedUUIDModel):
                 if company and company.header_image:
                     self.header_image = company.header_image
                 else:
-                    self.header_image.name = 'image/header.png'
+                    self.header_image = 'https://res.cloudinary.com/do3tlu1ph/image/upload/v1724244265/hkcyjcjfbv55wkwzcyuy.webp'
         super().save(*args, **kwargs)
 
     class Meta:

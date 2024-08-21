@@ -20,8 +20,8 @@ import { format, parse } from 'date-fns';
 const validationSchema = Yup.object().shape({
     title: Yup.string().optional(),
     receiverName: Yup.string().optional(),
-    receiverPhone: Yup.string().optional().test(
-        'is valid phone', 'Invalid phone number', (value) => isValidPhoneNumber(value ?? '')
+    receiverPhone: Yup.string().nullable().test(
+        'is valid phone', 'Invalid phone number', (value) => !value || isValidPhoneNumber(value)
     ),
     receiverEmail: Yup.string().optional().email(),
     boxCategory: Yup.string().required('Select box category'),
@@ -56,6 +56,8 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
         },
     });
 
+    console.log({initialValue})
+
     const initialValues: CreateFormSchema = {
         title: initialValue?.title ?? '',
         receiverEmail: initialValue?.receiver_email ?? '',
@@ -63,7 +65,7 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
         receiverName: initialValue?.receiver_name ?? '',
         openDate: new Date(),
         open_after_a_day: initialValue?.open_after_a_day,
-        boxCategory: initialValue?.box_campaign.toString() ?? '',
+        boxCategory: initialValue?.box_campaign?.toString() ?? '',
     }
 
     const handleSubmit = (values: CreateFormSchema) => {
@@ -144,7 +146,7 @@ const CreateBoxForm = ({ initialValue, onClose }: { initialValue?: BoxResponse, 
                             placeholder='Select box category'
                             control='select'
                             disabled={query === 'update' ? true : false}
-                            defaultValue={initialValue?.box_campaign.toString()}
+                            defaultValue={initialValue?.box_campaign?.toString()}
                             options={boxCategory ?? []}
                             handleChange={(value) => setFieldValue('boxCategory', value)}
                         />)}

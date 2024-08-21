@@ -11,6 +11,7 @@ import { BoxSheet } from "./box-sheet"
 import { createQueryString } from "@/lib/utils"
 import { usePathname, useRouter } from "next/navigation"
 import { BoxResponse } from "@/lib/response-type/company_dashboard/BoxesRespose"
+import { AlertModal } from "@/components/modals/alert-modal"
 
 interface CellActionProps {
     data: BoxResponse
@@ -21,15 +22,16 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     const pathname = usePathname();
     const client = useQueryClient()
     const [openSheet, setIsOpenSheet] = useState(false)
+    const [openAlert, setIsOpenAlert] = useState(false)
     const { mutate, isPending } = useDeleteBox({
         onSuccess() {
             client.invalidateQueries({ queryKey: ['company-box'] })
             toast.success('deleted successfully.')
-            setIsOpenSheet(false)
+            setIsOpenAlert(false)
         },
         onError(error) {
             toast.error("deletion failed")
-            setIsOpenSheet(false)
+            setIsOpenAlert(false)
         },
     });
 
@@ -41,6 +43,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     };
     return (
         <>
+            <AlertModal
+                isOpen={openAlert}
+                onClose={() => setIsOpenAlert(false)}
+                onConfirm={() => mutate(data.id)}
+                loading={isPending}
+            />
             <BoxSheet
                 isOpen={openSheet}
                 title="Update box"
@@ -71,7 +79,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                         <Copy className="mr-2 h-4 w-4" />
                         Copy QR code
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setIsOpenSheet(true)}>
+                    <DropdownMenuItem onClick={() => setIsOpenAlert(true)}>
                         <Trash className="mr-2 h-4 w-4" />
                         Delete
                     </DropdownMenuItem>

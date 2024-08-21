@@ -11,6 +11,7 @@ import Image from 'next/image';
 import { useQueryClient } from '@tanstack/react-query';
 import ImageUpload from '../form-controls/ImageUpload';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required('Company name is required'),
@@ -59,6 +60,7 @@ const SettingsForm = () => {
     const queryClient = useQueryClient();
     const { mutate, isPending } = useUpdateCompanyProfile({
         onSuccess() {
+            toast.success("Updated")
             queryClient.invalidateQueries({
                 queryKey: ['company-profile']
             });
