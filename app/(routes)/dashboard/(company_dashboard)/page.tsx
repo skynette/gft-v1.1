@@ -18,6 +18,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useCompanyDashboardMetrics, { useCompanyChartData } from "@/lib/hooks/useCompanyDashboardMetrics";
 import useGetCompanyBox from "@/lib/hooks/useGetCompanyBox";
 import { useSession } from "next-auth/react";
+import CardStats from "./components/CardStats";
+import BrowserUsageChart from "./components/browser-chart-usage";
+import MapCoverage from "./components/map-coverage";
 
 export default function page() {
     const session = useSession();
@@ -93,6 +96,7 @@ export default function page() {
                     </TabsList>
                     <TabsContent value="overview" className="space-y-4">
                         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                            {/* <CardStats />s */}
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle className="text-sm font-medium">Total Boxes</CardTitle>
@@ -220,9 +224,14 @@ export default function page() {
                                 </CardContent>
                             </Card>
                         </div>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-1 lg:grid-cols-2">
+                            <BrowserUsageChart />
+                            {/* <MapCoverage /> */}
+                        </div>
                     </TabsContent>
                 </Tabs>
             </div>
         </ScrollArea>
     );
 }
+

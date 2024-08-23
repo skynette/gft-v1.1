@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from apps.company_dashboard.serializers import BoxSetupSerializer, BoxSerializer, DashboardSerializer, GiftSerializer, GiftSetupSerializer, NotificationSerializer, ShowNotificationSerializer
 from apps.gft.models import Box, Company, CompanyUser, Gift, Notification
 from apps.gft.permissions import APIPermissionValidator
+from apps.gifter_dashboard.serializers import GiftVisitSerializer
 from drf_spectacular.utils import extend_schema, OpenApiExample, OpenApiResponse
 from django.utils import timezone
 from datetime import timedelta
@@ -348,3 +349,58 @@ class MarkAllNotificationsReadView(generics.GenericAPIView):
         return Response({'message': 'All notifications marked as read.'}, status=status.HTTP_200_OK)
 
 mark_all_notifications_read_api_view = MarkAllNotificationsReadView.as_view()
+
+import ipapi
+from user_agents import parse
+
+
+class GiftVisitRecordView(generics.GenericAPIView):
+    serializer_class = GiftVisitSerializer
+    permission_classes = [permissions.IsAuthenticated, APIPermissionValidator]
+    required_permissions = ["view_gift"]
+
+    @extend_schema(
+        request=GiftVisitSerializer,
+        description="Record a new gift visit for the authenticated user.",
+        responses=GiftVisitSerializer,
+        tags=["Gift Visits"],
+    )
+    def post(self, request, *args, **kwargs):
+        # Enhance the metadata
+        metadata = request.data.get('metadata', {})
+        
+        # Get IP and determine country
+        ip_address = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR'))
+        if ip_address:
+            ip_address = ip_address.split(',')[0].strip()  # In case of multiple IPs, take the first one
+        metadata['sourceIP'] = ip_address
+
+        # Use ipapi to get country information
+        try:
+            location_data = ipapi.location(ip=ip_address)
+            metadata['sourceCountry'] = location_data.get('country_name', 'Unknown')
+        except:
+            metadata['sourceCountry'] = 'Unknown'
+
+        # Parse User-Agent
+        user_agent_string = request.META.get('HTTP_USER_AGENT', '')
+        user_agent = parse(user_agent_string)
+        metadata['sourceBrowser'] = f"{user_agent.browser.family} {user_agent.browser.version_string}"
+        metadata['sourceOS'] = f"{user_agent.os.family} {user_agent.os.version_string}"
+        metadata['sourceDeviceType'] = user_agent.device.model or 'Unknown'
+
+        # Update request data with enhanced metadata
+        request.data['metadata'] = metadata
+        
+        print("metadata:", metadata)
+
+        serializer = self.get_serializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
+            gift_visit = serializer.save()
+            data = self.get_serializer(gift_visit).data
+            return Response(data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+create_gift_visit_api_view = GiftVisitRecordView.as_view()

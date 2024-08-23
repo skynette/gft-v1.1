@@ -2,7 +2,7 @@
 
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import useGetMinibox from "@/lib/hooks/useGetMinibox";
+import useGetMinibox, { useRecordGiftVisit } from "@/lib/hooks/useGetMinibox";
 import { MiniboxResponse } from "@/lib/response-type/gifter/MiniboxResponse";
 import { AlertDialogDescription } from "@radix-ui/react-alert-dialog";
 import { differenceInDays, format, parseISO } from "date-fns";
@@ -10,6 +10,8 @@ import { Gift, Loader } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import UAParser from 'ua-parser-js';
+
 
 const ViewGifts = () => {
     const boxId = useSearchParams().get('boxId') ?? '';
@@ -17,19 +19,43 @@ const ViewGifts = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [openGift, setOpenGift] = useState<MiniboxResponse | null>();
 
+    const { mutate: recordVisit, isPending: createVisitPending } = useRecordGiftVisit();
+    const handleGiftOpen = (gift: MiniboxResponse) => {
+        const parser = new UAParser(window.navigator.userAgent);
+        const browserInfo = parser.getBrowser();
+        const deviceInfo = parser.getDevice();
+        const osInfo = parser.getOS();
+
+        const metadata = {
+            sourceCountry: 'Unknown', // You might need to use a geolocation service to get this
+            sourceIP: 'Unknown', // This should be determined server-side
+            sourceBrowser: `${browserInfo.name} ${browserInfo.version}`,
+            sourceDeviceType: deviceInfo.type || 'Unknown',
+            sourceOS: `${osInfo.name} ${osInfo.version}`,
+            screenResolution: `${window.screen.width}x${window.screen.height}`,
+            language: navigator.language || 'Unknown',
+            referrer: document.referrer || 'Direct',
+            timestamp: new Date().toISOString(),
+        };
+
+        console.log({ metadata })
+
+        recordVisit({ gift_id: gift.pkid.toString(), metadata });
+    };
+
     if (isError)
         toast.error(error?.message);
 
     if (isPending)
         return (
-            <div className="flex flex-col py-10 items-center justify-center">
+            <div className="flex flex-col py-10 items-center justify-center mt-10">
                 <Loader className="mr-2 h-8 w-8 animate-spin" />
                 <p className="font-sm">Fetching gift boxes...</p>
             </div>
         )
 
     return (
-        <div className="container flex flex-col py-10">
+        <div className="container flex flex-col py-10 mt-10">
             <p className="text-2xl font-semibold">Gift boxes received</p>
             <div className="grid grid-cols-4 gap-4 mt-2">
                 {
@@ -56,6 +82,7 @@ const ViewGifts = () => {
                                         if (shouldOpen <= 0) {
                                             setOpenGift(gift);
                                             setOpenDialog(true);
+                                            handleGiftOpen(gift);
                                         } else toast.info('Not yet open date for gift box');
                                     }}>Open</Button>
                                 </AlertDialogTrigger>

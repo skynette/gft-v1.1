@@ -46,11 +46,44 @@ class Company(models.Model):
         return self.name + "'s Company"
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if not self.pk:  
             if not self.logo:
                 self.logo = 'https://res.cloudinary.com/do3tlu1ph/image/upload/v1724244265/hkcyjcjfbv55wkwzcyuy.webp'
             if not self.header_image:
                 self.header_image = 'https://res.cloudinary.com/do3tlu1ph/image/upload/v1724244265/hkcyjcjfbv55wkwzcyuy.webp'
+            if not self.socials:
+                self.socials = {
+                    "twitter_url": "",
+                    "facebook_url": "",
+                    "instagram_url": "",
+                    "snapchat_url": "",
+                    "youtube_url": ""
+                }
+            if not self.color_schema:
+                self.color_schema = {
+                    "light": {
+                        "primary_color": "",
+                        "secondary_color": "",
+                        "background_color": "",
+                        "qr_code_text_color": "",
+                        "background_border_color": "",
+                        "background_hover_color": "",
+                        "foreground_color": "",
+                        "header_color": "",
+                        "footer_color": ""
+                    },
+                    "dark": {
+                        "primary_color": "",
+                        "secondary_color": "",
+                        "background_color": "",
+                        "qr_code_text_color": "",
+                        "background_border_color": "",
+                        "background_hover_color": "",
+                        "foreground_color": "",
+                        "header_color": "",
+                        "footer_color": ""
+                    }
+                }
         super().save(*args, **kwargs)
 
     class Meta:

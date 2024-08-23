@@ -59,6 +59,16 @@ export const markNotificationAsRead = async (token: string, notificationId: stri
     return response.data;
 }
 
+
+export const recordGiftVisit = async (token: string, req: GiftVisitRequest): Promise<any> => {
+    const response = await axiosInstance.post('/dashboard/gifter/gift-visits/', req, {
+      headers: {
+        Authorization: `Token ${token}`,
+      }
+    });
+    return response.data;
+  }
+
 // COMPANY ENDPOINT
 export const getCompanyDashboardMetrics = async (token: string, apiKey: string): Promise<CompanyDashboardResponse> => {
     const response = await axiosInstance.get('/dashboard/analytics/combined/', {
