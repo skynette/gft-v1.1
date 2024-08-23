@@ -12,7 +12,7 @@ export default function MapCoverage() {
       <div className="mt-6">
         <ComposableMap projectionConfig={{ scale: 200 }}>
           <Geographies geography={geoUrl}>
-            {({ geographies: any }) =>
+            {({ geographies }: { geographies: any[] }) => // define the type here
               geographies.map((geo: any) => (
                 <Geography key={geo.rsmKey} geography={geo} className="fill-indigo-300" />
               ))

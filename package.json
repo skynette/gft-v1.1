@@ -75,6 +75,7 @@
     "@types/lodash": "^4.17.7",
     "@types/next-auth": "^3.15.0",
     "@types/react": "^17.0.52",
+    "@types/react-simple-maps": "^3.0.6",
     "@types/ua-parser-js": "^0.7.39"
   }
 }
