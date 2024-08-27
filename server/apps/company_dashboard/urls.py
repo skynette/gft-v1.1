@@ -55,4 +55,5 @@ urlpatterns = [
     path('analytics/campaigns/', views.CampaignAnalyticsView.as_view(), name='campaign-analytics'),
     path('analytics/combined/', views.CombinedAnalyticsView.as_view(), name='combined-analytics'),
     path('analytics/charts/', views.company_dashboard_chart_data, name='chart-data'),
+    path('analytics/browser-usage/', views.browser_usage_api_view, name='chart-data'),
 ]

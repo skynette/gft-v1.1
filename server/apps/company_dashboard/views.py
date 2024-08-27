@@ -16,6 +16,7 @@ from apps.gft.models import (
     Notification,
 )
 from apps.gft.permissions import APIPermissionValidator
+from apps.gifter_dashboard.serializers import GiftVisitSerializer
 from .serializers import (
     AddBoxesToCampaignSerializer,
     BoxAnalyticsSerializer,
@@ -364,6 +365,66 @@ class BoxGiftsView(generics.GenericAPIView):
 
 box_gifts_api_view = BoxGiftsView.as_view()
 
+
+class BrowserUsageView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]  
+    authentication_classes = [APIKeyAuthentication] 
+    serializer_class = GiftVisitSerializer
+
+    @extend_schema(
+        request=None,
+        description="Retrieve browser usage statistics based on gift visits.",
+        responses={200: OpenApiTypes.OBJECT},
+        tags=["Browser Usage"],
+    )
+    def get(self, request, *args, **kwargs):
+        company = Company.objects.filter(owner=request.user).first()
+        visits = GiftVisit.objects.filter(gift__box_model__box_campaign__company=company)
+        browser_data = {}
+
+        for visit in visits:
+            if visit.metadata is None:
+                print("visit metadata is None")
+                continue  # Skip this visit if metadata is None
+
+            print("visit metadata", visit.metadata)
+            full_browser_string = visit.metadata.get("sourceBrowser", "Unknown")
+            browser = full_browser_string.split()[0] if full_browser_string != "Unknown" else "Unknown"
+
+            if browser in browser_data:
+                browser_data[browser] += 1
+            else:
+                browser_data[browser] = 1
+
+        if not browser_data:
+            # If no browser data was collected, return an empty list
+            return Response({"browsers": []}, status=status.HTTP_200_OK)
+
+        total_visits = sum(browser_data.values())
+        color_mapping = {
+            "Chrome": "#4285F4",
+            "Safari": "#000000",
+            "Firefox": "#FF7139",
+            "Edge": "#0078D7",
+            "Opera": "#FF1B2D",
+            "Unknown": "#A9A9A9",
+        }
+        browsers = []
+
+        for browser, count in browser_data.items():
+            usage_percentage = (count / total_visits) * 100
+            browsers.append({
+                "name": browser,
+                "icon": browser,  # Use the browser name as the icon
+                "usage": round(usage_percentage, 1),
+                "change": 0.0,
+                "color": color_mapping.get(browser, "#A9A9A9"),
+            })
+
+        return Response({"browsers": browsers}, status=status.HTTP_200_OK)
+
+
+browser_usage_api_view = BrowserUsageView.as_view()
 
 class GiftEditView(generics.GenericAPIView):
     serializer_class = GiftSerializer

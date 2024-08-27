@@ -366,6 +366,21 @@ class GiftVisit(models.Model):
     def __str__(self):
         return f"{self.visitor.username} opened {self.gift.gift_title} at {self.time_of_visit}"
 
+    def save(self, *args, **kwargs):
+        if not self.pk:  # This is a new instance
+            if not self.metadata:
+                self.metadata = {
+                    "language": "en-US",
+                    "referrer": "",
+                    "sourceIP": "",
+                    "sourceOS": "",
+                    "timestamp": timezone.now().isoformat(),
+                    "sourceBrowser": "",
+                    "sourceCountry": "",
+                    "screenResolution": ""
+                }
+        super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('Gift Visit')
         verbose_name_plural = _('Gift Visits')

@@ -90,6 +90,16 @@ export const getCompanyChartData = async (token: string, apiKey: string): Promis
     return response.data;
 }
 
+export const getCompanyBrowserUsage = async (token: string, apiKey: string): Promise<BrowserUsageResponse> => {
+    const response = await axiosInstance.get('/dashboard/analytics/browser-usage/', {
+        headers: {
+            Authorization: `Token ${token}`,
+            'gft-api-key': `${apiKey}`,
+        }
+    });
+    return response.data;
+}
+
 export const getCompanyBox = async (token: string, apiKey: string): Promise<CompanyBoxResponse> => {
     const response = await axiosInstance.get('/dashboard/boxes/', {
         headers: {
