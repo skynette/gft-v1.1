@@ -8,7 +8,6 @@ import { ArrowRight, CloudUpload, XCircle } from 'lucide-react';
 import useGetCompanyCategorybox from '@/lib/hooks/useGetCompanyCategorybox';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useState } from 'react';
 import Dropzone from 'react-dropzone';
 import { Input } from '../ui/input';
 import { nanoid } from 'nanoid';
@@ -17,27 +16,27 @@ import { CampaignColumns } from '@/(routes)/dashboard/(company_dashboard)/compon
 import { useSearchParams } from 'next/navigation';
 import useCreateCampaign from '@/lib/hooks/useCreateCampaign';
 import useUpdateCampaign from '@/lib/hooks/useUpdateCampaign';
+import ImageUpload from '../form-controls/ImageUpload';
 
 const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: CampaignColumns, onClose: () => void }) => {
     const { data } = useGetCompanyCategorybox();
     const query = useSearchParams().get('query') ?? null;
     const client = useQueryClient()
     const boxCategory = data?.map(box => ({ option: box.box_type.name, value: box.box_type.id.toString() }));
-    const [headerImg, setHeaderImg] = useState<any | null>(initialValue?.header_image ?? '');
 
     const createValidationSchema = Yup.object().shape({
         name: Yup.string().required('Provide campaign name'),
         company_boxes: Yup.string().required('Select company'),
         // duration: Yup.number().required('Provide campaign duration').min(1, 'Duration too low'),
         num_boxes: Yup.number().required('Provide number of boxes').min(1, 'Number of boxes too low'),
-        header_image: Yup.mixed().optional(),
+        header_image: Yup.string().url('Invalid URL format').optional(),
         open_after_a_day: Yup.boolean().optional(),
     });
 
     const updateValidationSchema = Yup.object().shape({
         name: Yup.string().required('Provide campaign name'),
         num_boxes: Yup.number().required('Provide number of boxes').min(initialValue?.num_boxes ?? 1, 'Number of boxes can\'t be less than previously set value'),
-        header_image: Yup.mixed().optional(),
+        header_image: Yup.string().url('Invalid URL format').optional(),
         open_after_a_day: Yup.boolean().optional(),
     });
 
@@ -65,7 +64,6 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
     const initialValues: CreateCampaignFormSchema = {
         name: initialValue?.name ?? '',
         company_boxes: initialValue?.company_boxes.toString() ?? '',
-        // duration: initialValue?.duration ?? 0,
         num_boxes: initialValue?.num_boxes ?? 0,
         header_image: initialValue?.header_image ?? '',
         open_after_a_day: initialValue?.open_after_a_day ?? false
@@ -96,7 +94,7 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
             onSubmit={handleSubmit}
             enableReinitialize={true}
         >
-            {({ isValid, dirty, errors, setFieldValue }) => (
+            {({ isValid, dirty, errors, values, setFieldValue }) => (
                 <Form className='w-full flex flex-col space-y-5 mt-[5%]'>
                     <FormikControl
                         type='text'
@@ -143,7 +141,17 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
                         control='checkbox'
                     />
 
-                    <div className='w-full'>
+                    <div className='flex flex-col'>
+                        <p className='text-sm'>Header Image</p>
+                        <ImageUpload
+                            value={values.header_image ? [values.header_image] : []}
+                            disabled={isCreatePending || isUpdatePending}
+                            onChange={(url) => setFieldValue('header_image', url)}
+                            onRemove={() => setFieldValue('header_image', '')}
+                        />
+                    </div>
+
+                    {/* <div className='w-full'>
                         <p className='font-normal text-sm'>Header image</p>
                         <div className='flex flex-col space-y-2 my-4'>
                             {
@@ -201,7 +209,7 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
                                 }
                             </div>
                         }
-                    </div>
+                    </div> */}
 
                     <Button
                         type='submit'
