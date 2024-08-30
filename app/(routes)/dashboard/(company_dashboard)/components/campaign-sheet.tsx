@@ -24,11 +24,7 @@ export const CampaignSheet = ({ title, isOpen, onClose, initialValue }: Campaign
                     </SheetTitle>
                     <SheetDescription></SheetDescription>
                 </SheetHeader>
-                <CreateCampaignForm initialValue={initialValue} onClose={() => {
-                    onClose();
-                    createQueryString(pathname, router, 'query', '');
-                }}
-                />
+                <CreateCampaignForm />
             </SheetContent>
         </Sheet >
     )

@@ -4,25 +4,36 @@ import { Field, FieldProps, Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import FormikControl from '../form-controls/FormikControl';
 import { Button } from '../ui/button';
-import { ArrowRight, CloudUpload, XCircle } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import useGetCompanyCategorybox from '@/lib/hooks/useGetCompanyCategorybox';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import Dropzone from 'react-dropzone';
-import { Input } from '../ui/input';
-import { nanoid } from 'nanoid';
-import Image from 'next/image';
 import { CampaignColumns } from '@/(routes)/dashboard/(company_dashboard)/components/campaign-columns';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import useCreateCampaign from '@/lib/hooks/useCreateCampaign';
 import useUpdateCampaign from '@/lib/hooks/useUpdateCampaign';
 import ImageUpload from '../form-controls/ImageUpload';
+import { useEffect } from 'react';
+import { useGetCompanyCampaignById } from '@/lib/hooks/useCompanyCampaign';
 
-const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: CampaignColumns, onClose: () => void }) => {
+const CreateCampaignForm = () => {
     const { data } = useGetCompanyCategorybox();
     const query = useSearchParams().get('query') ?? null;
+    const id = useSearchParams()?.get('id') ?? null;
     const client = useQueryClient()
+    const router = useRouter()
+
     const boxCategory = data?.map(box => ({ option: box.box_type.name, value: box.box_type.id.toString() }));
+
+    const { data: initialValue, isPending: campaignPending, isSuccess, refetch } = useGetCompanyCampaignById(id!);
+
+    console.log({ initialValue })
+
+    useEffect(() => {
+        refetch();
+    }, [id, query, refetch]);
+
+
 
     const createValidationSchema = Yup.object().shape({
         name: Yup.string().required('Provide campaign name'),
@@ -42,12 +53,13 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
 
     type CreateCampaignFormSchema = Yup.InferType<typeof createValidationSchema>;
 
+
     const { mutate: createMutate, isPending: isCreatePending } = useCreateCampaign({
         onSuccess() {
             toast.success('Campaign created successfully');
-            onClose();
             client.invalidateQueries({ queryKey: ['company-campaigns'] });
             client.invalidateQueries({ queryKey: ['company-box'] });
+            router.push("/dashboard/campaigns")
         },
     });
 
@@ -55,15 +67,15 @@ const CreateCampaignForm = ({ initialValue, onClose }: { initialValue?: Campaign
         id: initialValue?.id ?? '',
         onSuccess() {
             toast.success('Campaign updated successfully');
-            onClose();
             client.invalidateQueries({ queryKey: ['company-campaigns'] });
             client.invalidateQueries({ queryKey: ['company-box'] });
+            router.push("/dashboard/campaigns")
         },
     });
 
     const initialValues: CreateCampaignFormSchema = {
         name: initialValue?.name ?? '',
-        company_boxes: initialValue?.company_boxes.toString() ?? '',
+        company_boxes: initialValue?.company_boxes?.toString() ?? '',
         num_boxes: initialValue?.num_boxes ?? 0,
         header_image: initialValue?.header_image ?? '',
         open_after_a_day: initialValue?.open_after_a_day ?? false

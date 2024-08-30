@@ -10,10 +10,12 @@ import { useState } from 'react'
 import { CampaignSheet } from '../components/campaign-sheet'
 import useGetCompanyCampaign from '@/lib/hooks/useGetCompanyCampaigns'
 import LoadingSkeleton from '@/components/skeleton'
+import { useRouter } from 'next/navigation'
 
 export default function CampaignsPage() {
     const [openSheet, setIsOpenSheet] = useState(false);
     const { data: companyCampaigns, isPending, isSuccess } = useGetCompanyCampaign();
+    const router = useRouter()
 
     return (
         <div className='p-10'>
@@ -22,7 +24,7 @@ export default function CampaignsPage() {
                     title={`Campaigns`}
                     description="Manage your Campaigns here."
                 />
-                <Button onClick={() => setIsOpenSheet(true)}>
+                <Button onClick={() => router.push(`/dashboard/campaigns/create`)}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Campaign
                 </Button>

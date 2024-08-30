@@ -26,9 +26,6 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
     const pathname = usePathname();
     const router = useRouter();
 
-    const [loading, setLoading] = useState(false)
-    const [open, setOpen] = useState(false)
-
     const { data: box } = useGetCompanyBox();
     const [selected, setSelected] = useState<Option[]>([]);
     const options = box?.results.filter(item => item.box_campaign === null).map(item => (
@@ -44,29 +41,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             })
             setSelected([])
         },
-        onError(error) {
+        onError() {
             toast.error('Unable to add box to campaign')
         },
     });
-
-    const onCopy = (id: string) => {
-        navigator.clipboard.writeText(id)
-        toast.success('copied.')
-    }
-
-    const onDelete = async () => {
-        try {
-            setLoading(true)
-            // delete action goes here
-            router.refresh()
-            toast.success('deleted successfully.')
-        } catch (error) {
-            toast.error('Make sure you removed all products using this category before deleting it.')
-        } finally {
-            setLoading(false)
-            setOpen(false)
-        }
-    }
 
     return (
         <>
@@ -101,15 +79,13 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             <div className="flex space-x-2">
                 <Button variant="ghost" className="h-8 w-8 p-0" onClick={() => {
                     createQueryString(pathname, router, 'query', 'update');
-                    setIsOpenSheet(true);
+                    router.push(`/dashboard/campaigns/create?query=update&id=${data.id}`)
+                    router.refresh()
                 }}>
                     <Edit className="h-5 w-5" />
                 </Button>
                 <Button variant="ghost" className="h-8 w-8 p-0" onClick={() => showAddToBox(true)}>
                     <PlusSquare className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" className="h-8 w-8 p-0" onClick={() => setOpen(true)}>
-                    <Trash className="h-5 w-5" />
                 </Button>
             </div>
         </>
