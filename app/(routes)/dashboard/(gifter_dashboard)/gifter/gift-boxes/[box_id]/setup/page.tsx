@@ -20,6 +20,7 @@ export interface Minibox {
 export interface GiftBoxValues {
     title: string;
     receiverName: string;
+    receiverEmail: string;
     receiverPhone: string;
     openDate: string;
     open_after_a_day: boolean;
@@ -49,6 +50,7 @@ const SetupBox = () => {
     const [data, setData] = useState<GiftBoxValues>({
         title: '',
         receiverName: '',
+        receiverEmail: '',
         receiverPhone: '',
         openDate: '',
         open_after_a_day: false,
@@ -66,6 +68,7 @@ const SetupBox = () => {
                     ...prev,
                     title: giftBox?.title ?? '',
                     receiverName: giftBox?.receiver_name ?? '',
+                    receiverEmail: giftBox?.receiver_email ?? '',
                     receiverPhone: giftBox?.receiver_phone ?? '',
                     openDate: giftBox?.open_date ?? '',
                     open_after_a_day: giftBox?.open_after_a_day ?? false,

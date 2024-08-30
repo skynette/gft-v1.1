@@ -16,6 +16,7 @@ import { useQueryClient } from '@tanstack/react-query';
 const validationSchema = Yup.object().shape({
     title: Yup.string().required('Enter the title').min(10, 'Title must be at least 10 characters'),
     receiverName: Yup.string().required('Enter the receiver name'),
+    receiverEmail: Yup.string().email("Enter Valid Email Address").required("Receiver Email is required"),
     receiverPhone: Yup.string().required('Enter the receiver phone').test(
         'is valid phone', 'Invalid phone number', (value) => isValidPhoneNumber(value)
     ),
@@ -61,6 +62,7 @@ const EditGiftboxForm = ({ onNext, data }: {
             mutateEdit({
                 title: values.title,
                 receiver_name: values.receiverName,
+                receiver_email: values.receiverEmail,
                 receiver_phone: values.receiverPhone,
                 open_after_a_day: values.open_after_a_day,
                 open_date: values.openDate,
@@ -71,6 +73,7 @@ const EditGiftboxForm = ({ onNext, data }: {
             mutateSetupGift({
                 title: values.title,
                 receiver_name: values.receiverName,
+                receiver_email: values.receiverEmail,
                 receiver_phone: values.receiverPhone,
                 open_after_a_day: values.open_after_a_day,
                 open_date: values.openDate,
@@ -99,6 +102,14 @@ const EditGiftboxForm = ({ onNext, data }: {
                     name='receiverName'
                     label='Receiver name'
                     placeholder='Town Hall'
+                    control='input'
+                />
+
+                <FormikControl
+                    type='text'
+                    name='receiverEmail'
+                    label='Receiver email'
+                    placeholder='example@gmail.com'
                     control='input'
                 />
 

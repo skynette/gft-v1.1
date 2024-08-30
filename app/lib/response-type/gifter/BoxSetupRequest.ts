@@ -1,6 +1,7 @@
 export interface BoxSetupRequest {
     title: string;
     receiver_name: string;
+    receiver_email: string;
     receiver_phone: string;
     open_date: string;
     is_setup: boolean;

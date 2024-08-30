@@ -285,7 +285,10 @@ class BoxReceivedView(generics.GenericAPIView):
         if request.user.user_type == "company":
             return Response({"detail": "Not allowed"}, status=status.HTTP_401_UNAUTHORIZED)
         
-        gift_boxes = Box.objects.filter(receiver_email=request.user.email)
+        gift_boxes = Box.objects.filter(
+            Q(receiver_email=request.user.email) | 
+            Q(receiver_phone=request.user.mobile)
+        )
         serializer = BoxSerializer(gift_boxes, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
