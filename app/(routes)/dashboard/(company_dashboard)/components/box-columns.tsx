@@ -27,7 +27,6 @@ export type BoxColumn = {
     open_after_a_day: boolean
 }
 
-
 export const columns: ColumnDef<BoxResponse>[] = [
     {
         id: "select",
@@ -64,22 +63,26 @@ export const columns: ColumnDef<BoxResponse>[] = [
                 </div>
             )
         },
-    },
-    {
-        accessorKey: "owner",
-        header: "Owner",
+        cell: ({ row }) => (
+            <div>
+                <div>{row.original.owner}</div>
+                <div className="text-xs text-gray-500">{row.original.id}</div>
+            </div>
+        ),
     },
     {
         accessorKey: "title",
         header: "Title",
+        cell: ({ row }) => (
+            <div>
+                <div>{row.original.title}</div>
+                <div className="text-xs text-gray-500">{row.original.receiver_name}</div>
+            </div>
+        ),
     },
     {
         accessorKey: "days_of_gifting",
         header: "Days of Gifting",
-    },
-    {
-        accessorKey: "receiver_name",
-        header: "Receiver Name",
     },
     {
         accessorKey: "open_date",

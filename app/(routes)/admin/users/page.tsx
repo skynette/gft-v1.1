@@ -36,7 +36,6 @@ export default function UsersPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="email"
                     disabled={false}
                 />
             }

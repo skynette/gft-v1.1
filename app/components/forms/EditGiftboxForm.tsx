@@ -128,8 +128,8 @@ const EditGiftboxForm = ({ onNext, data }: {
 
                 <Button
                     type='submit'
-                    disabled={isPendingEdit || isPendingEdit}
-                    isLoading={isPendingEdit || isPendingEdit}
+                    disabled={isPendingEdit || isPendingEdit || isPendingStep}
+                    isLoading={isPendingEdit || isPendingEdit || isPendingStep}
                     className='inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50'
                 >
                     Continue <ArrowRight size={18} className='text-white ml-2' />

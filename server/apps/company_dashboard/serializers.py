@@ -35,7 +35,6 @@ class CreateCampaignSerializer(serializers.ModelSerializer):
         fields = [
             "name",
             "company_boxes",
-            "duration",
             "num_boxes",
             "header_image",
             "open_after_a_day",

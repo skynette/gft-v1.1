@@ -35,7 +35,6 @@ export default function BoxAllocations() {
                 <DataTable
                     columns={columns}
                     data={boxAlllocations ?? []}
-                    searchKey="id"
                     disabled={false}
                 />
             }

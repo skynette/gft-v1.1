@@ -17,22 +17,21 @@ export interface CampaignColumns {
 
 export const columns: ColumnDef<CampaignColumns>[] = [
     {
-        accessorKey: "company",
-        header: ({ column }) => {
-            return (
-                <div
-                    className="flex cursor-pointer w-fit"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Company
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </div>
-            );
-        },
-    },
-    {
         accessorKey: "name",
-        header: "Name",
+        header: ({ column }) => (
+            <div
+                className="flex cursor-pointer w-fit"
+                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+                Name
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+            </div>
+        ),
+        cell: ({ row }) => (
+            <div>
+                <div>{row.original.name}</div>
+            </div>
+        ),
     },
     {
         accessorKey: "duration",
@@ -45,7 +44,17 @@ export const columns: ColumnDef<CampaignColumns>[] = [
     {
         accessorKey: "open_after_a_day",
         header: "Open After a Day",
+        cell: ({ row }) => (
+            <div className="flex justify-center items-center">
+                {row.original.open_after_a_day ? (
+                    <span className="text-green-500">&#10003;</span>
+                ) : (
+                    <span className="text-red-500">&#10007;</span>
+                )}
+            </div>
+        ),
     },
+
     {
         id: "actions",
         cell: ({ row }) => <CellAction data={row.original} />

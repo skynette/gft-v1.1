@@ -34,7 +34,6 @@ export default function BoxPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="title"
                     disabled={false}
                 />
             }

@@ -34,7 +34,6 @@ export default function GiftsPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="gift_title"
                     disabled={false}
                 />
             }

@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 import EditGiftboxForm from '@/components/forms/EditGiftboxForm';
 import EditMiniboxForm from '@/components/forms/EditMiniboxForm';
 import useGetGiftbox from '@/lib/hooks/useGetGiftbox';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import useSetMiniBox from '@/lib/hooks/useSetMinibox';
 import { toast } from 'sonner';
 import { SyncLoader } from 'react-spinners';
@@ -29,6 +29,7 @@ export interface GiftBoxValues {
 const SetupBox = () => {
     const boxId = useParams().box_id as string;
     const router = useRouter();
+    const isEdit = useSearchParams().get('edit') ?? null;
 
     const steps = 2;
     const label = ['Edit receiver details', 'Edit mini boxes details'];
@@ -36,6 +37,7 @@ const SetupBox = () => {
     const width = `${(100 / (steps - 1)) * (currentStep)}%`;
 
     const { data: giftBox, isPending: boxDataLoading } = useGetGiftbox(boxId);
+    console.log({ giftBox, isEdit })
 
     const { mutate, isPending } = useSetMiniBox({
         boxId, onSuccess() {
@@ -55,14 +57,20 @@ const SetupBox = () => {
 
     useEffect(() => {
         if (giftBox) {
-            setData(prev => ({
-                ...prev,
-                title: giftBox?.title ?? '',
-                receiverName: giftBox?.receiver_name ?? '',
-                receiverPhone: giftBox?.receiver_phone ?? '',
-                openDate: giftBox?.open_date ?? '',
-                open_after_a_day: giftBox?.open_after_a_day ?? false,
-            }));
+            if (giftBox.is_setup && isEdit === null) {
+                console.log("already setup and not edit")
+                router.push("/dashboard/gifter")
+            } else {
+                console.log("gift box present but in edit mode")
+                setData(prev => ({
+                    ...prev,
+                    title: giftBox?.title ?? '',
+                    receiverName: giftBox?.receiver_name ?? '',
+                    receiverPhone: giftBox?.receiver_phone ?? '',
+                    openDate: giftBox?.open_date ?? '',
+                    open_after_a_day: giftBox?.open_after_a_day ?? false,
+                }));
+            }
         }
     }, [giftBox]);
 
@@ -94,7 +102,7 @@ const SetupBox = () => {
     ];
 
     return (
-        <div className="container flex flex-col justify-center items-center py-10">
+        <div className="container flex flex-col justify-center items-center py-10 mt-10">
             <h1 className='font-semibold text-2xl capitalize'>GFT Setup box</h1>
             <div className='container relative w-full max-w-xl'>
                 <style>
@@ -126,7 +134,7 @@ const SetupBox = () => {
             </div>
             {boxDataLoading ? (
                 <div className="flex justify-center items-center h-64">
-                    <SyncLoader size={15} color='#3b82f6'/>
+                    <SyncLoader size={15} color='#3b82f6' />
                 </div>
             ) : (
                 forms[currentStep]

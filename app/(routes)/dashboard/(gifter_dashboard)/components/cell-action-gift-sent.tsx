@@ -1,8 +1,7 @@
 'use client'
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Copy, Edit, MoreHorizontal, Trash } from "lucide-react"
+import { Copy, Edit, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { AlertModal } from "@/components/modals/alert-modal"
@@ -22,23 +21,23 @@ export const CellActionGiftSent: React.FC<CellActionProps> = ({ data }) => {
     const [open, setOpen] = useState(false);
 
     const onCopy = (id: string) => {
-        navigator.clipboard.writeText(id)
-        toast.success('copied.')
-    }
+        navigator.clipboard.writeText(id);
+        toast.success('Copied.');
+    };
 
     const onDelete = async () => {
         try {
-            setLoading(true)
+            setLoading(true);
             // delete action goes here
-            router.refresh()
-            toast.success('deleted successfully.')
+            router.refresh();
+            toast.success('Deleted successfully.');
         } catch (error) {
-            toast.error('Make sure you removed all products using this category before deleting it.')
+            toast.error('Make sure you removed all products using this category before deleting it.');
         } finally {
-            setLoading(false)
-            setOpen(false)
+            setLoading(false);
+            setOpen(false);
         }
-    }
+    };
 
     return (
         <>
@@ -48,25 +47,19 @@ export const CellActionGiftSent: React.FC<CellActionProps> = ({ data }) => {
                 onConfirm={onDelete}
                 loading={loading}
             />
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+            <div className="flex space-x-2">
+                <Link href={`/dashboard/gifter/gift-boxes/${data.id}/setup?edit=${true}`}>
                     <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
+                        <Edit className="h-4 w-4" />
                     </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>
-                        Actions
-                    </DropdownMenuLabel>
-                    <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/gifter/gift-boxes/${data.id}/setup?edit=${true}`}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            Update
-                        </Link>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+                </Link>
+                {/* <Button variant="ghost" className="h-8 w-8 p-0" onClick={() => onCopy(data.id)}>
+                    <Copy className="h-4 w-4" />
+                </Button> */}
+                <Button variant="ghost" className="h-8 w-8 p-0" onClick={() => setOpen(true)}>
+                    <Trash className="h-4 w-4" />
+                </Button>
+            </div>
         </>
-    )
-}
+    );
+};

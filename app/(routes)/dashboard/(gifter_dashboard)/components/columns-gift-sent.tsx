@@ -24,15 +24,11 @@ export const columnsGiftSent: ColumnDef<GiftBoxColumn>[] = [
                     className="flex cursor-pointer w-fit"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Name
+                    Gift Name
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </div>
             )
         },
-    },
-    {
-        accessorKey: "owner",
-        header: "Owner",
     },
     {
         accessorKey: "days_of_gifting",

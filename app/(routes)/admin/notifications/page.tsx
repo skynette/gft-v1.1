@@ -34,7 +34,6 @@ export default function NotificationsPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="message"
                     disabled={false}
                 />
             }

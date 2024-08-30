@@ -25,7 +25,6 @@ export default function TokensPage() {
                 <DataTable
                     columns={columns}
                     data={data?.results ?? []}
-                    searchKey="visitor"
                     disabled={false}
                 />
             }

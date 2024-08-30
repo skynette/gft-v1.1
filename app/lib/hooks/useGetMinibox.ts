@@ -27,11 +27,11 @@ export const useRecordGiftVisit = (): UseMutationResult<any, AxiosError, GiftVis
         mutationFn: (req: GiftVisitRequest) =>
             recordGiftVisit(session?.accessToken ?? '', req),
         onSuccess: (data, variables, context) => {
-            toast.success('Gift visit recorded successfully');
+            // toast.success('Gift visit recorded successfully');
             queryClient.invalidateQueries({ queryKey: ['gift-visits'] });
         },
         onError: (error) => {
-            toast.error('Failed to record gift visit');
+            // toast.error('Failed to record gift visit');
             console.error('Error recording gift visit:', error);
         },
     });

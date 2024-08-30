@@ -34,7 +34,6 @@ export default function TemplatesPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="visitor"
                     disabled={false}
                 />
             }

@@ -34,7 +34,6 @@ export default function CompanyBoxesPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="company"
                     disabled={false}
                 />
             }

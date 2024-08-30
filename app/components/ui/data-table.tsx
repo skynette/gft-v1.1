@@ -15,7 +15,9 @@ import {
     getPaginationRowModel,
     useReactTable,
     Row,
+    FilterFn,
 } from "@tanstack/react-table"
+import { rankItem } from "@tanstack/match-sorter-utils"
 
 import {
     Table,
@@ -40,18 +42,23 @@ import { Trash } from "lucide-react"
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
-    searchKey: string
-    // onDelete?: (rows: Row<TData>[]) => void
     disabled?: boolean;
 }
+
+// Define a fuzzy filter function
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    const itemRank = rankItem(row.getValue(columnId), value)
+    addMeta({ itemRank })
+    return itemRank.passed
+}
+
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    searchKey,
-    // onDelete,
     disabled,
 }: DataTableProps<TData, TValue>) {
+    const [globalFilter, setGlobalFilter] = useState('')
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -69,11 +76,14 @@ export function DataTable<TData, TValue>({
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: setRowSelection,
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: fuzzyFilter,
         state: {
             sorting,
             columnFilters,
             columnVisibility,
             rowSelection,
+            globalFilter,
         },
     })
 
@@ -82,11 +92,9 @@ export function DataTable<TData, TValue>({
             <div className="flex items-center py-4">
                 <div className="flex items-center gap-4">
                     <Input
-                        placeholder="Search..."
-                        value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-                        onChange={(event) =>
-                            table.getColumn(searchKey)?.setFilterValue(event.target.value)
-                        }
+                        placeholder="Search all columns..."
+                        value={globalFilter ?? ""}
+                        onChange={(event) => setGlobalFilter(event.target.value)}
                         className="max-w-sm"
                     />
                     {table.getFilteredSelectedRowModel().rows.length > 0 && (

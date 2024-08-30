@@ -25,7 +25,6 @@ export default function CampaignsPage() {
                 <DataTable
                     columns={columns}
                     data={companyUsers ?? []}
-                    searchKey="username"
                 />
             }
         </div>

@@ -34,7 +34,6 @@ export default function GiftVisitPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="username"
                     disabled={false}
                 />
             }

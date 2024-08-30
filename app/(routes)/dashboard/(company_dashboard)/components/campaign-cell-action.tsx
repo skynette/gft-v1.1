@@ -1,11 +1,9 @@
 'use client'
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { Copy, Edit, MoreHorizontal, PlusSquare, Trash } from "lucide-react"
+import { Copy, Edit, PlusSquare, Trash } from "lucide-react"
 import { usePathname, useRouter } from "next/navigation"
 import { useState } from "react"
-import { AlertModal } from "@/components/modals/alert-modal"
 import { toast } from "sonner"
 import { CampaignColumns } from "./campaign-columns"
 import { CampaignSheet } from "./campaign-sheet"
@@ -55,6 +53,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         navigator.clipboard.writeText(id)
         toast.success('copied.')
     }
+
     const onDelete = async () => {
         try {
             setLoading(true)
@@ -68,14 +67,9 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
             setOpen(false)
         }
     }
+
     return (
         <>
-            <AlertModal
-                isOpen={open}
-                onClose={() => setOpen(false)}
-                onConfirm={onDelete}
-                loading={loading}
-            />
             <AlertDialog open={addToBox} onOpenChange={showAddToBox}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -103,34 +97,21 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
                 setIsOpenSheet(false);
                 createQueryString(pathname, router, 'query', '');
             }} />
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>
-                        Actions
-                    </DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => {
-                        createQueryString(pathname, router, 'query', 'update');
-                        setIsOpenSheet(true);
-                    }}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Update
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => showAddToBox(true)}>
-                        <PlusSquare className="mr-2 h-4 w-4" />
-                        Add box to campaign
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setOpen(true)}>
-                        <Trash className="mr-2 h-4 w-4" />
-                        Delete
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+
+            <div className="flex space-x-2">
+                <Button variant="ghost" className="h-8 w-8 p-0" onClick={() => {
+                    createQueryString(pathname, router, 'query', 'update');
+                    setIsOpenSheet(true);
+                }}>
+                    <Edit className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" className="h-8 w-8 p-0" onClick={() => showAddToBox(true)}>
+                    <PlusSquare className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" className="h-8 w-8 p-0" onClick={() => setOpen(true)}>
+                    <Trash className="h-5 w-5" />
+                </Button>
+            </div>
         </>
     )
 }

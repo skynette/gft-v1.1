@@ -24,7 +24,6 @@ export function GiftBoxTableArea<TData, TValue>({ title, columns, data }: GiftBo
             <DataTable
                 columns={columns}
                 data={data}
-                searchKey="name"
             />
             <Separator />
         </>

@@ -23,7 +23,6 @@ const page = () => {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="name"
                     disabled={false}
                 />
             }

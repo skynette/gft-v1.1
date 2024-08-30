@@ -32,15 +32,11 @@ export const columnsGiftReceived: ColumnDef<GiftBoxColumn>[] = [
     },
     {
         accessorKey: "owner",
-        header: "Owner",
+        header: "Sender",
     },
     {
         accessorKey: "days_of_gifting",
         header: "Days of Gifting",
-    },
-    {
-        accessorKey: "receiver_name",
-        header: "Receiver Name",
     },
     {
         accessorKey: "open_date",

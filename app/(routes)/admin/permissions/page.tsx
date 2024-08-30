@@ -33,7 +33,6 @@ export default function PrmissionsPage() {
                 <DataTable
                     columns={columns}
                     data={data ?? []}
-                    searchKey="visitor"
                     disabled={false}
                 />
             }

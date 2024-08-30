@@ -34,7 +34,6 @@ export default function CampaignsPage() {
                 <DataTable
                     columns={columns}
                     data={companyCampaigns ?? []}
-                    searchKey="name"
                 />
             }
             <CampaignSheet title='Create Campaign' isOpen={openSheet} onClose={() => setIsOpenSheet(false)} />

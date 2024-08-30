@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Button } from '@/components/ui/button'
 import { DataTable } from '@/components/ui/data-table'
@@ -35,7 +35,6 @@ export default function BoxPage() {
                 <DataTable
                     columns={columns}
                     data={companyBox?.results ?? []}
-                    searchKey="title"
                     disabled={false}
                 />
             }

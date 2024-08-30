@@ -23,7 +23,7 @@ export const setGifterBox = async (token: string, boxId: string, req: BoxSetupRe
 }
 
 export const getMinibox = async (id: string, token: string): Promise<MiniboxResponse[]> => {
-    const response = await axiosInstance.get(`/dashboard/gifter/gift-boxes/${id}/gifts`, {
+    const response = await axiosInstance.get(`/dashboard/gifter/gift-boxes/${id}/gifts/`, {
         headers: {
             Authorization: `Token ${token}`
         }

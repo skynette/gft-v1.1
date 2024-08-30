@@ -1,25 +1,27 @@
-'use client';
+'use client'
 
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import React, { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { format, parseISO, differenceInDays } from 'date-fns';
+import UAParser from 'ua-parser-js';
+import { Gift, Loader, Calendar, User, Mail, Phone, Clock, Package, Heart } from 'lucide-react';
+import { toast } from 'sonner';
 import useGetMinibox, { useRecordGiftVisit } from "@/lib/hooks/useGetMinibox";
 import { MiniboxResponse } from "@/lib/response-type/gifter/MiniboxResponse";
-import { AlertDialogDescription } from "@radix-ui/react-alert-dialog";
-import { differenceInDays, format, parseISO } from "date-fns";
-import { Gift, Loader } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import UAParser from 'ua-parser-js';
-
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialogCancel } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const ViewGifts = () => {
     const boxId = useSearchParams().get('boxId') ?? '';
     const { data: giftsReceived, isPending, error, isError } = useGetMinibox(boxId);
     const [openDialog, setOpenDialog] = useState(false);
-    const [openGift, setOpenGift] = useState<MiniboxResponse | null>();
+    const [openGift, setOpenGift] = useState<MiniboxResponse | null>(null);
 
     const { mutate: recordVisit, isPending: createVisitPending } = useRecordGiftVisit();
+
     const handleGiftOpen = (gift: MiniboxResponse) => {
         const parser = new UAParser(window.navigator.userAgent);
         const browserInfo = parser.getBrowser();
@@ -27,8 +29,8 @@ const ViewGifts = () => {
         const osInfo = parser.getOS();
 
         const metadata = {
-            sourceCountry: 'Unknown', // You might need to use a geolocation service to get this
-            sourceIP: 'Unknown', // This should be determined server-side
+            sourceCountry: 'Unknown',
+            sourceIP: 'Unknown',
             sourceBrowser: `${browserInfo.name} ${browserInfo.version}`,
             sourceDeviceType: deviceInfo.type || 'Unknown',
             sourceOS: `${osInfo.name} ${osInfo.version}`,
@@ -38,82 +40,150 @@ const ViewGifts = () => {
             timestamp: new Date().toISOString(),
         };
 
-        console.log({ metadata })
-
         recordVisit({ gift_id: gift.pkid.toString(), metadata });
     };
 
-    if (isError)
+    if (isError) {
         toast.error(error?.message);
+    }
 
-    if (isPending)
+    if (isPending) {
         return (
-            <div className="flex flex-col py-10 items-center justify-center mt-10">
-                <Loader className="mr-2 h-8 w-8 animate-spin" />
-                <p className="font-sm">Fetching gift boxes...</p>
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+                <Loader className="w-12 h-12 text-primary animate-spin" />
+                <p className="mt-4 text-lg font-medium text-gray-600">Fetching your gift boxes...</p>
             </div>
-        )
+        );
+    }
 
     return (
-        <div className="container flex flex-col py-10 mt-10">
-            <p className="text-2xl font-semibold">Gift boxes received</p>
-            <div className="grid grid-cols-4 gap-4 mt-2">
-                {
-                    giftsReceived?.map(gift => (
-                        <div key={gift.id} className="flex flex-col space-y-2 p-2 items-center justify-center text-center rounded-lg border">
-                            <Gift size={64} />
-
-                            <p className="font-semibold">{gift.gift_title}</p>
-                            <p className="text-gray-500 text-sm font-normal">
-                                Gift owned by: <span className="text-black font-medium">{gift.box_model.owner}</span>
-                            </p>
-                            <p className="text-gray-500 text-sm font-normal">
-                                Open date: <span className="text-black font-medium">{format(parseISO(gift.open_date), 'dd-MM-yyyy')}</span>
-                            </p>
-
-                            <AlertDialog defaultOpen={openDialog} onOpenChange={setOpenDialog}>
-                                <AlertDialogTrigger>
-                                    <Button variant='outline' className="" onClick={() => {
-                                        const shouldOpen = differenceInDays(
-                                            parseISO(gift.open_date),
-                                            new Date().toISOString(),
-                                        );
-
-                                        if (shouldOpen <= 0) {
-                                            setOpenGift(gift);
-                                            setOpenDialog(true);
-                                            handleGiftOpen(gift);
-                                        } else toast.info('Not yet open date for gift box');
-                                    }}>Open</Button>
+        <div className="container mx-auto px-4 py-8 mt-10">
+            <h1 className="text-3xl font-bold text-gray-800 mb-6">Your Gift Boxes</h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {giftsReceived?.map(gift => (
+                    <Card key={gift.id} className="overflow-hidden transition-shadow duration-300 ease-in-out hover:shadow-lg">
+                        <CardHeader className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                            <CardTitle className="flex items-center">
+                                <Gift className="mr-2" size={24} />
+                                {gift.gift_title}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4">
+                            <div className="space-y-2">
+                                <p className="flex items-center text-sm text-gray-600">
+                                    <User className="mr-2" size={16} />
+                                    Gift from: <span className="font-medium ml-1">{gift.box_model.owner}</span>
+                                </p>
+                                <p className="flex items-center text-sm text-gray-600">
+                                    <Calendar className="mr-2" size={16} />
+                                    Open date: <span className="font-medium ml-1">{format(parseISO(gift.open_date), 'MMMM d, yyyy')}</span>
+                                </p>
+                            </div>
+                        </CardContent>
+                        <CardFooter>
+                            <AlertDialog open={openDialog} onOpenChange={setOpenDialog}>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="w-full"
+                                        onClick={() => {
+                                            const shouldOpen = differenceInDays(parseISO(gift.open_date), new Date()) <= 0;
+                                            if (shouldOpen) {
+                                                setOpenGift(gift);
+                                                setOpenDialog(true);
+                                                handleGiftOpen(gift);
+                                            } else {
+                                                toast.info('This gift box is not ready to be opened yet.');
+                                            }
+                                        }}
+                                    >
+                                        Open Gift
+                                    </Button>
                                 </AlertDialogTrigger>
-
-                                <AlertDialogContent>
+                                <AlertDialogContent className="max-w-3xl">
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Giftbox</AlertDialogTitle>
-                                        <AlertDialogDescription></AlertDialogDescription>
+                                        <AlertDialogTitle className="text-2xl font-bold text-center mb-4">
+                                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+                                                Your Special Gift
+                                            </span>
+                                        </AlertDialogTitle>
                                     </AlertDialogHeader>
-                                    <div className="flex flex-col">
-                                        <p className="text-gray-500 text-sm">Gift title: <span className="text-black">{openGift?.box_model.title}</span></p>
-                                        <p className="text-gray-500 text-sm">Gift owner: <span className="text-black">{openGift?.box_model.owner}</span></p>
-                                        <p className="text-gray-500 text-sm">Receiver name: <span className="text-black">{openGift?.box_model.receiver_name}</span></p>
-                                        <p className="text-gray-500 text-sm">Receiver email: <span className="text-black">{openGift?.box_model.receiver_email}</span></p>
-                                        <p className="text-gray-500 text-sm">Receiver phone number: <span className="text-black">{openGift?.box_model.receiver_phone}</span></p>
-                                        <p className="text-gray-500 text-sm">Open date: <span className="text-black">{format(parseISO(openGift?.box_model.open_date ?? new Date().toISOString()), 'dd-MM-yyyy')}</span></p>
-                                        <p className="text-gray-500 text-sm">Gift created at: <span className="text-black">{format(parseISO(openGift?.box_model.created_at ?? new Date().toISOString()), 'dd-MM-yyyy')}</span></p>
-                                        <p className="text-gray-500 text-sm">Gift last updated at: <span className="text-black">{format(parseISO(openGift?.box_model.updated_at ?? new Date().toISOString()), 'dd-MM-yyyy')}</span></p>
+                                    <Tabs defaultValue="details" className="w-full">
+                                        <TabsList className="grid w-full grid-cols-2">
+                                            <TabsTrigger value="details">Gift Details</TabsTrigger>
+                                            <TabsTrigger value="info">Sender Info</TabsTrigger>
+                                        </TabsList>
+                                        <TabsContent value="details" className="mt-4">
+                                            <div className="text-center mb-6">
+                                                <Package className="w-16 h-16 mx-auto text-purple-500" />
+                                                <h3 className="text-xl font-semibold mt-2">{openGift?.box_model.title}</h3>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="flex items-center">
+                                                    <Calendar className="mr-2 text-purple-500" size={20} />
+                                                    <div>
+                                                        <p className="text-sm text-gray-500">Open Date</p>
+                                                        <p className="font-medium">{format(parseISO(openGift?.box_model.open_date ?? new Date().toISOString()), 'MMMM d, yyyy')}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <Clock className="mr-2 text-purple-500" size={20} />
+                                                    <div>
+                                                        <p className="text-sm text-gray-500">Created</p>
+                                                        <p className="font-medium">{format(parseISO(openGift?.box_model.created_at ?? new Date().toISOString()), 'MMMM d, yyyy')}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </TabsContent>
+                                        <TabsContent value="info" className="mt-4">
+                                            <div className="flex items-center justify-center mb-6">
+                                                <Avatar className="w-20 h-20">
+                                                    <AvatarImage src="/placeholder-avatar.png" alt="Sender" />
+                                                    <AvatarFallback>{openGift?.box_model.owner.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <div className="flex items-center">
+                                                    <User className="mr-2 text-purple-500" size={20} />
+                                                    <div>
+                                                        <p className="text-sm text-gray-500">From</p>
+                                                        <p className="font-medium">{openGift?.box_model.owner}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <Mail className="mr-2 text-purple-500" size={20} />
+                                                    <div>
+                                                        <p className="text-sm text-gray-500">Email</p>
+                                                        <p className="font-medium">{openGift?.box_model.receiver_email}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center">
+                                                    <Phone className="mr-2 text-purple-500" size={20} />
+                                                    <div>
+                                                        <p className="text-sm text-gray-500">Phone</p>
+                                                        <p className="font-medium">{openGift?.box_model.receiver_phone}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </TabsContent>
+                                    </Tabs>
+                                    <div className="mt-6 text-center">
+                                        <p className="text-sm text-gray-500 flex items-center justify-center">
+                                            <Heart className="mr-2 text-pink-500" size={16} />
+                                            Sent with love to {openGift?.box_model.receiver_name}
+                                        </p>
                                     </div>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogCancel>Close</AlertDialogCancel>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
-
-                        </div>
-                    ))
-                }
+                        </CardFooter>
+                    </Card>
+                ))}
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default ViewGifts;
